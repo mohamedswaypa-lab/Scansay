@@ -13,24 +13,24 @@
 @font-face{font-family:J;src:url(../fonts/jakarta-800.woff2) format('woff2');font-weight:800}
 :root{--g0:#0B0B0E;--g1:#0F1013;--g2:#141519;--g3:#18191E;--g4:#1E1F25;--g5:#25262D;--g6:#2E2F37;
  --tx:#ECECEF;--tx2:#A1A1AA;--tx3:#71717A;--hair:rgba(255,255,255,.08);--hair2:rgba(255,255,255,.14);
- --or:#FF7A45;--pk:#FF3D77;--am:#FFB547;--pri:#E5384B;--ok:#34D399;--warn:#FBBF24;--bad:#F87171;--info:#60A5FA;
- --sun:linear-gradient(135deg,#FF7A45,#FF3D77);color-scheme:dark}
+ --or:#3B82F6;--pk:#1D4ED8;--am:#2563EB;--pri:#1D4ED8;--ok:#34D399;--warn:#FBBF24;--bad:#F87171;--info:#60A5FA;
+ --sun:linear-gradient(135deg,#3B82F6,#1D4ED8);color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;font-family:J,system-ui,sans-serif;font-size:14.5px;line-height:1.5;color:var(--tx);background:radial-gradient(900px 500px at 90% -10%,rgba(255,122,69,.1),transparent 60%),radial-gradient(800px 600px at 0% 110%,rgba(255,61,119,.08),transparent 60%),var(--g1);background-attachment:fixed;min-height:100vh}
+body{margin:0;font-family:J,system-ui,sans-serif;font-size:14.5px;line-height:1.5;color:var(--tx);background:radial-gradient(900px 500px at 90% -10%,rgba(59,130,246,.1),transparent 60%),radial-gradient(800px 600px at 0% 110%,rgba(29,78,216,.08),transparent 60%),var(--g1);background-attachment:fixed;min-height:100vh}
 a{color:var(--or)}
 button,input,select,textarea{font:inherit;color:inherit}
 h1{font-size:28px;letter-spacing:-.03em;margin:0}h2{font-size:17px;margin:0 0 12px;letter-spacing:-.01em}h3{font-size:15px;margin:0}
 .sub{color:var(--tx2);font-size:13.5px}
 /* layout */
 .top{position:sticky;top:0;z-index:30;height:64px;display:flex;align-items:center;gap:16px;padding:0 20px;background:rgba(11,11,14,.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--hair)}
-.top:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:linear-gradient(90deg,transparent,#FF7A45 25%,#FF3D77 75%,transparent);opacity:.7;pointer-events:none}
+.top:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:linear-gradient(90deg,transparent,#3B82F6 25%,#1D4ED8 75%,transparent);opacity:.7;pointer-events:none}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;min-width:208px}
-.brand svg{width:32px;height:32px;filter:drop-shadow(0 6px 14px rgba(255,61,119,.35))}
+.brand svg{width:32px;height:32px;filter:drop-shadow(0 6px 14px rgba(29,78,216,.35))}
 .brand b{font-size:21px;font-weight:800;letter-spacing:-.045em}.brand b span{background:var(--sun);-webkit-background-clip:text;background-clip:text;color:transparent}
 .brand small{display:block;font-size:11px;color:var(--am);font-weight:700;letter-spacing:.04em;margin-top:1px}
 .gsearch{flex:1;max-width:520px;position:relative}
 .gsearch input{width:100%;background:var(--g3);border:1px solid var(--hair2);border-radius:999px;padding:10px 16px 10px 40px;outline:0}
-.gsearch input:focus{border-color:rgba(255,122,69,.6);box-shadow:0 0 0 4px rgba(255,122,69,.12)}
+.gsearch input:focus{border-color:rgba(59,130,246,.6);box-shadow:0 0 0 4px rgba(59,130,246,.12)}
 .gsearch svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--tx3)}
 .gres{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--g3);border:1px solid var(--hair2);border-radius:16px;box-shadow:0 30px 60px -20px rgba(0,0,0,.8);padding:6px;display:none;max-height:380px;overflow:auto}
 .gres.on{display:block}.gres button{display:flex;gap:10px;width:100%;text-align:left;background:none;border:0;padding:9px 10px;border-radius:10px;cursor:pointer}.gres button:hover{background:var(--g5)}
@@ -42,7 +42,7 @@ h1{font-size:28px;letter-spacing:-.03em;margin:0}h2{font-size:17px;margin:0 0 12
 .side button{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;color:var(--tx2);padding:9px 10px;border-radius:12px;cursor:pointer;font-weight:600;text-align:left;margin-bottom:2px}
 .side button .ni{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:rgba(255,255,255,.05);flex:none}
 .side button:hover{background:rgba(255,255,255,.05);color:#fff}
-.side button.on{background:var(--pri);color:#fff;box-shadow:0 12px 26px -14px rgba(229,56,75,.9)}.side button.on .ni{background:rgba(255,255,255,.18)}
+.side button.on{background:var(--pri);color:#fff;box-shadow:0 12px 26px -14px rgba(29,78,216,.9)}.side button.on .ni{background:rgba(255,255,255,.18)}
 .side .cnt{margin-left:auto;background:var(--pk);color:#fff;border-radius:999px;font-size:11.5px;font-weight:800;padding:1px 8px}
 .side .grp{font-size:11px;font-weight:800;color:var(--tx3);letter-spacing:.08em;text-transform:uppercase;margin:14px 10px 6px}
 .side .ext{color:var(--am)}
@@ -55,34 +55,34 @@ main{margin-left:236px;padding:24px 26px 60px;max-width:1500px}
 .kpi small{display:block;color:var(--tx2);font-weight:600;font-size:12.5px;padding-right:40px}
 .kpi b{display:block;font-size:28px;letter-spacing:-.03em;font-weight:800;margin:6px 0 2px;font-variant-numeric:tabular-nums}
 .kpi em{font-style:normal;font-size:12.5px;font-weight:700;color:var(--tx3)}.kpi em.up{color:var(--ok)}.kpi em.dn{color:var(--bad)}
-.kpi .ki{position:absolute;right:14px;top:14px;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:rgba(255,122,69,.14);color:var(--or)}
-.kpi.hero{background:linear-gradient(135deg,rgba(255,122,69,.22),rgba(255,61,119,.18)),var(--g3);border-color:rgba(255,122,69,.3)}
+.kpi .ki{position:absolute;right:14px;top:14px;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:rgba(59,130,246,.14);color:var(--or)}
+.kpi.hero{background:linear-gradient(135deg,rgba(59,130,246,.22),rgba(29,78,216,.18)),var(--g3);border-color:rgba(59,130,246,.3)}
 .kpi.hero b{font-size:32px}
 .btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--hair2);background:var(--g4);color:#fff;border-radius:999px;padding:9px 16px;font-weight:700;font-size:13.5px;cursor:pointer;white-space:nowrap}
 .btn:hover{background:var(--g5)}
-.btn.pri{background:var(--pri);border-color:var(--pri);box-shadow:0 10px 24px -12px rgba(229,56,75,.9)}.btn.pri:hover{background:#C92A3E}
+.btn.pri{background:var(--pri);border-color:var(--pri);box-shadow:0 10px 24px -12px rgba(29,78,216,.9)}.btn.pri:hover{background:#1E40AF}
 .btn.ghost{background:transparent}.btn.danger{border-color:rgba(248,113,113,.4);color:#FCA5A5;background:rgba(248,113,113,.08)}
 .btn.sm{padding:6px 12px;font-size:12.5px}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}
 .tag{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 10px;font-weight:800;font-size:11.5px;white-space:nowrap}
-.t-ok{background:rgba(52,211,153,.14);color:#6EE7B7}.t-warn{background:rgba(251,191,36,.14);color:#FCD34D}.t-bad{background:rgba(248,113,113,.14);color:#FCA5A5}.t-info{background:rgba(96,165,250,.14);color:#93C5FD}.t-mut{background:rgba(255,255,255,.07);color:var(--tx2)}.t-sun{background:rgba(255,122,69,.16);color:#FFB59A}
+.t-ok{background:rgba(52,211,153,.14);color:#6EE7B7}.t-warn{background:rgba(251,191,36,.14);color:#FCD34D}.t-bad{background:rgba(248,113,113,.14);color:#FCA5A5}.t-info{background:rgba(96,165,250,.14);color:#93C5FD}.t-mut{background:rgba(255,255,255,.07);color:var(--tx2)}.t-sun{background:rgba(59,130,246,.16);color:#93C5FD}
 table{width:100%;border-collapse:collapse}
 th{text-align:left;font-size:12px;font-weight:700;color:var(--tx3);padding:10px 12px;border-bottom:1px solid var(--hair2);white-space:nowrap}
 td{padding:12px;border-bottom:1px solid var(--hair);vertical-align:middle}
 tr:last-child td{border-bottom:0}tbody tr.click{cursor:pointer}tbody tr.click:hover td{background:rgba(255,255,255,.03)}
 td b{font-weight:700}.num{font-variant-numeric:tabular-nums;text-align:right}
 input.f,select.f,textarea.f{background:var(--g4);border:1px solid var(--hair2);border-radius:12px;padding:10px 12px;outline:0;width:100%}
-input.f:focus,select.f:focus,textarea.f:focus{border-color:rgba(255,122,69,.6);box-shadow:0 0 0 4px rgba(255,122,69,.12)}
+input.f:focus,select.f:focus,textarea.f:focus{border-color:rgba(59,130,246,.6);box-shadow:0 0 0 4px rgba(59,130,246,.12)}
 label.l{display:block;font-size:12.5px;font-weight:700;color:var(--tx2);margin:12px 0 6px}
 .seg{display:inline-flex;background:var(--g4);border:1px solid var(--hair);border-radius:999px;padding:3px}
 .seg button{background:none;border:0;color:var(--tx2);padding:7px 14px;border-radius:999px;font-weight:700;cursor:pointer;font-size:13px}.seg button.on{background:var(--sun);color:#fff}
 .pick{display:grid;gap:8px}.pick.c4{grid-template-columns:repeat(4,1fr)}.pick.c2{grid-template-columns:repeat(2,1fr)}
 .pick button{background:var(--g4);border:1px solid var(--hair2);border-radius:14px;padding:12px;text-align:left;cursor:pointer;color:var(--tx)}
 .pick button b{display:block;font-size:14px}.pick button small{color:var(--tx3);font-size:12px}
-.pick button.on{border-color:var(--or);background:rgba(255,122,69,.1);box-shadow:0 0 0 3px rgba(255,122,69,.15)}
+.pick button.on{border-color:var(--or);background:rgba(59,130,246,.1);box-shadow:0 0 0 3px rgba(59,130,246,.15)}
 .chk{display:flex;align-items:center;gap:10px;background:var(--g4);border:1px solid var(--hair2);border-radius:12px;padding:9px 12px;cursor:pointer}
-.chk.on{border-color:var(--or);background:rgba(255,122,69,.1)}
-.chk input{accent-color:#FF7A45;width:16px;height:16px}
+.chk.on{border-color:var(--or);background:rgba(59,130,246,.1)}
+.chk input{accent-color:#3B82F6;width:16px;height:16px}
 .switch{display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:600}
 .switch i{width:40px;height:22px;border-radius:999px;background:var(--g6);position:relative;transition:.2s;flex:none}
 .switch i:after{content:"";position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s}
@@ -97,7 +97,7 @@ label.l{display:block;font-size:12.5px;font-weight:700;color:var(--tx2);margin:1
 .modal.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%)}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--g5);border:1px solid var(--hair2);color:#fff;border-radius:14px;padding:12px 18px;font-weight:700;opacity:0;transition:.25s;z-index:90;box-shadow:0 20px 40px -20px rgba(0,0,0,.8)}
 .toast.on{opacity:1;transform:translateX(-50%)}
-.sum{background:linear-gradient(135deg,rgba(255,122,69,.14),rgba(255,61,119,.1));border:1px solid rgba(255,122,69,.3);border-radius:16px;padding:14px 16px;margin-top:14px}
+.sum{background:linear-gradient(135deg,rgba(59,130,246,.14),rgba(29,78,216,.1));border:1px solid rgba(59,130,246,.3);border-radius:16px;padding:14px 16px;margin-top:14px}
 .sum b.big{font-size:26px;letter-spacing:-.03em}
 .feed li{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--hair);font-size:13.5px}.feed li:last-child{border:0}.feed{list-style:none;margin:0;padding:0}
 .dot{width:8px;height:8px;border-radius:50%;margin-top:7px;flex:none}
@@ -116,6 +116,43 @@ label.l{display:block;font-size:12.5px;font-weight:700;color:var(--tx2);margin:1
 @media (max-width:1180px){.g6{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(2,1fr)}.g21,.g12{grid-template-columns:1fr}}
 @media (max-width:820px){.side{position:static;width:auto;display:flex;overflow-x:auto;border-right:0;border-bottom:1px solid var(--hair);padding:8px}.side .grp{display:none}.side button{width:auto;flex:none}main{margin-left:0;padding:16px}.g3,.g2,.g4,.g6{grid-template-columns:1fr 1fr}.brand{min-width:0}.brand small,.who span{display:none}.msgwrap{grid-template-columns:1fr}.pick.c4{grid-template-columns:1fr 1fr}}
 </style>
+<style id="light">
+:root{--g0:#FFFFFF;--g1:#F5F7FB;--g2:#FFFFFF;--g3:#FFFFFF;--g4:#F3F4F6;--g5:#E5E7EB;--g6:#D1D5DB;--tx:#0A0F1C;--tx2:#374151;--tx3:#6B7280;--hair:rgba(10,15,28,.08);--hair2:rgba(10,15,28,.14);color-scheme:light}
+body{background:#F5F7FB!important;color:#0A0F1C}
+.top{background:rgba(255,255,255,.92)!important;border-bottom:1px solid #E5E7EB}.top:after{display:none}
+.brand{color:#0A0F1C!important}.brand b span{background:none!important;-webkit-background-clip:border-box!important;color:#1D4ED8!important}.brand small{color:#1D4ED8!important}
+.side{background:#FFFFFF!important;border-right:1px solid #E5E7EB}.side button{color:#374151}.side button:hover{color:#0A0F1C;background:#F3F4F6}.side button.on{background:#0A0F1C;color:#fff}.side button .ni{background:#F3F4F6}.side button.on .ni{background:rgba(255,255,255,.15)}.side .ext{color:#1D4ED8}
+.btn{color:#0A0F1C;background:#FFFFFF;border-color:#D1D5DB}.btn:hover{background:#F3F4F6}.btn.pri{background:#1D4ED8;border-color:#1D4ED8;color:#fff;box-shadow:none}.btn.pri:hover{background:#1E40AF}
+.btn.danger{color:#B91C1C;background:#FEF2F2;border-color:#FECACA}.btn.ghost{background:transparent}
+.card{box-shadow:0 1px 2px rgba(10,15,28,.05)}
+.kpi.hero{background:#0A0F1C!important;border-color:#0A0F1C!important}.kpi.hero small,.kpi.hero em{color:#CBD5E1!important}.kpi.hero b{color:#fff!important}.kpi.hero .ki{background:rgba(200,245,66,.18);color:#C8F542}
+.kpi .ki{background:#EFF6FF;color:#1D4ED8}
+.t-ok{background:#DCFCE7;color:#166534}.t-warn{background:#FEF3C7;color:#92400E}.t-bad{background:#FEE2E2;color:#991B1B}.t-info{background:#DBEAFE;color:#1E40AF}.t-mut{background:#F3F4F6;color:#374151}.t-sun{background:#EFF6FF;color:#1D4ED8}
+.kpi em.up{color:#15803D}.kpi em.dn{color:#B91C1C}
+.seg{background:#F3F4F6}.seg button{color:#374151}.seg button.on{background:#0A0F1C;color:#fff}
+.pick button.on,.chk.on{border-color:#1D4ED8;background:#EFF6FF;box-shadow:0 0 0 3px rgba(29,78,216,.12)}
+.switch.on i{background:#1D4ED8}
+.sum{background:#EFF6FF!important;border-color:#BFDBFE!important}
+.gres{background:#fff;box-shadow:0 20px 50px -20px rgba(10,15,28,.3)}
+.drawer{background:#FFFFFF;box-shadow:-30px 0 60px -30px rgba(10,15,28,.3)}
+.dim{background:rgba(10,15,28,.35)}
+.toast{background:#0A0F1C;color:#fff}
+.bub{background:#F3F4F6;color:#0A0F1C}.bub.me{background:#1D4ED8;color:#fff}
+.th.on{background:#EFF6FF}
+.who{background:#fff;border-color:#E5E7EB}
+.lbox{box-shadow:0 30px 60px -30px rgba(10,15,28,.25)}
+input.f,select.f,textarea.f{background:#FFFFFF;border-color:#D1D5DB;color:#0A0F1C}
+.empty{color:#6B7280}
+a{color:#1D4ED8}
+body,button,input,select,textarea{font-family:var(--font)!important}h1,h2,h3,.kpi b,.brand b{font-family:var(--font-h)!important;letter-spacing:-.025em}
+
+/* v18 contrast */
+:root{--ok:#15803D!important;--warn:#B45309!important;--bad:#B91C1C!important;--info:#1D4ED8!important}
+.av{box-shadow:inset 0 0 0 100px rgba(10,15,28,.28)!important;color:#fff!important}
+.aib{color:#fff!important;-webkit-text-fill-color:#fff!important}
+.ctr-empty{color:#6B7280!important}
+</style>
+<link rel="stylesheet" href="../fonts.css">
 </head>
 <body>
 <div id="root"></div>
@@ -123,6 +160,7 @@ label.l{display:block;font-size:12.5px;font-weight:700;color:var(--tx2);margin:1
 <aside class="drawer" id="drawer" aria-modal="true" role="dialog"></aside>
 <div class="modal" id="modal" role="alertdialog"></div>
 <div class="toast" id="toast" role="status"></div>
+<script src="../legal/contract.js"></script>
 <script>
 /* ScanSay admin console (demo data in localStorage). Live: replace store() with API calls (see server/stripe.js). */
 const $=id=>document.getElementById(id);
@@ -139,16 +177,17 @@ const I={home:'<path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/>'
  tool:'<path d="M14.7 6.3a4 4 0 0 0 5 5L22 14l-8 8-2.3-2.3a4 4 0 0 0-5-5L2 10l8-8z"/>',money:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/>',
  search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',plus:'<path d="M12 5v14M5 12h14"/>',card:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',out:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
  trend:'<path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',check:'<path d="M20 6L9 17l-5-5"/>',bell:'<path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/>'};
-const LOGO='<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF7A45"/><stop offset="1" stop-color="#FF3D77"/></linearGradient></defs><path d="M14 2h36a11 11 0 0 1 11 11v33a11 11 0 0 1-11 11H27l-14 7v-7h-1A9 9 0 0 1 3 48V13A11 11 0 0 1 14 2z" fill="url(#lgA)"/>'+[[0,0],[1,0],[2,0],[0,1],[2,1],[0,2],[1,2],[2,2],[4,0],[5,0],[6,0],[4,1],[6,1],[4,2],[5,2],[6,2],[0,4],[1,4],[2,4],[0,5],[2,5],[0,6],[1,6],[2,6],[4,4],[6,4],[5,5],[4,6],[3,3],[5,3],[3,5],[6,6],[3,1],[1,3]].map(([x,y])=>`<rect x="${13+x*5.5}" y="${11+y*5.5}" width="4.6" height="4.6" rx="1.2" fill="#fff"/>`).join('')+'</svg>';
+const LOGO='<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3B82F6"/><stop offset="1" stop-color="#1D4ED8"/></linearGradient></defs><path d="M14 2h36a11 11 0 0 1 11 11v33a11 11 0 0 1-11 11H27l-14 7v-7h-1A9 9 0 0 1 3 48V13A11 11 0 0 1 14 2z" fill="url(#lgA)"/>'+[[0,0],[1,0],[2,0],[0,1],[2,1],[0,2],[1,2],[2,2],[4,0],[5,0],[6,0],[4,1],[6,1],[4,2],[5,2],[6,2],[0,4],[1,4],[2,4],[0,5],[2,5],[0,6],[1,6],[2,6],[4,4],[6,4],[5,5],[4,6],[3,3],[5,3],[3,5],[6,6],[3,1],[1,3]].map(([x,y])=>`<rect x="${13+x*5.5}" y="${11+y*5.5}" width="4.6" height="4.6" rx="1.2" fill="#fff"/>`).join('')+'</svg>';
 
 /* ---------- reference data ---------- */
 const INDS={hotel:'Hotell',taxi:'Taxi',bus:'Buss och spårvagn',stop:'Hållplatser',restaurant:'Restaurang',cafe:'Kafé',gym:'Gym',spa:'Spa',shop:'Butik',workshop:'Verkstad',salon:'Frisör och skönhet',cleaning:'Städ och fastighet',office:'Kontor'};
 const UNIT={hotel:'rum',taxi:'bilar',bus:'fordon',stop:'hållplatser',restaurant:'bord',cafe:'platser',gym:'zoner',spa:'rum',shop:'butiker',workshop:'platser',salon:'stolar',cleaning:'objekt',office:'rum'};
 const PLANS={start:{n:'Start',base:690,per:15,feat:'Inkorg, larm och statistik'},pro:{n:'Pro',base:1490,per:12,feat:'+ svar till kund, intyg och rapporter'},business:{n:'Business',base:2990,per:9,feat:'+ AI-insikter, flera grupper, API'},enterprise:{n:'Enterprise',base:5990,per:7,feat:'Allt, SSO, egen avtalsnivå'}};
-const priceFor=(plan,places,interval)=>{const p=PLANS[plan],m=p.base+p.per*Math.max(0,places-10);return interval==='year'?Math.round(m*10/10)*10:Math.round(m/10)*10};
+const SEATS={start:3,pro:10,business:25,enterprise:100},SEAT_PRICE=49;
+const priceFor=(plan,places,interval,seats)=>{const p=PLANS[plan],extra=Math.max(0,(seats||SEATS[plan])-SEATS[plan]),m=p.base+p.per*Math.max(0,places-10)+extra*SEAT_PRICE;return interval==='year'?Math.round(m)*10:Math.round(m/10)*10};
 const monthlyOf=s=>s.interval==='year'?s.price/12:s.price;
 const STATUS={active:['Aktiv','t-ok'],trial:['Provperiod','t-info'],past_due:['Förfallen','t-bad'],paused:['Pausad','t-warn'],canceled:['Uppsagd','t-mut']};
-const COLORS=['#FF7A45','#FF3D77','#FFB547','#60A5FA','#34D399','#A78BFA','#F472B6'];
+const COLORS=['#3B82F6','#1D4ED8','#2563EB','#60A5FA','#34D399','#A78BFA','#F472B6'];
 const ini=n=>n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
 
 /* ---------- store ---------- */
@@ -184,6 +223,7 @@ function seed(){const r=rng(42),pick=a=>a[Math.floor(r()*a.length)];
 function load(){try{S=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){S=null}if(!S||!S.accounts)S=seed();
  /* applications sent from the website's form */
  try{(JSON.parse(localStorage.getItem('scansay-applications')||'[]')).forEach(w=>{if(!S.apps.find(a=>a.id===w.id))S.apps.unshift({id:w.id,company:w.company,org:'',ind:w.ind||'hotel',city:'',contact:w.name,email:w.email,phone:w.phone||'',places:+w.size||10,plan:{s:'start',m:'pro',l:'business',e:'enterprise'}[w.tier]||'pro',interval:'month',message:w.msg||'',ts:w.time||NOW,status:'new'})})}catch(e){}}
+function migrate(){S.accounts.forEach(a=>{if(a.seats==null)a.seats=SEATS[a.sub.plan]||10;if(!Array.isArray(a.agents))a.agents=[];if(!a.sign)a.sign=null});S.apps.forEach(a=>{if(a.seats==null)a.seats=Math.max(3,Math.round((a.places||10)/8))});S.settings.api=S.settings.api||{url:'',key:''};S.settings.seller=S.settings.seller||Object.assign({},(window.SSContract||{}).SELLER||{});}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function log(txt){S.log.unshift({ts:Date.now(),txt});S.log=S.log.slice(0,60)}
 const A=id=>S.accounts.find(a=>a.id===id),AG=id=>S.agents.find(a=>a.id===id);
@@ -205,7 +245,7 @@ function revenueChart(){const ms=months12();const data=ms.map(m=>{const iv=S.inv
  const mx=Math.max(1,...data.map(d=>d.st+d.fa))*1.12,W=720,H=240,bw=W/12*.56;
  const bars=data.map((d,k)=>{const x=k*W/12+(W/12-bw)/2,h1=d.st/mx*(H-30),h2=d.fa/mx*(H-30);return `<rect x="${x}" y="${H-20-h1}" width="${bw}" height="${h1}" rx="6" fill="url(#gS)"><title>${d.l}: Stripe ${kr(d.st)}</title></rect><rect x="${x}" y="${H-20-h1-h2-3}" width="${bw}" height="${h2}" rx="6" fill="#60A5FA" opacity=".85"><title>${d.l}: Faktura ${kr(d.fa)}</title></rect><text x="${x+bw/2}" y="${H-4}" text-anchor="middle" font-size="11" fill="#71717A">${d.l}</text>`}).join('');
  const grid=[.25,.5,.75,1].map(f=>`<line x1="0" x2="${W}" y1="${H-20-(H-30)*f}" y2="${H-20-(H-30)*f}" stroke="rgba(255,255,255,.06)"/><text x="${W}" y="${H-24-(H-30)*f}" text-anchor="end" font-size="10.5" fill="#71717A">${kr(mx*f/1.12)}</text>`).join('');
- return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto"><defs><linearGradient id="gS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF7A45"/><stop offset="1" stop-color="#FF3D77"/></linearGradient></defs>${grid}${bars}</svg>
+ return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto"><defs><linearGradient id="gS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3B82F6"/><stop offset="1" stop-color="#1D4ED8"/></linearGradient></defs>${grid}${bars}</svg>
  <div class="row" style="gap:16px;margin-top:6px;font-size:12.5px;color:var(--tx2)"><span><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--sun);margin-right:6px"></i>Stripe (automatiskt)</span><span><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#60A5FA;margin-right:6px"></i>Faktura</span></div>`}
 function donut(parts){const tot=parts.reduce((s,p)=>s+p[1],0)||1;let a=0;const R=54,C=2*Math.PI*R;
  const segs=parts.map(([l,v,c])=>{const len=v/tot*C;const s=`<circle r="${R}" cx="70" cy="70" fill="none" stroke="${c}" stroke-width="18" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-a}" transform="rotate(-90 70 70)"/>`;a+=len;return s}).join('');
@@ -230,7 +270,7 @@ function overview(){const s=stats(),d=s.prevM?Math.round((s.thisM-s.prevM)/s.pre
   <div class="card kpi"><span class="ki">${ICO(I.inv)}</span><small>Obetalt</small><b>${kr(s.open.reduce((x,i)=>x+i.amount,0))}</b><em class="${s.open.some(i=>i.status==='overdue')?'dn':''}">${s.open.length} fakturor · ${s.open.filter(i=>i.status==='overdue').length} förfallna</em></div>
   <div class="card kpi"><span class="ki">${ICO(I.msg)}</span><small>Olästa meddelanden</small><b>${s.unread}</b><em>från kunder</em></div></div>
  <div class="grid g21" style="margin-bottom:14px"><div class="card"><div class="row between"><h2>Intäkter senaste 12 månaderna</h2><span class="sub">betalda fakturor</span></div>${revenueChart()}</div>
-  <div class="card"><h2>Betalsätt</h2>${donut([['Stripe · förnyas automatiskt',s.stripeN,'#FF7A45'],['Faktura · hanteras manuellt',s.invN,'#60A5FA']])}<div class="sum"><div class="sub">Automatiskt via Stripe varje månad</div><b class="big">${kr(s.act.filter(a=>a.sub.method==='stripe').reduce((x,a)=>x+monthlyOf(a.sub),0))}</b></div></div></div>
+  <div class="card"><h2>Betalsätt</h2>${donut([['Stripe · förnyas automatiskt',s.stripeN,'#3B82F6'],['Faktura · hanteras manuellt',s.invN,'#60A5FA']])}<div class="sum"><div class="sub">Automatiskt via Stripe varje månad</div><b class="big">${kr(s.act.filter(a=>a.sub.method==='stripe').reduce((x,a)=>x+monthlyOf(a.sub),0))}</b></div></div></div>
  <div class="grid g3"><div class="card"><div class="row between"><h2>Nya ansökningar</h2><button class="btn sm ghost" onclick="go('apps')">Visa alla</button></div>${s.newApps.slice(0,4).map(a=>`<div class="row between" style="padding:10px 0;border-bottom:1px solid var(--hair)"><div><b>${esc(a.company)}</b><div class="sub">${INDS[a.ind]} · ${a.places} ${UNIT[a.ind]} · ${esc(a.city)}</div></div><button class="btn sm pri" onclick="openApp('${a.id}')">Granska</button></div>`).join('')||'<div class="empty">Inga nya ansökningar</div>'}</div>
   <div class="card"><h2>MRR per bransch</h2>${hbars(byInd)}</div>
   <div class="card"><h2>Förnyas inom 30 dagar</h2>${s.renew30.slice(0,6).map(a=>`<div class="row between" style="padding:8px 0;border-bottom:1px solid var(--hair)"><div><b>${esc(a.name)}</b><div class="sub">${DS(a.sub.renew)} · ${kr(a.sub.price)}/${a.sub.interval==='year'?'år':'mån'}</div></div>${methodTag(a.sub)}</div>`).join('')||'<div class="empty">Inga förnyelser</div>'}
@@ -245,10 +285,11 @@ function apps(){const L=S.apps.filter(a=>F.apps?a.status===F.apps:a.status!=='ap
   ${a.message?`<p class="sub" style="margin:12px 0 0;padding:10px 12px;background:var(--g4);border-radius:12px">"${esc(a.message)}"</p>`:''}</div>`).join('')||'<div class="card empty">Inget att visa</div>'}</div>`}
 
 let OF=null;
-function openApp(id){const a=S.apps.find(x=>x.id===id);OF={id,ind:a.ind,places:a.places,plan:a.plan,interval:a.interval||'month',method:a.places>100?'invoice':'stripe',price:priceFor(a.plan,a.places,a.interval||'month'),custom:false,start:new Date(NOW+DAY).toISOString().slice(0,10),term:12,autoRenew:true,agents:[S.agents[0].id],note:''};drawApp()}
-function drawApp(){const a=S.apps.find(x=>x.id===OF.id);if(!OF.custom)OF.price=priceFor(OF.plan,OF.places,OF.interval);const mo=OF.interval==='year'?OF.price/12:OF.price;
+function openApp(id){const a=S.apps.find(x=>x.id===id);OF={id,ind:a.ind,places:a.places,plan:a.plan,interval:a.interval||'month',method:a.places>100?'invoice':'stripe',price:priceFor(a.plan,a.places,a.interval||'month'),custom:false,start:new Date(NOW+DAY).toISOString().slice(0,10),term:12,autoRenew:true,agents:[S.agents[0].id],seats:a.seats||SEATS[a.plan],note:''};drawApp()}
+function drawApp(){const a=S.apps.find(x=>x.id===OF.id);if(!OF.custom)OF.price=priceFor(OF.plan,OF.places,OF.interval,OF.seats);const mo=OF.interval==='year'?OF.price/12:OF.price;
  if(OF.method==='stripe')OF.autoRenew=true;
  openDrawer(`<div class="row between"><div><div class="sub">Ansökan</div><h1>${esc(a.company)}</h1><div class="sub">${esc(a.contact)} · ${esc(a.email)} · ${esc(a.phone)}${a.org?' · Org.nr '+esc(a.org):''}</div></div><button class="btn ghost sm" onclick="closeAll()">Stäng</button></div>
+ <div class="row" style="margin-top:10px"><button class="btn sm" onclick="compose('app','${a.id}','confirm')">${ICO(I.msg)} E-post</button><button class="btn sm" onclick="compose('app','${a.id}','custom','sms')">Sms</button><button class="btn sm" onclick="compose('app','${a.id}','info')">Be om mer info</button></div>
  ${a.message?`<p class="sub" style="margin:14px 0 0;padding:10px 12px;background:var(--g4);border-radius:12px">"${esc(a.message)}"</p>`:''}
  <h2 style="margin-top:20px">1. Kategori och antal</h2><div class="grid g2"><div><label class="l">Bransch</label><select class="f" onchange="OF.ind=this.value;drawApp()">${Object.entries(INDS).map(([k,n])=>`<option value="${k}" ${OF.ind===k?'selected':''}>${n}</option>`).join('')}</select></div>
   <div><label class="l">Antal ${UNIT[OF.ind]} (QR-koder)</label><input class="f" type="number" min="1" value="${OF.places}" oninput="OF.places=Math.max(1,+this.value||1);OF.custom=false;drawApp.later()"></div></div>
@@ -261,18 +302,19 @@ function drawApp(){const a=S.apps.find(x=>x.id===OF.id);if(!OF.custom)OF.price=p
  <div class="grid g3" style="margin-top:6px"><div><label class="l">Startdatum</label><input class="f" type="date" value="${OF.start}" onchange="OF.start=this.value;drawApp()"></div>
   <div><label class="l">Bindningstid</label><select class="f" onchange="OF.term=+this.value;drawApp()">${[[0,'Ingen'],[12,'12 månader'],[24,'24 månader'],[36,'36 månader']].map(([v,l])=>`<option value="${v}" ${OF.term===v?'selected':''}>${l}</option>`).join('')}</select></div>
   <div><label class="l">Förnyelse</label><label class="switch ${OF.autoRenew?'on':''}" ${OF.method==='stripe'?'title="Stripe förnyar alltid automatiskt"':''} onclick="${OF.method==='stripe'?'':"OF.autoRenew=!OF.autoRenew;drawApp()"}"><i></i>${OF.autoRenew?'Automatisk':'Manuell'}</label></div></div>
- <h2 style="margin-top:20px">5. Agenter</h2><div class="grid g2">${S.agents.map(g=>`<label class="chk ${OF.agents.includes(g.id)?'on':''}"><input type="checkbox" ${OF.agents.includes(g.id)?'checked':''} onchange="const i=OF.agents.indexOf('${g.id}');if(this.checked&&i<0)OF.agents.push('${g.id}');if(!this.checked&&i>=0)OF.agents.splice(i,1);drawApp()"><span class="av" style="background:${g.color}">${ini(g.name)}</span><span><b>${esc(g.name)}</b><br><small class="sub">${esc(g.role)} · ${S.accounts.filter(x=>x.agents.includes(g.id)).length} kunder</small></span></label>`).join('')}</div>
+ <h2 style="margin-top:20px">5. Agenter och kundansvarig</h2><div class="grid g2"><div><label class="l">Antal agenter (inloggningar för kundens personal)</label><input class="f" type="number" min="1" value="${OF.seats}" oninput="OF.seats=Math.max(1,+this.value||1);OF.custom=false;drawApp.later()"><div class="sub" style="margin-top:6px">${PLANS[OF.plan].n} har ${SEATS[OF.plan]} agenter. Fler kostar ${SEAT_PRICE} kr/mån per agent.${OF.seats>SEATS[OF.plan]?` <b>+${OF.seats-SEATS[OF.plan]} extra = ${kr((OF.seats-SEATS[OF.plan])*SEAT_PRICE)}/mån</b>`:""}</div></div><div><label class="l">Kundansvarig på ScanSay</label><select class="f" onchange="OF.agents=[this.value];drawApp()">${S.agents.map(g=>`<option value="${g.id}" ${OF.agents[0]===g.id?"selected":""}>${esc(g.name)} · ${esc(g.role)}</option>`).join("")}</select></div></div>
  <label class="l">Intern anteckning</label><textarea class="f" rows="2" oninput="OF.note=this.value">${esc(OF.note)}</textarea>
  <div class="sum"><div class="row between"><div><div class="sub">Kunden betalar</div><b class="big">${kr(OF.price)}</b> <span class="sub">/${OF.interval==='year'?'år':'månad'} exkl. moms</span></div><div style="text-align:right"><div class="sub">Motsvarar</div><b>${kr(mo)}/mån</b><div class="sub">${OF.method==='stripe'?'Förnyas automatiskt via Stripe':OF.autoRenew?'Ny faktura skapas vid förnyelse':'Förnyas manuellt'}</div></div></div></div>
- <div class="row" style="margin-top:16px;justify-content:space-between"><div class="row"><button class="btn ghost" onclick="appStatus('${a.id}','info')">Begär mer info</button><button class="btn danger" onclick="appStatus('${a.id}','declined')">Avslå</button></div><button class="btn pri" onclick="approve()" ${OF.agents.length?'':'disabled title="Välj minst en agent"'}>${ICO(I.check)} Godkänn och skapa konto</button></div>`)}
+ <div class="row" style="margin-top:16px;justify-content:space-between"><div class="row"><button class="btn ghost" onclick="appStatus('${a.id}','info')">Begär mer info</button><button class="btn danger" onclick="appStatus('${a.id}','declined')">Avslå</button></div><div class="row"><button class="btn" onclick="previewContract()">Förhandsgranska avtal</button><button class="btn" onclick="sendForSigning()">${ICO(I.msg)} Skicka för signering</button><button class="btn pri" onclick="approve()">${ICO(I.check)} Godkänn och skapa konto</button></div></div>
+ <div class="sub" style="margin-top:10px">${a.signed?`<span class="tag t-ok">Signerat ${D(a.signed.ts)} av ${esc(a.signed.name)}</span>`:a.sentForSign?`<span class="tag t-warn">Skickat för signering ${D(a.sentForSign)}</span> Kontot skapas när kunden har signerat, eller när du godkänner manuellt.`:'Tips: skicka avtalet för signering först. Då har du ett signerat avtal om kunden senare bestrider en betalning.'}</div>`)}
 drawApp.later=()=>{clearTimeout(drawApp._t);drawApp._t=setTimeout(()=>{const y=$('drawer').scrollTop,ae=document.activeElement,typ=ae&&ae.type;drawApp();$('drawer').scrollTop=y;if(typ==='number'){const ins=[...$('drawer').querySelectorAll('input[type=number]')];const el=ins.find(e=>e.value==String(ae.value));if(el){el.focus();el.setSelectionRange&&0}}},500)};
 function approve(){const a=S.apps.find(x=>x.id===OF.id);const start=new Date(OF.start).getTime()||NOW;const per=OF.interval==='year'?365:30;
- const acc={id:'ac'+Date.now(),name:a.company,org:a.org,ind:OF.ind,city:a.city,places:OF.places,contact:a.contact,email:a.email,phone:a.phone,agents:OF.agents.slice(),status:'active',created:NOW,
+ const acc={id:'ac'+Date.now(),name:a.company,org:a.org,ind:OF.ind,city:a.city,places:OF.places,contact:a.contact,email:a.email,phone:a.phone,agents:OF.agents.slice(),seats:OF.seats,sign:a.signed||null,status:'active',created:NOW,
   sub:{plan:OF.plan,interval:OF.interval,price:OF.price,method:OF.method,start,renew:start+per*DAY,autoRenew:OF.autoRenew,end:OF.term?start+OF.term*30.44*DAY:null,stripeId:OF.method==='stripe'?'sub_'+Math.random().toString(36).slice(2,12):null},notes:OF.note};
  S.accounts.unshift(acc);a.status='approved';a.acc=acc.id;
  const no=1001+S.invoices.length;S.invoices.unshift({id:'in'+Date.now(),no:'SS-'+no,acc:acc.id,amount:OF.price,issued:start,due:start+(OF.method==='invoice'?S.settings.invoiceDays:0)*DAY,status:OF.method==='stripe'?'paid':'open',method:OF.method,period:OF.interval});
  S.users.unshift({id:'u'+Date.now(),acc:acc.id,name:a.contact,email:a.email,role:'Ägare',last:0,twofa:false});
- S.threads.unshift({id:'th'+Date.now(),acc:acc.id,subject:'Välkommen till ScanSay',unread:0,msgs:[{from:'admin',text:`Hej ${a.contact.split(' ')[0]}! Ert konto är klart. Paket ${PLANS[OF.plan].n}, ${kr(OF.price)}/${OF.interval==='year'?'år':'månad'}. ${OF.method==='stripe'?'Betalningen dras automatiskt via Stripe.':'Faktura skickas till '+a.email+'.'} Er kontaktperson är ${AG(OF.agents[0]).name}.`,ts:NOW,by:AG(OF.agents[0]).name}]});
+ S.threads.unshift({id:'th'+Date.now(),acc:acc.id,subject:'Välkommen till ScanSay',unread:0,msgs:[{from:'admin',text:`Hej ${a.contact.split(' ')[0]}! Ert konto är klart. Paket ${PLANS[OF.plan].n}, ${kr(OF.price)}/${OF.interval==='year'?'år':'månad'}. ${OF.method==='stripe'?'Betalningen dras automatiskt via Stripe.':'Faktura skickas till '+a.email+'.'} Ni har ${OF.seats} agentinloggningar. Er kontaktperson är ${AG(OF.agents[0]).name}.`,ts:NOW,by:AG(OF.agents[0]).name}]});
  log(`${a.company} godkänd · ${PLANS[OF.plan].n} · ${kr(OF.price)}/${OF.interval==='year'?'år':'mån'} · ${OF.method==='stripe'?'Stripe':'faktura'}`);
  save();closeAll();render();toast(OF.method==='stripe'?'Konto skapat · Stripe-betallänk skickad till '+a.email:'Konto skapat · faktura '+'SS-'+no+' skapad')}
 function appStatus(id,st){const a=S.apps.find(x=>x.id===id);a.status=st;log(`${a.company}: ${st==='declined'?'ansökan avslagen':'begäran om mer info skickad'}`);save();closeAll();render();toast(st==='declined'?'Ansökan avslagen':'Begäran om mer information skickad')}
@@ -283,8 +325,8 @@ function customers(){const q=Q.toLowerCase();const L=S.accounts.filter(a=>(!q||[
   <select class="f" style="width:auto" onchange="F.st=this.value;render()"><option value="">Alla statusar</option>${Object.entries(STATUS).map(([k,v])=>`<option value="${k}" ${F.st===k?'selected':''}>${v[0]}</option>`).join('')}</select>
   <select class="f" style="width:auto" onchange="F.m=this.value;render()"><option value="">Alla betalsätt</option><option value="stripe" ${F.m==='stripe'?'selected':''}>Stripe</option><option value="invoice" ${F.m==='invoice'?'selected':''}>Faktura</option></select>
   <button class="btn pri" onclick="newCustomer()">${ICO(I.plus)} Ny kund</button></div></div>
- <div class="card" style="padding:6px;overflow-x:auto"><table><thead><tr><th>Företag</th><th>Bransch</th><th>Antal</th><th>Paket</th><th class="num">Pris</th><th>Betalsätt</th><th>Förnyas</th><th>Agenter</th><th>Status</th></tr></thead><tbody>
- ${L.map(a=>`<tr class="click" onclick="openAcc('${a.id}')"><td><b>${esc(a.name)}</b><div class="sub">${esc(a.city)} · ${esc(a.contact)}</div></td><td>${INDS[a.ind]}</td><td>${a.places} ${UNIT[a.ind]}</td><td>${PLANS[a.sub.plan].n}</td><td class="num"><b>${kr(a.sub.price)}</b><div class="sub">/${a.sub.interval==='year'?'år':'mån'}</div></td><td>${methodTag(a.sub)}</td><td>${a.status==='canceled'?'–':DS(a.sub.renew)}</td><td>${agentChips(a.agents)}</td><td>${statusTag(a)}</td></tr>`).join('')||'<tr><td colspan="9" class="empty">Inga kunder matchar</td></tr>'}</tbody></table></div>`}
+ <div class="card" style="padding:6px;overflow-x:auto"><table><thead><tr><th>Företag</th><th>Bransch</th><th>Antal</th><th>Paket</th><th class="num">Pris</th><th>Betalsätt</th><th>Förnyas</th><th>Agenter</th><th>Avtal</th><th>Status</th></tr></thead><tbody>
+ ${L.map(a=>`<tr class="click" onclick="openAcc('${a.id}')"><td><b>${esc(a.name)}</b><div class="sub">${esc(a.city)} · ${esc(a.contact)}</div></td><td>${INDS[a.ind]}</td><td>${a.places} ${UNIT[a.ind]}</td><td>${PLANS[a.sub.plan].n}</td><td class="num"><b>${kr(a.sub.price)}</b><div class="sub">/${a.sub.interval==='year'?'år':'mån'}</div></td><td>${methodTag(a.sub)}</td><td>${a.status==='canceled'?'–':DS(a.sub.renew)}</td><td><b>${a.seats}</b> ${agentChips(a.agents.slice(0,1))}</td><td>${a.sign?'<span class="tag t-ok">Signerat</span>':'<span class="tag t-mut">Ej signerat</span>'}</td><td>${statusTag(a)}</td></tr>`).join('')||'<tr><td colspan="10" class="empty">Inga kunder matchar</td></tr>'}</tbody></table></div>`}
 
 let ED=null;
 function openAcc(id){const a=A(id);ED=JSON.parse(JSON.stringify(a));drawAcc()}
@@ -301,7 +343,8 @@ function drawAcc(){const a=ED,isNew=a.id==='new';const users=S.users.filter(u=>u
  <div class="pick c2" style="margin-top:10px"><button class="${a.sub.method==='stripe'?'on':''}" onclick="ED.sub.method='stripe';ED.sub.autoRenew=true;drawAcc()"><b>${ICO(I.card)} Stripe</b><small>Automatisk dragning och förnyelse${a.sub.stripeId?' · '+esc(a.sub.stripeId):''}</small></button><button class="${a.sub.method==='invoice'?'on':''}" onclick="ED.sub.method='invoice';drawAcc()"><b>${ICO(I.inv)} Faktura</b><small>Du hanterar själv</small></button></div>
  <div class="row" style="margin-top:10px"><label class="switch ${a.sub.autoRenew?'on':''}" onclick="${a.sub.method==='stripe'?'':'ED.sub.autoRenew=!ED.sub.autoRenew;drawAcc()'}"><i></i>Automatisk förnyelse ${a.sub.method==='stripe'?'(Stripe)':''}</label>
   <span class="sub">Status:</span><select class="f" style="width:auto" onchange="ED.status=this.value">${Object.entries(STATUS).map(([k,v])=>`<option value="${k}" ${a.status===k?'selected':''}>${v[0]}</option>`).join('')}</select></div>
- <h2 style="margin-top:20px">Agenter</h2><div class="grid g2">${S.agents.map(g=>`<label class="chk ${a.agents.includes(g.id)?'on':''}"><input type="checkbox" ${a.agents.includes(g.id)?'checked':''} onchange="const i=ED.agents.indexOf('${g.id}');if(this.checked&&i<0)ED.agents.push('${g.id}');if(!this.checked&&i>=0)ED.agents.splice(i,1);drawAcc()"><span class="av" style="background:${g.color}">${ini(g.name)}</span><span><b>${esc(g.name)}</b><br><small class="sub">${esc(g.role)}</small></span></label>`).join('')}</div>
+ <h2 style="margin-top:20px">Agenter och kundansvarig</h2><div class="grid g2"><div><label class="l">Antal agenter</label><input class="f" type="number" min="1" value="${a.seats||1}" oninput="ED.seats=Math.max(1,+this.value||1)"><div class="sub" style="margin-top:6px">${PLANS[a.sub.plan].n} har ${SEATS[a.sub.plan]} agenter. Extra: ${SEAT_PRICE} kr/mån per agent.</div></div><div><label class="l">Kundansvarig på ScanSay</label><select class="f" onchange="ED.agents=[this.value]">${S.agents.map(g=>`<option value="${g.id}" ${a.agents[0]===g.id?"selected":""}>${esc(g.name)}</option>`).join("")}</select></div></div>
+ ${isNew?"":`<h2 style="margin-top:20px">Kontakta kunden</h2><div class="row"><button class="btn" onclick="compose('acc','${a.id}','confirm')">${ICO(I.msg)} E-post</button><button class="btn" onclick="compose('acc','${a.id}','custom','sms')">Sms</button><button class="btn" onclick="compose('acc','${a.id}','sign')">Be om signatur</button><button class="btn" onclick="compose('acc','${a.id}','remind')">Betalningspåminnelse</button><button class="btn" onclick="previewContract('${a.id}')">Visa avtal</button></div><div class="sub" style="margin-top:8px">Avtal: ${a.sign?`signerat ${D(a.sign.ts)} av ${esc(a.sign.name)} · logg sparad`:"inte signerat ännu"}</div>`}
  ${isNew?'':`<h2 style="margin-top:20px">Användare <button class="btn sm" style="float:right" onclick="addUser('${a.id}')">${ICO(I.plus)} Lägg till</button></h2>${users.map(u=>`<div class="row between" style="padding:8px 0;border-bottom:1px solid var(--hair)"><div><b>${esc(u.name)}</b> <span class="tag t-mut">${esc(u.role)}</span><div class="sub">${esc(u.email)}</div></div><button class="btn sm danger" onclick="delUser('${u.id}',true)">Ta bort</button></div>`).join('')||'<div class="empty">Inga användare</div>'}
  <h2 style="margin-top:20px">Fakturor</h2>${inv.slice(0,6).map(i=>`<div class="row between" style="padding:8px 0;border-bottom:1px solid var(--hair)"><div><b>${i.no}</b> <span class="sub">${D(i.issued)}</span></div><div class="row"><b>${kr(i.amount)}</b>${invTag(i)}${i.status!=='paid'?`<button class="btn sm" onclick="markPaid('${i.id}',true)">Markera betald</button>`:''}</div></div>`).join('')||'<div class="empty">Inga fakturor</div>'}`}
  <label class="l">Intern anteckning</label><textarea class="f" rows="2" oninput="ED.notes=this.value">${esc(a.notes||'')}</textarea>
@@ -367,7 +410,7 @@ function saveUser(){const n=$('unm').value.trim(),e=$('uem').value.trim();if(!n|
 function setRole(id,r){S.users.find(u=>u.id===id).role=r;save();toast('Rollen är ändrad')}
 function delUser(id,inDrawer){const u=S.users.find(x=>x.id===id);confirmBox('Ta bort '+u.name+'?','Personen kan inte längre logga in.','Ta bort',()=>{S.users=S.users.filter(x=>x.id!==id);log('Användare borttagen: '+u.name);save();if(inDrawer&&ED){drawAcc()}render();toast('Användaren är borttagen')})}
 
-function agents(){return `<div class="hd"><div><h1>Agenter</h1><div class="sub">ScanSays team. Agenter kopplas till kunder vid godkännande och syns som kontaktpersoner.</div></div><button class="btn pri" onclick="editAgent()">${ICO(I.plus)} Ny agent</button></div>
+function agents(){return `<div class="hd"><div><h1>Team</h1><div class="sub">ScanSays kundansvariga. Varje kund får en kontaktperson härifrån. Kundens egna agenter (inloggningar) anges per kund.</div></div><button class="btn pri" onclick="editAgent()">${ICO(I.plus)} Ny teammedlem</button></div>
  <div class="grid g3">${S.agents.map(g=>{const acc=S.accounts.filter(a=>a.agents.includes(g.id)&&a.status!=='canceled');return `<div class="card"><div class="row between"><div class="row"><span class="av" style="background:${g.color};width:44px;height:44px;font-size:15px">${ini(g.name)}</span><div><b style="font-size:16px">${esc(g.name)}</b><div class="sub">${esc(g.role)}</div></div></div><button class="btn sm" onclick="editAgent('${g.id}')">Ändra</button></div>
   <div class="grid g2" style="margin-top:14px"><div class="card" style="background:var(--g4);padding:12px"><small class="sub">Kunder</small><b style="display:block;font-size:22px">${acc.length}</b></div><div class="card" style="background:var(--g4);padding:12px"><small class="sub">MRR</small><b style="display:block;font-size:22px">${kr(acc.reduce((s,a)=>s+monthlyOf(a.sub),0))}</b></div></div>
   <div class="sub" style="margin-top:10px">${esc(g.email)} · ${esc(g.phone)}</div><div style="margin-top:8px">${acc.slice(0,4).map(a=>`<span class="tag t-mut" style="margin:2px">${esc(a.name)}</span>`).join('')}${acc.length>4?`<span class="tag t-mut">+${acc.length-4}</span>`:''}</div></div>`}).join('')}</div>`}
@@ -384,11 +427,61 @@ function settings(){const st=S.settings;return `<div class="hd"><div><h1>Instäl
   <div class="row" style="margin-top:12px"><div class="seg"><button class="${st.stripe.mode==='test'?'on':''}" onclick="S.settings.stripe.mode='test';save();render()">Test</button><button class="${st.stripe.mode==='live'?'on':''}" onclick="S.settings.stripe.mode='live';save();render()">Live</button></div><span class="sub">Hemliga nycklar sparas bara på servern (server/stripe.js).</span></div></div>
  <div class="card"><h2>${ICO(I.inv)} Fakturor</h2><label class="l">Betalvillkor (dagar)</label><input class="f" type="number" value="${st.invoiceDays}" oninput="S.settings.invoiceDays=+this.value"><label class="l">Moms (%)</label><input class="f" type="number" value="${st.vat}" oninput="S.settings.vat=+this.value">
   <label class="l">Avsändare</label><input class="f" value="${esc(st.company)} · ${esc(st.email)}" readonly><div class="row" style="margin-top:12px;justify-content:flex-end"><button class="btn pri" onclick="save();toast('Inställningarna är sparade')">Spara</button></div></div>
+ <div class="card"><h2>${ICO(I.msg)} Utskick: e-post och sms</h2><p class="sub">Skickas via er server på Vercel (mappen <b>api/</b>). Lägg in nycklarna som miljövariabler i Vercel: ADMIN_TOKEN, BREVO_API_KEY, ELKS_USER, ELKS_PASS och SIGN_SECRET.</p>
+  <label class="l">Server-adress</label><input class="f" id="api_url" placeholder="Lämna tomt om admin ligger på samma domän" value="${esc(st.api.url)}">
+  <label class="l">Admin-nyckel (ADMIN_TOKEN)</label><input class="f" id="api_key" type="password" value="${esc(st.api.key)}" autocomplete="off">
+  <div class="row" style="margin-top:12px"><button class="btn pri" onclick="S.settings.api={url:$('api_url').value.trim().replace(/\/$/,''),key:$('api_key').value.trim()};save();toast('Sparat')">Spara</button><button class="btn" onclick="testApi()">Testa anslutningen</button><span class="sub" id="api_st">${apiOn()?'Kopplad':'Demoläge: inget skickas på riktigt'}</span></div></div>
+ <div class="card"><h2>${ICO(I.inv)} Företagsuppgifter i avtalet</h2><div class="grid g2">${[['name','Företagsnamn'],['org','Org.nr'],['vatNo','Momsreg.nr'],['bankgiro','Bankgiro'],['address','Adress'],['email','E-post']].map(([k,l])=>`<div><label class="l">${l}</label><input class="f" value="${esc(st.seller[k]||'')}" oninput="S.settings.seller['${k}']=this.value"></div>`).join('')}</div>
+  <div class="row" style="margin-top:12px;justify-content:flex-end"><button class="btn pri" onclick="save();toast('Företagsuppgifterna är sparade')">Spara</button></div></div>
  <div class="card"><h2>${ICO(I.tool)} Avancerade verktyg</h2><p class="sub">Intyg, branschmallar, GDPR och avtal, piloter, system och lansering finns i de avancerade verktygen.</p><a class="btn" href="advanced.html">Öppna avancerade verktyg →</a></div>
  <div class="card"><h2>Demodata</h2><p class="sub">Återställ exempeldatan om du vill börja om.</p><button class="btn danger" onclick="confirmBox('Återställ demodata?','Alla ändringar du gjort i demot försvinner.','Återställ',()=>{localStorage.removeItem(KEY);load();render();toast('Demodatan är återställd')})">Återställ</button></div></div>`}
 
+
+/* ---------- contract, signing and messaging ---------- */
+const apiOn=()=>!!(S.settings.api&&S.settings.api.key);
+const apiBase=()=>(S.settings.api&&S.settings.api.url)||'';
+async function api(path,body){const r=await fetch(apiBase()+path,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+S.settings.api.key},body:JSON.stringify(body)});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||('Fel '+r.status));return j}
+async function testApi(){if(!apiOn()){toast('Lägg in admin-nyckeln först');return}try{await api('/api/send',{test:true});$('api_st').textContent='Kopplad ✓';toast('Anslutningen fungerar')}catch(e){$('api_st').textContent='Fel: '+e.message;toast('Kunde inte ansluta: '+e.message)}}
+function contractData(kind,id){
+  if(kind==='acc'){const a=A(id);return{no:'AVT-'+a.id.slice(-6).toUpperCase(),seller:S.settings.seller,customer:{name:a.name,org:a.org,contact:a.contact,email:a.email,phone:a.phone,address:a.city},plan:a.sub.plan,industry:INDS[a.ind],places:a.places,unit:UNIT[a.ind],agents:a.seats,price:a.sub.price,interval:a.sub.interval,method:a.sub.method,start:a.sub.start,termMonths:a.sub.end?Math.round((a.sub.end-a.sub.start)/(30.44*DAY)):12,autoRenew:a.sub.autoRenew,invoiceDays:S.settings.invoiceDays,vat:S.settings.vat}}
+  const a=S.apps.find(x=>x.id===id);return{no:'OFF-'+a.id.slice(-6).toUpperCase(),seller:S.settings.seller,customer:{name:a.company,org:a.org,contact:a.contact,email:a.email,phone:a.phone,address:a.city},plan:OF.plan,industry:INDS[OF.ind],places:OF.places,unit:UNIT[OF.ind],agents:OF.seats,price:OF.price,interval:OF.interval,method:OF.method,start:OF.start,termMonths:OF.term,autoRenew:OF.autoRenew,invoiceDays:S.settings.invoiceDays,vat:S.settings.vat,note:OF.note}}
+function previewContract(accId){const d=accId?contractData('acc',accId):contractData('app',OF.id);
+  const w=document.createElement('div');w.id='cprev';w.innerHTML=`<style>${SSContract.CSS}#cprev{position:fixed;inset:0;z-index:95;background:rgba(10,15,28,.7);overflow:auto;padding:30px 16px}#cprev .bar{max-width:820px;margin:0 auto 12px;display:flex;justify-content:space-between;gap:10px;align-items:center;color:#fff}@media print{body>*:not(#cprev){display:none!important}#cprev{position:static;background:none;padding:0}#cprev .bar{display:none}}</style>
+  <div class="bar"><b>Förhandsgranskning · avtalsversion ${SSContract.VERSION}</b><div class="row"><button class="btn" onclick="window.print()">Skriv ut eller spara som PDF</button>${accId?'':'<button class="btn pri" onclick="document.getElementById(\'cprev\').remove();sendForSigning()">Skicka för signering</button>'}<button class="btn" onclick="document.getElementById('cprev').remove()">Stäng</button></div></div>${SSContract.offer(d)}`;
+  document.body.appendChild(w)}
+async function signLink(kind,id){const d=contractData(kind,id);d.ref=kind+':'+id;
+  if(apiOn()){const j=await api('/api/sign-link',{offer:d});return j.url}
+  const t=btoa(unescape(encodeURIComponent(JSON.stringify(d)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');return location.origin+location.pathname.replace(/admin\/.*$/,'')+'sign/?demo=1&t='+t}
+async function sendForSigning(){const a=S.apps.find(x=>x.id===OF.id);let url;try{url=await signLink('app',a.id)}catch(e){toast('Kunde inte skapa länk: '+e.message);return}
+  a.sentForSign=Date.now();a.offer=Object.assign({},OF);a.status='info';save();compose('app',a.id,'sign',null,url)}
+const TPL={
+ confirm:{n:'Bekräfta konto',s:'Bekräftelse: ert ScanSay-konto',t:(x)=>`Hej ${x.first}!\n\nTack för er ansökan till ScanSay. Vi har tagit emot uppgifterna för ${x.company} och återkommer med offert och avtal inom en arbetsdag.\n\nBekräfta gärna att uppgifterna stämmer genom att svara på det här mejlet.\n\nVänliga hälsningar\n${x.me}\nScanSay · hello@scansay.se`,sms:(x)=>`Hej ${x.first}! Tack för er ansökan till ScanSay. Vi återkommer med offert inom en arbetsdag. /${x.me}, ScanSay`},
+ sign:{n:'Be om signatur',s:'Avtal att signera: ScanSay',t:(x)=>`Hej ${x.first}!\n\nHär är offerten och avtalet för ${x.company}. Läs igenom och signera elektroniskt via länken nedan. Det tar ungefär två minuter.\n\n${x.link||'[länk skapas när du skickar]'}\n\nNär avtalet är signerat aktiverar vi kontot och skickar inloggningen.\n\nVänliga hälsningar\n${x.me}\nScanSay · hello@scansay.se`,sms:(x)=>`Hej ${x.first}! Avtalet från ScanSay är klart att signera: ${x.link||''} /${x.me}`},
+ info:{n:'Be om mer information',s:'Några frågor om er ansökan',t:(x)=>`Hej ${x.first}!\n\nTack för er ansökan. För att ta fram rätt offert behöver vi veta:\n\n1. Hur många platser (rum, bilar, hållplatser eller bord) ska ha en QR-kod?\n2. Hur många i personalen behöver logga in?\n3. Vill ni betala med kort eller faktura?\n\nVänliga hälsningar\n${x.me}\nScanSay`,sms:(x)=>`Hej ${x.first}! Vi behöver några uppgifter för er offert. Vi har mejlat er. /${x.me}, ScanSay`},
+ remind:{n:'Betalningspåminnelse',s:'Påminnelse: obetald faktura',t:(x)=>`Hej ${x.first}!\n\nVi har inte fått betalt för den senaste fakturan för ${x.company}. Betala gärna inom 10 dagar för att undvika avstängning. Har ni redan betalt kan ni bortse från detta.\n\nFrågor? Svara på det här mejlet.\n\nVänliga hälsningar\n${x.me}\nScanSay`,sms:(x)=>`Hej ${x.first}! Påminnelse från ScanSay: en faktura är obetald. Se mejl för detaljer.`},
+ welcome:{n:'Välkommen',s:'Välkommen till ScanSay',t:(x)=>`Hej ${x.first}!\n\nVälkommen till ScanSay. Ert konto är aktiverat och ni får inloggningen i ett separat mejl.\n\nVänliga hälsningar\n${x.me}\nScanSay`,sms:(x)=>`Välkommen till ScanSay! Inloggningen kommer per e-post. /${x.me}`},
+ custom:{n:'Eget meddelande',s:'',t:(x)=>`Hej ${x.first}!\n\n\n\nVänliga hälsningar\n${x.me}\nScanSay`,sms:(x)=>`Hej ${x.first}! `}};
+let CM=null;
+function compose(kind,id,tpl,chan,link){const t=kind==='acc'?A(id):S.apps.find(x=>x.id===id);const x={first:(t.contact||'').split(' ')[0]||'',company:kind==='acc'?t.name:t.company,me:(AG((t.agents||[])[0]||S.agents[0].id)||{name:'ScanSay'}).name,link};
+  CM={kind,id,tpl,link,email:t.email,phone:t.phone,company:x.company,chan:chan||'email',x};drawCompose()}
+function drawCompose(){const T=TPL[CM.tpl],x=CM.x;
+  openDrawer(`<div class="row between"><div><div class="sub">Till ${esc(CM.company)}</div><h1>Skicka meddelande</h1></div><button class="btn ghost sm" onclick="closeAll()">Stäng</button></div>
+  <label class="l">Mall</label><select class="f" onchange="CM.tpl=this.value;drawCompose()">${Object.entries(TPL).map(([k,v])=>`<option value="${k}" ${CM.tpl===k?'selected':''}>${v.n}</option>`).join('')}</select>
+  <label class="l">Kanal</label><div class="seg">${[['email','E-post'],['sms','Sms'],['both','Båda']].map(([k,l])=>`<button class="${CM.chan===k?'on':''}" onclick="CM.chan='${k}';drawCompose()">${l}</button>`).join('')}</div>
+  ${CM.chan!=='sms'?`<label class="l">E-post</label><input class="f" id="cm_to" value="${esc(CM.email)}"><label class="l">Ämne</label><input class="f" id="cm_sub" value="${esc(T.s||'')}"><label class="l">Meddelande</label><textarea class="f" id="cm_txt" rows="12">${esc(T.t(x))}</textarea>`:''}
+  ${CM.chan!=='email'?`<label class="l">Mobilnummer</label><input class="f" id="cm_ph" value="${esc(CM.phone||'')}" placeholder="+46 70 123 45 67"><label class="l">Sms (högst 300 tecken)</label><textarea class="f" id="cm_sms" rows="4" maxlength="300">${esc(T.sms(x))}</textarea>`:''}
+  ${CM.link?`<div class="sum" style="margin-top:12px"><div class="sub">Signeringslänk</div><a href="${esc(CM.link)}" target="_blank" rel="noopener" style="word-break:break-all">${esc(CM.link)}</a></div>`:''}
+  <div class="row" style="margin-top:16px;justify-content:space-between"><span class="sub">${apiOn()?'Skickas direkt via er server':'Demoläge: koppla servern under Inställningar för att skicka på riktigt'}</span><button class="btn pri" onclick="sendCompose()">${ICO(I.msg)} Skicka</button></div>`)}
+async function sendCompose(){const em=CM.chan!=='sms',sm=CM.chan!=='email';const body={};
+  if(em){body.email={to:$('cm_to').value.trim(),subject:$('cm_sub').value.trim(),text:$('cm_txt').value};if(!/^\S+@\S+\.\S+$/.test(body.email.to)){toast('Ogiltig e-postadress');return}}
+  if(sm){body.sms={to:$('cm_ph').value.trim(),text:$('cm_sms').value};if(!/^\+?[\d\s-]{8,}$/.test(body.sms.to)){toast('Ogiltigt mobilnummer');return}}
+  try{if(apiOn())await api('/api/send',body)}catch(e){toast('Kunde inte skicka: '+e.message);return}
+  const accId=CM.kind==='acc'?CM.id:(S.apps.find(x=>x.id===CM.id)||{}).acc;const text=(em?body.email.text:body.sms.text);
+  if(accId){let th=S.threads.find(t=>t.acc===accId&&t.subject===(em?body.email.subject:'Sms'));if(!th){th={id:'th'+Date.now(),acc:accId,subject:em?body.email.subject:'Sms',unread:0,msgs:[]};S.threads.unshift(th)}th.msgs.push({from:'admin',text,ts:Date.now(),by:CM.x.me})}
+  log(`${TPL[CM.tpl].n} skickat till ${CM.company} (${CM.chan==='both'?'e-post och sms':CM.chan==='sms'?'sms':'e-post'})`);save();closeAll();render();toast(apiOn()?'Skickat':'Demo: meddelandet sparades men skickades inte')}
+
 /* ---------- shell ---------- */
-const NAV=[['overview','Översikt',I.home],['apps','Ansökningar',I.apps],['customers','Kunder',I.acc],['subs','Prenumerationer',I.sub],['invoices','Fakturor',I.inv],['messages','Meddelanden',I.msg],['users','Användare',I.users],['agents','Agenter',I.agent],['settings','Inställningar',I.set]];
+const NAV=[['overview','Översikt',I.home],['apps','Ansökningar',I.apps],['customers','Kunder',I.acc],['subs','Prenumerationer',I.sub],['invoices','Fakturor',I.inv],['messages','Meddelanden',I.msg],['users','Användare',I.users],['agents','Team',I.agent],['settings','Inställningar',I.set]];
 function drawSide(){const s=stats();const c={apps:s.newApps.length,messages:s.unread,invoices:s.open.filter(i=>i.status==='overdue').length};
  const el=$('side');if(!el)return;el.innerHTML=`<div class="grp">Översikt</div>`+NAV.map(([k,l,ic],i)=>(i===2?'<div class="grp">Kunder och pengar</div>':i===5?'<div class="grp">Kontakt och team</div>':'')+`<button class="${TAB===k?'on':''}" onclick="go('${k}')"><span class="ni">${ICO(ic)}</span>${l}${c[k]?`<span class="cnt">${c[k]}</span>`:''}</button>`).join('')+`<div class="grp">Mer</div><button class="ext" onclick="location.href='advanced.html'"><span class="ni">${ICO(I.tool)}</span>Avancerade verktyg</button><button onclick="location.href='../index.html'"><span class="ni">${ICO(I.out)}</span>Till webbplatsen</button>`}
 function go(t){TAB=t;Q='';closeAll();render();scrollTo(0,0);try{history.replaceState(null,'','#'+t)}catch(e){}}
@@ -403,12 +496,15 @@ function bindSearch(){const q=$('gq'),r=$('gres');q.addEventListener('input',()=
  const acc=S.accounts.filter(a=>[a.name,a.city,a.email,a.org].join(' ').toLowerCase().includes(t)).slice(0,5),us=S.users.filter(u=>[u.name,u.email].join(' ').toLowerCase().includes(t)).slice(0,4),iv=S.invoices.filter(i=>i.no.toLowerCase().includes(t)).slice(0,3);
  r.innerHTML=acc.map(a=>`<button onclick="openAcc('${a.id}');$('gres').classList.remove('on')">${ICO(I.acc)}<span><b>${esc(a.name)}</b><br><small>Kund · ${INDS[a.ind]} · ${esc(a.city)}</small></span></button>`).join('')+us.map(u=>`<button onclick="go('users');Q=${JSON.stringify(u.email)};render()">${ICO(I.users)}<span><b>${esc(u.name)}</b><br><small>Användare · ${esc(u.email)}</small></span></button>`).join('')+iv.map(i=>`<button onclick="printInv('${i.id}')">${ICO(I.inv)}<span><b>${i.no}</b><br><small>Faktura · ${kr(i.amount)}</small></span></button>`).join('')||'<div class="empty" style="padding:14px">Inga träffar</div>';r.classList.add('on')});
  document.addEventListener('click',e=>{if(!e.target.closest('.gsearch'))r.classList.remove('on')})}
-function loginView(){$('root').innerHTML=`<div class="login"><form class="lbox" onsubmit="event.preventDefault();doLogin()"><div style="display:flex;align-items:center;gap:10px;margin-bottom:18px"><span style="width:42px;display:inline-block">${LOGO}</span><div><b style="font-size:24px;letter-spacing:-.04em">Scan<span style="background:var(--sun);-webkit-background-clip:text;background-clip:text;color:transparent">Say</span></b><div style="font-size:11px;color:var(--am);font-weight:800;letter-spacing:.06em">ADMIN</div></div></div>
- <h1 style="font-size:22px">Logga in</h1><p class="sub">Endast för ScanSays team. Inloggning kräver tvåstegsverifiering.</p><label class="l">E-post</label><input class="f" id="le" type="email" value="admin@scansay.se" autocomplete="username"><label class="l">Lösenord</label><input class="f" id="lp" type="password" value="demo-demo" autocomplete="current-password">
- <label class="l">Kod från autentiseringsappen</label><input class="f otp" id="lo" inputmode="numeric" maxlength="6" value="123456"><button class="btn pri" style="width:100%;justify-content:center;margin-top:16px;padding:12px">Logga in</button><p class="sub" style="font-size:12px;margin:12px 0 0">Demo: uppgifterna är ifyllda. I skarp drift loggar du in med ditt eget konto och din kod.</p></form></div>`}
-function doLogin(){if(!/^\d{6}$/.test($('lo').value)){toast('Skriv in sexsiffrig kod');return}sessionStorage.setItem('ssadm-auth','1');$('root').innerHTML='';render()}
+const LIVE=/^https?:$/.test(location.protocol)&&!/localhost|127\.0\.0\.1|claude\.ai|claudeusercontent/.test(location.hostname);
+function loginView(){$('root').innerHTML=`<div class="login"><form class="lbox" onsubmit="event.preventDefault();doLogin()"><div style="display:flex;align-items:center;gap:10px;margin-bottom:18px"><span style="width:42px;display:inline-block">${LOGO}</span><div><b style="font-size:24px;letter-spacing:-.04em">Scan<span style="color:#1D4ED8">Say</span></b><div style="font-size:11px;color:#1D4ED8;font-weight:800;letter-spacing:.06em">ADMIN</div></div></div>
+ <h1 style="font-size:22px">Logga in</h1><p class="sub">Endast för ScanSays team.</p>
+ ${LIVE?`<label class="l">Admin-nyckel</label><input class="f" id="lk" type="password" autocomplete="current-password" required><p class="sub" style="font-size:12.5px;margin:8px 0 0">Samma värde som miljövariabeln ADMIN_TOKEN i Vercel.</p>`:`<label class="l">E-post</label><input class="f" id="le" type="email" value="admin@scansay.se" autocomplete="username"><label class="l">Lösenord</label><input class="f" id="lp" type="password" value="demo-demo" autocomplete="current-password"><p class="sub" style="font-size:12.5px;margin:10px 0 0">Demo: uppgifterna är ifyllda.</p>`}
+ <button class="btn pri" style="width:100%;justify-content:center;margin-top:16px;padding:12px">Logga in</button><p class="sub" id="lerr" style="color:#B91C1C;margin:10px 0 0"></p></form></div>`}
+async function doLogin(){if(LIVE){const k=$('lk').value.trim();if(!k){return}try{const r=await fetch('/api/send',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+k},body:'{"test":true}'});if(!r.ok)throw new Error();S.settings.api={url:'',key:k};save()}catch(e){$('lerr').textContent='Fel nyckel, eller så är servern inte uppsatt än.';return}}
+ sessionStorage.setItem('ssadm-auth','1');$('root').innerHTML='';render()}
 addEventListener('keydown',e=>{if(e.key==='Escape')closeAll()});
-load();const h=location.hash.slice(1);if(NAV.some(n=>n[0]===h))TAB=h;render();
+load();migrate();const h=location.hash.slice(1);if(NAV.some(n=>n[0]===h))TAB=h;render();
 </script>
 </body>
 </html>
