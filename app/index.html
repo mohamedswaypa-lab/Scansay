@@ -225,6 +225,8 @@ hr{border:0;border-top:1px solid var(--hair)}
 .kpi{border-top-width:3px!important}
 ::selection{background:#2563EB;color:#0F1013}
 </style><link rel="stylesheet" href="../fonts.css">
+<script src="live.js"></script>
+<style>.pwbox{max-width:440px;margin:70px auto;padding:28px;background:#fff;border:1px solid #E5E7EB;border-radius:18px;font-family:Inter,Arial,sans-serif}.pwbox label{display:grid;gap:6px;margin:12px 0;font-weight:600}.pwbox input{padding:12px;border:1px solid #D1D5DB;border-radius:10px;font-size:16px}.pwbox button{width:100%;padding:13px;border:0;border-radius:10px;background:#1D4ED8;color:#fff;font-weight:700;font-size:16px;margin-top:8px;cursor:pointer}.pwe{color:#B91C1C;font-weight:600;min-height:20px}.liveme{display:flex;gap:10px;align-items:center;margin-left:auto;font-size:13px;color:#374151}html.live .scope{margin-left:12px}</style>
 </head>
 <body>
 <header>
@@ -612,17 +614,17 @@ function seed(){
     companies:[{id:'c1',name:'Exempel Taxi AB',ind:'taxi',email:'drift@exempeltaxi.se',status:'Väntar'},{id:'c2',name:'Exempel Café AB',ind:'cafe',email:'hej@exempelcafe.se',status:'Väntar'}],
     mbl:{g1:{date:'',named:false},g2:{date:'2026-09-15',named:true},g3:{date:'',named:false}},retention:12};
 }
-let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}if(!S||!S.fb)S=seed();
-function importInbox(){let q=[];try{q=JSON.parse(localStorage.getItem('scansay-inbox')||'[]')}catch(e){}
+let S;if(window.SSLIVE&&SSLIVE.on){S=SSLIVE.boot();SSLIVE.getS=()=>S}else{try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}if(!S||!S.fb)S=seed()}
+function importInbox(){if(window.SSLIVE&&SSLIVE.on)return 0;let q=[];try{q=JSON.parse(localStorage.getItem('scansay-inbox')||'[]')}catch(e){}
   S.imported=S.imported||[];let n=0;
   q.forEach(x=>{const ex=S.fb.find(f=>f.id==='w'+x.id);if(ex){if(ex.verified!==!!x.verified){ex.verified=!!x.verified;n++}}if(S.imported.includes(x.id))return;const pl=allPlaces().find(p=>p.code===x.code);if(!pl)return;
     S.fb.push({id:'w'+x.id,g:pl.g,sec:pl.sec,secName:pl.secName,code:x.code,place:pl.name,ts:NOW+S.imported.length*1000,type:x.type,topic:x.topic,rating:x.rating||0,quick:x.quick||null,nps:x.nps??null,msg:x.message,email:(x.email||'').replace(/^(.).*(@.*)$/,'$1***$2'),status:x.type==='c'?'new':'fix',live:true,verified:!!x.verified,copy:!!x.copy});S.imported.push(x.id);n++});
   if(n){save();setTimeout(()=>toast(n+' nya meddelanden från formuläret'),400)}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function save(){if(window.SSLIVE&&SSLIVE.on){SSLIVE.save(S);return}try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2200)}
-const NOW=new Date('2026-10-24T18:00:00').getTime(),T0=Date.now();
+const NOW=(window.SSLIVE&&SSLIVE.on)?Date.now():new Date('2026-10-24T18:00:00').getTime(),T0=Date.now();
 let SC='all',TAB='overview',PER=30,IF='open',PSORT='c';
 const DAYS=['Mån','Tis','Ons','Tor','Fre','Lör','Sön'];
 const G=id=>S.groups.find(g=>g.id===id);
@@ -638,7 +640,7 @@ function onShift(f){const h=new Date(f.ts).getHours();const sh=h>=6&&h<14?'Förm
 importInbox();
 if(/^#(qr|cert|inbox|overview)/.test(location.hash))TAB=location.hash.slice(1).split(/[^a-z]/)[0];
 /* ---------- internal chat: channels, direct messages and ScanSay support ---------- */
-const SUPK='scansay-support',COMPANY='Exempel Hotell AB',ME='Du (ägare)';
+const SUPK='scansay-support',COMPANY=(window.SSLIVE&&SSLIVE.data)?SSLIVE.data.account.name:'Exempel Hotell AB',ME='Du (ägare)';
 const PEOPLE=[['anna','Anna L.','Platschef, hotell','#2563EB'],['erik','Erik S.','Reception','#1D4ED8'],['sara','Sara M.','Städansvarig','#3CC28E'],['ali','Ali R.','Teknik och fastighet','#2563EB'],['nora','Nora K.','Driftchef, taxi','#60A5FA']];
 let CH='general',CHAT_SEEN={};
 function chatData(){if(!S.chat){const t=Date.now();S.chat={general:[{u:'anna',t:'God morgon! Veckorapporten från AI-chefen är ute. Frukosten har gått upp till 4,3 ⭐',ts:t-5*36e5},{u:'erik',t:'Toppen! Vi har fått tre beröm om incheckningen i går också.',ts:t-4.6*36e5},{u:'nora',t:'Bil 112 har flest klagomål om städning. Vi bokar en extra tvätt.',ts:t-2*36e5}],
@@ -682,10 +684,10 @@ function spark(a,col){if(!a.length)return '';const mx=Math.max(1,...a),w=120,h=3
  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="sg${col.slice(1)}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".35"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs><path d="${d}L${w} ${h}L0 ${h}Z" fill="url(#sg${col.slice(1)})"/><path d="${d}" fill="none" stroke="${col}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`}
 function greet(){const h=new Date().getHours();return h<10?'God morgon':h<17?'God eftermiddag':'God kväll'}
 const KI=['<path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3z"/>','<circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/>','<path d="M12 3l2.8 5.8 6.2.9-4.5 4.4 1 6.2L12 17.4 6.5 20.3l1-6.2L3 9.7l6.2-.9z"/>','<path d="M20 6L9 17l-5-5"/>','<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/>'].map(p=>`<span class="ki"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg></span>`);
-function render(){
-  $('scope').innerHTML=`<option value="all" ${SC==='all'?'selected':''}>Alla grupper (superadmin)</option>`+S.groups.map(g=>`<option value="${g.id}" ${SC===g.id?'selected':''}>${esc(g.name)} · ${IND[g.ind].n}</option>`).join('');
+function render(){if(TAB==='staff'&&S.features&&S.features.staff===false)TAB='overview';
+  $('scope').innerHTML=`<option value="all" ${SC==='all'?'selected':''}>${window.SSLIVE&&SSLIVE.on?"Alla grupper":"Alla grupper (superadmin)"}</option>`+S.groups.map(g=>`<option value="${g.id}" ${SC===g.id?'selected':''}>${esc(g.name)} · ${IND[g.ind].n}</option>`).join('');
   const openN=S.fb.filter(f=>inScope(f)&&f.type==='c'&&f.status==='new').length;
-  const tabs=[['overview','Översikt'],['inbox','Inkorg',openN],['chat','Chatt'],['places','Platser'],['qr','QR-koder'],['staff','Personal'],['alerts','Larm'],['cert','Intyg'],['users','Användare'],['gdpr','GDPR']];
+  const tabs=[['overview','Översikt'],['inbox','Inkorg',openN],...(window.SSLIVE&&SSLIVE.on?[]:[['chat','Chatt']]),['places','Platser'],['qr','QR-koder'],...(S.features&&S.features.staff===false?[]:[['staff','Personal']]),['alerts','Larm'],['cert','Intyg'],['users','Användare'],['gdpr','GDPR']];
   $('nav').innerHTML=tabs.map(([k,l,c])=>`<button class="${TAB===k?'on':''}" onclick="TAB='${k}';render()"><span class="ni">${NI[k]||''}</span>${l}${c?`<span class="cnt">${c}</span>`:''}</button>`).join('');
   $('app').innerHTML={chat:chatV,overview,inbox,places,qr:qrV,staffV,alertsV,users,gdpr,cert:certV}[TAB==='staff'?'staffV':TAB==='alerts'?'alertsV':TAB]();
 }
@@ -811,13 +813,27 @@ function inbox(){
   <div class="grid">${list.map(caseCard).join('')||'<div class="card sub">Inga ärenden här.</div>'}</div>`;
 }
 function caseCard(f){const g=G(f.g),dt=new Date(f.ts),named=S.mbl[f.g]&&S.mbl[f.g].named&&S.mbl[f.g].date;const w=onShift(f);
-  return `<div class="case ${f.type}"><div class="row between"><div class="row"><span class="tag t-${f.type}">${{c:'Klagomål',p:'Beröm',i:'Idé'}[f.type]}</span><span class="tag ${f.status==='new'?'t-new':f.status==='prog'?'t-prog':'t-fix'}">${{new:'Ny',prog:'Pågår',fix:'Löst'}[f.status]}</span><b>${esc(f.secName?f.secName+' › ':'')}${esc(f.place)}</b>${f.live?'<span class="tag t-new">Från formuläret</span>':''}<span class="sub">${esc(f.topic)} · ${'★'.repeat(f.rating)}</span></div>
+  return `<div class="case ${f.type}"><div class="row between"><div class="row"><span class="tag t-${f.type}">${{c:'Klagomål',p:'Beröm',i:'Idé'}[f.type]}</span><span class="tag ${f.status==='new'?'t-new':f.status==='prog'?'t-prog':'t-fix'}">${{new:'Ny',prog:'Pågår',fix:'Löst'}[f.status]}</span>${f.urgent?'<span class="tag" style="background:#B91C1C!important;color:#fff!important">⚠ AKUT</span>':''}<b>${esc(f.secName?f.secName+' › ':'')}${esc(f.place)}</b>${f.live&&!(window.SSLIVE&&SSLIVE.on)?'<span class="tag t-new">Från formuläret</span>':''}<span class="sub">${esc(f.topic)} · ${'★'.repeat(f.rating)}</span></div>
    <span class="sub">${dt.getDate()}/${dt.getMonth()+1} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}${SC==='all'?' · '+esc(g.name):''}</span></div>
-   <div class="msg">"${esc(f.msg)}"</div>
-   <div class="sub">${f.via==='sms'?'Svar via sms till '+esc(f.phone?f.phone.slice(0,3)+' ••• '+f.phone.slice(-4):''):'Svar till '+esc(f.email)} <span class="tag t-fix">✓ Verifierad${f.via==='sms'?' via sms':' via e-post'}</span> · ${named&&w?`Pass (internt): ${esc(w.name)}`:'Pass matchas internt mot schemat'}</div>
-   ${f.type==='c'&&f.status!=='fix'?`<div class="reply"><b>Svarsförslag:</b> Tack för att du berättade. Vi beklagar och har skickat ärendet till ansvarig för ${esc(f.place)}. Vi återkommer när det är åtgärdat.</div>
-   <div class="row"><button class="btn sm lime" onclick="setSt('${f.id}','fix')">Skicka svar och markera som löst</button>${f.status==='new'?`<button class="btn sm line" onclick="setSt('${f.id}','prog')">Markera som pågår</button>`:''}</div>`:''}</div>`}
-function setSt(id,v){const F=S.fb.find(f=>f.id===id);F.status=v;if(v==='fix')F.fixTs=Math.max(F.ts,NOW)+(Date.now()-T0)+9e5;save();render();toast(v==='fix'?'Svar skickat · ärendet är löst':'Markerat som pågår')}
+   ${f.msg?`<div class="msg">"${esc(f.msg)}"</div>`:''}${f.img?`<img src="${f.img}" alt="Bild från kunden" style="max-width:220px;border-radius:12px;margin:6px 0;display:block">`:''}
+   <div class="sub">${f.via==='sms'?'Svar via sms till '+esc(f.phone?f.phone.slice(0,3)+' ••• '+f.phone.slice(-4):''):'Svar till '+esc(f.email)} <span class="tag t-fix">✓ Verifierad${f.via==='sms'?' via sms':' via e-post'}</span> ${S.features&&S.features.staff===false?'':` · ${named&&w?`Pass (internt): ${esc(w.name)}`:'Pass matchas internt mot schemat'}`}</div>
+   ${replyBox(f)}</div>`}
+const RD={};
+function sugg(f){const pl=f.place||'platsen',t=(f.topic||'').toLowerCase();
+  if(f.type==='p')return['Tack för dina fina ord! Vi berättar det för hela teamet.','Vad roligt att höra. Tack för att du tog dig tid att skriva, välkommen tillbaka!'];
+  if(f.type==='i')return['Tack för idén! Vi tittar på den och hör av oss om vi genomför den.','Bra förslag, tack. Vi tar upp det på nästa möte.'];
+  if(f.status==='prog')return['Tack för ditt tålamod. Vi arbetar med '+(t||'ärendet')+' i '+pl+' och hör av oss när det är klart.','Vi har inte glömt dig. Ärendet är hos ansvarig och vi återkommer så snart det är åtgärdat.'];
+  return['Tack för att du berättade. Vi beklagar och har skickat ärendet om '+(t||'problemet')+' till ansvarig för '+pl+'. Vi återkommer när det är åtgärdat.','Förlåt för besväret. Vi har åtgärdat '+(t||'problemet')+' i '+pl+'. Hör gärna av dig om något fortfarande inte stämmer.','Tack för att du sa till. Vi skickar någon till '+pl+' så snart som möjligt.']}
+function replyBox(f){if(f.replies&&f.replies.length&&f.status==='fix')return `<div class="reply sent"><b>Ditt svar (skickat ${new Date(f.replies[f.replies.length-1].ts).toLocaleDateString('sv-SE')}):</b> ${esc(f.replies[f.replies.length-1].txt)}</div>`;
+  const r=RD[f.id]||{mode:null,txt:''},sg=sugg(f);
+  return `<div class="rbox">${r.mode===null?`<div class="row"><button class="btn sm lime" onclick="RD['${f.id}']={mode:'ai',txt:sugg(S.fb.find(x=>x.id==='${f.id}'))[0],i:0};render()">✦ Föreslå ett svar</button><button class="btn sm line" onclick="RD['${f.id}']={mode:'own',txt:''};render();setTimeout(()=>{const e=document.getElementById('rt_${f.id}');e&&e.focus()},30)">✎ Skriv eget svar</button>${f.type==='c'&&f.status==='new'?`<button class="btn sm line" onclick="setSt('${f.id}','prog')">Markera som pågår</button>`:''}${f.type!=='c'&&f.status!=='fix'?`<button class="btn sm line" onclick="setSt('${f.id}','fix')">Klart utan svar</button>`:''}</div>`
+  :`${r.mode==='ai'?`<div class="row" style="gap:6px;margin-bottom:6px"><span class="sub">Förslag:</span>${sg.map((x,i)=>`<button class="btn sm ${r.i===i?'pri':'line'}" onclick="RD['${f.id}'].i=${i};RD['${f.id}'].txt=sugg(S.fb.find(x=>x.id==='${f.id}'))[${i}];render()">${i+1}</button>`).join('')}<span class="sub">Du kan ändra texten innan du skickar.</span></div>`:''}
+   <textarea id="rt_${f.id}" rows="3" maxlength="800" placeholder="Skriv ditt svar till kunden…" oninput="RD['${f.id}'].txt=this.value">${esc(r.txt)}</textarea>
+   <div class="row" style="margin-top:6px"><label class="row" style="gap:6px"><input type="checkbox" id="rf_${f.id}" ${f.type==='c'?'checked':''}> Markera som löst</label><button class="btn sm pri" onclick="sendReply('${f.id}')">Skicka svar</button><button class="btn sm line" onclick="delete RD['${f.id}'];render()">Avbryt</button>${r.mode==='own'?`<button class="btn sm line" onclick="RD['${f.id}']={mode:'ai',txt:sugg(S.fb.find(x=>x.id==='${f.id}'))[0],i:0};render()">✦ Visa förslag</button>`:`<button class="btn sm line" onclick="RD['${f.id}'].mode='own';render()">✎ Skriv själv</button>`}</div>`}</div>`}
+async function sendReply(id){const F=S.fb.find(f=>f.id===id),r=RD[id],t=($('rt_'+id).value||'').trim();if(t.length<3)return toast('Skriv ett svar först');
+  const fix=$('rf_'+id).checked;if(window.SSLIVE&&SSLIVE.on){try{await SSLIVE.reply(F,t,fix)}catch(e){return toast('Kunde inte skicka: '+e.message)}}
+  F.replies=(F.replies||[]).concat({txt:t,ts:Date.now(),mode:r.mode});delete RD[id];if(fix){F.status='fix';F.fixTs=Math.max(F.ts,NOW)+(Date.now()-T0)+9e5}else if(F.status==='new')F.status='prog';save();render();toast('Svaret är skickat till kunden'+(fix?' · ärendet är löst':''))}
+function setSt(id,v){const F=S.fb.find(f=>f.id===id);if(window.SSLIVE&&SSLIVE.on)SSLIVE.status(F,v).catch(e=>toast('Kunde inte spara: '+e.message));F.status=v;if(v==='fix')F.fixTs=Math.max(F.ts,NOW)+(Date.now()-T0)+9e5;save();render();toast(v==='fix'?'Svar skickat · ärendet är löst':'Markerat som pågår')}
 
 /* ---------------- places ---------------- */
 function placeRows(list){const m={};list.forEach(f=>{const k=f.g+'|'+f.place;m[k]=m[k]||{g:f.g,place:f.place,l:[]};m[k].l.push(f)});
@@ -834,11 +850,11 @@ function places(){
 
 
 /* ---------------- QR codes ---------------- */
-let QG=null,QSEL=null,QCHK={},QD={size:'5x10',cw:6,ch:12,theme:'black',custom:'#0F3D2E',logo:true,lang:'sv',co:null,cta:null,pl:null,showPl:true};
+let QG=null,QSEL=null,QCHK={},QREN=null,QD={size:'5x10',cw:6,ch:12,theme:'black',custom:'#0F3D2E',logo:true,lang:'sv',co:null,cta:null,pl:null,showPl:true};
 const defHead=g=>g.name;
 const FORM_URL=location.pathname.includes('/app/')?'../form/index.html':'https://claude.ai/artifact/A9YrEELkZpj8B1fz2kHL2y';
 const qrPath=SSB.qrPath;
-const qurl=c=>'https://scansay.se/k/'+c;
+const qurl=c=>((window.SSLIVE&&SSLIVE.on)?location.origin:'https://scansay.se')+'/k/'+c;
 function stSize(){if(QD.size==='custom'){const w=Math.min(300,Math.max(30,Math.round(QD.cw*10))),h=Math.min(300,Math.max(30,Math.round(QD.ch*10)));return{w,h}}const z=SSB.SIZES.find(x=>x.id===QD.size)||SSB.SIZES[0];return{w:z.w,h:z.h}}
 function sticker(o){const z=stSize();return SSB.sticker({code:o.code,title:o.co,cta:o.cta,place:QD.showPl?o.pl:'',lang:QD.lang,theme:QD.theme,custom:QD.custom,logo:QD.logo,w:z.w,h:z.h})}
 function qG(){const id=SC!=='all'?SC:(QG&&G(QG)?QG:S.groups[0].id);return G(id)}
@@ -852,10 +868,11 @@ function qrV(){
    ${SC==='all'?`<select onchange="QG=this.value;QSEL=null;QD.co=null;QD.pl=null;render()">${S.groups.map(x=>`<option value="${x.id}" ${x.id===g.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select>`:''}</div>
   <div class="grid qg">
    <div class="card"><div class="crumbs"><span>${esc(g.company)}</span>›<span>${esc(g.name)}</span>›<span class="tag t-p">${esc(IND[g.ind].n)}</span></div>
-    ${g.secs.map((s,si)=>`<div class="qsec"><div class="row between"><b>${esc(s.name)}</b><span class="row" style="gap:8px"><span class="sub">${s.places.length} koder · ${secTopics(g,s.k).length} ämnen</span><button class="btn sm lime" onclick="secStickers(${si})">Dekaler för sektionen</button></span></div>
+    <div class="row between qbar"><label class="row" style="gap:8px"><input type="checkbox" ${pls.length&&pls.every(x=>QCHK[x.p.code])?'checked':''} onchange="selAll(this.checked)"> <b>Välj alla koder (${pls.length})</b></label><span class="sub">${nChk} valda för utskrift</span>${nChk?'<button class="btn sm line" onclick="selAll(false)">Avmarkera alla</button>':''}</div>
+    ${g.secs.map((s,si)=>{const allS=s.places.length&&s.places.every(p=>QCHK[p.code]);return `<div class="qsec"><div class="row between"><span class="row" style="gap:8px"><input type="checkbox" ${allS?'checked':''} onchange="selSec(${si},this.checked)" aria-label="Välj alla i ${esc(s.name)}">${QREN==='s'+si?`<input id="ren_s${si}" value="${esc(s.name)}" maxlength="40" style="width:180px" onkeydown="if(event.key==='Enter')renSec(${si})"><button class="btn sm pri" onclick="renSec(${si})">Spara</button><button class="btn sm line" onclick="QREN=null;render()">Avbryt</button>`:`<b>${esc(s.name)}</b><button class="btn sm line" title="Byt namn på sektionen" onclick="QREN='s${si}';render();setTimeout(()=>$('ren_s${si}').select(),30)">✎ Byt namn</button><button class="btn sm red" title="Ta bort sektionen" onclick="delSec(${si})">Ta bort</button>`}</span><span class="row" style="gap:8px"><span class="sub">${s.places.length} koder · ${secTopics(g,s.k).length} ämnen</span><button class="btn sm lime" onclick="secStickers(${si})">Dekaler för sektionen</button></span></div>
      <div class="chipsm">${secTopics(g,s.k).map(t=>`<span>${esc(t)}</span>`).join('')}</div>
-     <table class="qt">${s.places.map(p=>`<tr class="${p.code===QSEL?'sel':''}"><td><input type="checkbox" ${QCHK[p.code]?'checked':''} onchange="QCHK['${p.code}']=this.checked;render()" aria-label="Välj ${esc(p.name)}"></td><td><a href="javascript:void 0" onclick="QSEL='${p.code}';QD.pl=null;render()">${esc(p.name)}</a></td><td><code>${p.code}</code></td><td class="sub hide">${cnt(p.code)} meddelanden</td><td><button class="btn sm line" onclick="QSEL='${p.code}';QD.pl=null;render();if(innerWidth<900)setTimeout(()=>document.querySelector('.qedit').scrollIntoView({behavior:'smooth'}),60)">Dekal</button></td></tr>`).join('')}</table>
-     <div class="row" style="margin-top:8px"><input id="np${si}" placeholder="Ny plats eller intervall, t.ex. ${esc((s.places[0]?s.places[0].name.replace(/\s*\d+$/,''):s.name)+' 1–10')}" style="flex:1;min-width:160px"><button class="btn sm" onclick="addPlaces(${si})">Lägg till plats</button></div></div>`).join('')}
+     <table class="qt">${s.places.map(p=>`<tr class="${p.code===QSEL?'sel':''}"><td><input type="checkbox" ${QCHK[p.code]?'checked':''} onchange="QCHK['${p.code}']=this.checked;render()" aria-label="Välj ${esc(p.name)}"></td><td><a href="javascript:void 0" onclick="QSEL='${p.code}';QD.pl=null;render()">${esc(p.name)}</a></td><td><code>${p.code}</code></td><td class="sub hide">${cnt(p.code)} meddelanden</td><td style="white-space:nowrap"><button class="btn sm line" onclick="QSEL='${p.code}';QD.pl=null;render();if(innerWidth<900)setTimeout(()=>document.querySelector('.qedit').scrollIntoView({behavior:'smooth'}),60)">Dekal</button> <button class="btn sm line" title="Byt namn" onclick="renPlace(${si},'${p.code}')">✎</button> <button class="btn sm red" title="Ta bort platsen" onclick="delPlace(${si},'${p.code}')">✕</button></td></tr>`).join('')}</table>
+     <div class="row" style="margin-top:8px"><input id="np${si}" placeholder="Ny plats eller intervall, t.ex. ${esc((s.places[0]?s.places[0].name.replace(/\s*\d+$/,''):s.name)+' 1–10')}" style="flex:1;min-width:160px"><button class="btn sm" onclick="addPlaces(${si})">Lägg till plats</button></div></div>`}).join('')}
     <div class="qsec"><b>Lägg till sektion</b><div class="row" style="margin-top:8px"><select id="nsec">${unused.map(t=>`<option value="${t.k}">${esc(trs(t.n))}</option>`).join('')}<option value="__custom">Egen sektion…</option></select><input id="nsecn" placeholder="Namn på egen sektion"><button class="btn sm" onclick="addSec()">Lägg till</button></div>
      <div class="sub" style="margin-top:6px">Mallen för ${esc(IND[g.ind].n.toLowerCase())} ger rätt frågor till varje sektion. Egna sektioner får allmänna ämnen.</div></div>
    </div>
@@ -896,7 +913,13 @@ function dlSheet(){const codes=Object.keys(QCHK).filter(k=>QCHK[k]);const z=stSi
    dlBlob(`scansay-ark-${pi+1}.svg`,`<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 297" width="210mm" height="297mm">${body}</svg>`)})}
 function printSel(codes){const pa=$('printArea');pa.innerHTML=codes.map(c=>`<div class="pst">${stOf(c)}</div>`).join('');try{window.print()}catch(e){toast('Utskrift blockeras här. Ladda ner i stället.')}}
 function secStickers(si){const s=qG().secs[si];QCHK={};s.places.forEach(p=>QCHK[p.code]=true);if(!s.places.find(p=>p.code===QSEL))QSEL=s.places[0]&&s.places[0].code;QD.pl=null;render();toast(s.places.length+' dekaler valda i '+s.name+' · skriv ut eller ladda ner A4-ark');if(innerWidth<900)setTimeout(()=>document.querySelector('.qedit').scrollIntoView({behavior:'smooth'}),60)}
-function selAll(){qG().secs.forEach(s=>s.places.forEach(p=>QCHK[p.code]=true));render()}
+function selAll(on){if(on===undefined)on=true;qG().secs.forEach(s=>s.places.forEach(p=>{if(on)QCHK[p.code]=true;else delete QCHK[p.code]}));render()}
+function selSec(si,on){qG().secs[si].places.forEach(p=>{if(on)QCHK[p.code]=true;else delete QCHK[p.code]});render()}
+function renSec(si){const g=qG(),v=($('ren_s'+si).value||'').trim();if(!v)return toast('Skriv ett namn');g.secs[si].name=v;QREN=null;save();liveSync(g);render();toast('Sektionen heter nu '+v)}
+function delSec(si){const g=qG(),sc=g.secs[si];if(!confirm('Ta bort sektionen "'+sc.name+'" och dess '+sc.places.length+' koder? Dekaler som redan sitter uppe slutar fungera. Statistiken sparas.'))return;sc.places.forEach(p=>delete QCHK[p.code]);g.secs.splice(si,1);QSEL=null;save();liveSync(g);render();toast('Sektionen är borttagen')}
+function renPlace(si,code){const g=qG(),p=g.secs[si].places.find(x=>x.code===code);const v=prompt('Nytt namn på platsen',p.name);if(!v||!v.trim())return;p.name=v.trim();if(QSEL===code)QD.pl=null;save();liveSync(g);render()}
+function delPlace(si,code){const g=qG(),sc=g.secs[si],p=sc.places.find(x=>x.code===code);if(!confirm('Ta bort "'+p.name+'"? Dekalen med kod '+code+' slutar fungera.'))return;sc.places=sc.places.filter(x=>x.code!==code);delete QCHK[code];if(QSEL===code)QSEL=null;save();liveSync(g);render()}
+function liveSync(g){try{if(window.SSLIVE&&SSLIVE.on)SSLIVE.saveGroup(g)}catch(e){}}
 function addPlaces(si){const g=qG(),s=g.secs[si],v=$('np'+si).value.trim();if(!v)return toast('Skriv ett platsnamn');
   const m=v.match(/^(.*?)(\d+)\s*[-–]\s*(\d+)$/);let names=[v];if(m){const a=+m[2],b=+m[3];if(b<a||b-a>199)return toast('Ange ett intervall på högst 200');names=[];for(let i=a;i<=b;i++)names.push(m[1]+i)}
   names.forEach(n=>s.places.push({name:n,code:newCode()}));g.places=g.secs.flatMap(x=>x.places.map(p=>p.name));save();render();toast(names.length+' nya QR-koder i '+s.name)}
@@ -934,15 +957,39 @@ function addStaff(){const n=$('nn').value.trim();if(!n)return toast('Skriv ett n
 function toggleStaff(id){const s=S.staff.find(x=>x.id===id);s.active=!s.active;save();render();toast(s.name+(s.active?' aktiverad':' inaktiverad'))}
 
 /* ---------------- alerts ---------------- */
+
+let CHO=null;
+const CHHELP={email:'Skriv en eller flera e-postadresser, separerade med komma.',sms:'Skriv mobilnummer med landskod, t.ex. +46701234567. Separera flera med komma.',teams:'I Teams: öppna kanalen › ⋯ › <b>Workflows</b> › välj <b>”Post to a channel when a webhook request is received”</b> › följ stegen och kopiera länken. Klistra in den här.',slack:'I Slack: gå till api.slack.com/apps › Create app › <b>Incoming Webhooks</b> › slå på › Add New Webhook › välj kanal › kopiera länken.',hook:'Vi skickar en POST med JSON (plats, ämne, text, tid och länk) till adressen. Använd https.'};
+function chForm(id,cf){const ph={email:'drift@hotell.se, chef@hotell.se',sms:'+46701234567, +46709876543',teams:'https://….webhook.office.com/… eller https://prod-…logic.azure.com/…',slack:'https://hooks.slack.com/services/…',hook:'https://ert-system.se/scansay'}[id];
+  return `<div class="chf" style="margin-top:10px;padding:12px;border-radius:12px;background:var(--bg)"><div class="sub" style="margin-bottom:8px">${CHHELP[id]}</div>
+   <label>${id==='email'?'E-postadresser':id==='sms'?'Mobilnummer':'Webhook-adress'}<input id="ch_v" value="${esc(cf.v||'')}" placeholder="${ph}"></label>
+   <label>Visas som<input id="ch_to" value="${esc(cf.to||'')}" placeholder="T.ex. Housekeeping eller #fastighet-larm"></label>
+   <label>Vilka larm<select id="ch_lv"><option value="all" ${cf.lv==='all'?'selected':''}>Alla nya klagomål</option><option value="low" ${!cf.lv||cf.lv==='low'?'selected':''}>Betyg 1–2 och akuta</option><option value="urgent" ${cf.lv==='urgent'?'selected':''}>Bara akuta</option></select></label>
+   <label>Sektioner<select id="ch_sec"><option value="">Alla sektioner</option>${[...new Set(S.groups.flatMap(g=>g.secs.map(x=>x.name)))].map(n=>`<option ${cf.sec===n?'selected':''}>${esc(n)}</option>`).join('')}</select></label>
+   <div class="row" style="margin-top:8px"><button class="btn sm pri" onclick="chSave('${id}')">Spara</button><button class="btn sm line" onclick="chSave('${id}',true)">Spara och testa</button></div></div>`}
+function chOn(id,on){const c=S.channels.find(x=>x.id===id);const cf=(S.chcfg||{})[id]||{};if(on&&!cf.v){CHO=id;render();return toast('Fyll i inställningarna först')}c.on=on;save();liveCfg();render();toast(c.n+(on?' är påslagen':' är avstängd'))}
+function chSave(id,test){const v=$('ch_v').value.trim();if(!v)return toast('Fyll i '+(id==='email'?'e-post':id==='sms'?'nummer':'adressen'));
+  if((id==='teams'||id==='slack'||id==='hook')&&!/^https:\/\//.test(v))return toast('Adressen måste börja med https://');
+  if(id==='sms'&&!v.split(',').every(x=>/^\+\d{8,15}$/.test(x.trim().replace(/[\s-]/g,''))))return toast('Skriv numren med landskod, t.ex. +46701234567');
+  if(id==='email'&&!v.split(',').every(x=>/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(x.trim())))return toast('Kontrollera e-postadresserna');
+  S.chcfg[id]={v,to:$('ch_to').value.trim(),lv:$('ch_lv').value,sec:$('ch_sec').value};S.channels.find(x=>x.id===id).on=true;CHO=null;save();liveCfg();render();toast('Sparat');if(test)testAlarm(id)}
+async function testAlarm(only){if(window.SSLIVE&&SSLIVE.on){try{const r=await SSLIVE.testAlarm(only);toast('Testlarm skickat: '+r.sent.join(', ')+(r.failed.length?' · misslyckades: '+r.failed.join(', '):''))}catch(e){toast('Kunde inte skicka: '+e.message)}}else toast('Förhandsvisning: på den riktiga sidan skickas testlarmet till '+(only||S.channels.filter(c=>c.on).map(c=>c.n).join(', ')))}
+function liveCfg(){try{if(window.SSLIVE&&SSLIVE.on)SSLIVE.saveCfg({channels:S.channels,chcfg:S.chcfg,urgent:S.urgent,esc:S.esc})}catch(e){}}
 function alertsV(){
   S.channels=S.channels||[{id:'email',n:'E-post',on:true,to:'Ansvarig för avdelningen'},{id:'sms',n:'SMS',on:true,to:'Den som har skift'},{id:'wa',n:'WhatsApp-grupp',on:false,to:'Grupp per avdelning, t.ex. Housekeeping'},{id:'teams',n:'Microsoft Teams',on:false,to:'Kanal, t.ex. #fastighet-larm'},{id:'slack',n:'Slack',on:false,to:'Kanal, t.ex. #reception'},{id:'hook',n:'Webhook till eget system',on:false,to:'T.ex. bokningssystem eller ärendesystem'}];
-  S.esc=S.esc||{on:true,remind:15,up:30,to:'Platschef'};
+  S.esc=S.esc||{on:true,remind:15,up:30,to:'Platschef'};S.chcfg=S.chcfg||{};S.urgent=S.urgent||{on:true};if(!S.urgent.items)S.urgent.items=['Vatten på golvet','Halkrisk','Rök eller brandlukt','Trasigt och farligt','Någon behöver hjälp','Hot eller bråk'];S.channels=S.channels.filter(c=>c.id!=='wa');
   const recent=S.fb.filter(f=>inScope(f)&&f.type==='c'&&f.rating<=2&&f.ts>NOW-3*864e5).sort((a,b)=>b.ts-a.ts).slice(0,8);
   const ex=recent[0]||{place:'Rum 412',topic:'Temperatur',msg:'Det är kallt i rummet.',rating:1,secName:'Rum'};
   return `<h1>Larm och notiser</h1><div class="sub" style="margin-bottom:12px">Rätt person får larmet där hen redan är, så att problemet kan lösas medan kunden är kvar · ${esc(scopeName())}</div>
   <div class="grid g2" style="margin-bottom:14px">
-   <div class="card"><h2>Kanaler</h2><div class="sub" style="margin:-6px 0 8px">Personal på golvet läser sällan e-post. Skicka larm till SMS, en WhatsApp-grupp eller en kanal i Teams eller Slack.</div>
-    ${S.channels.map(c=>`<div class="row between" style="padding:9px 0;border-bottom:1px solid var(--line)"><div class="row"><label class="sw"><input type="checkbox" ${c.on?'checked':''} onchange="S.channels.find(x=>x.id==='${c.id}').on=this.checked;save();toast(this.checked?'${c.n} aktiverad':'${c.n} avstängd')"><i></i></label><div><b>${c.n}</b><div class="sub">${esc(c.to)}</div></div></div>${c.on?'<span class="tag t-p">Ansluten</span>':`<button class="btn sm line" onclick="S.channels.find(x=>x.id==='${c.id}').on=true;save();render();toast('${c.n} ansluten (förhandsvisning)')">Anslut</button>`}</div>`).join('')}</div>
+   <div class="card"><h2>Kanaler</h2><div class="sub" style="margin:-6px 0 8px">Personal på golvet läser sällan e-post. Skicka larm som SMS, till en kanal i Teams eller Slack, eller till ert eget system.</div><div class="note info" style="margin-bottom:8px"><b>WhatsApp-grupper:</b> WhatsApp tillåter inte att andra system skriver i grupper. Använd SMS till samma personer, eller en kanal i Teams, som fungerar likadant i mobilen.</div>
+    ${S.channels.map(c=>{const cf=(S.chcfg||{})[c.id]||{};return `<div style="padding:10px 0;border-bottom:1px solid var(--line)"><div class="row between"><div class="row"><label class="sw"><input type="checkbox" ${c.on?'checked':''} onchange="chOn('${c.id}',this.checked)"><i></i></label><div><b>${c.n}</b><div class="sub">${esc(cf.to||c.to)}</div></div></div><button class="btn sm line" onclick="CHO=CHO==='${c.id}'?null:'${c.id}';render()">${CHO===c.id?'Stäng':'Inställningar'}</button></div>${CHO===c.id?chForm(c.id,cf):''}</div>`}).join('')}</div>
+   <div class="card"><h2>Akuta larm</h2><div class="sub" style="margin:-6px 0 10px">När en kund väljer <b>Akut eller farligt</b> i formuläret, till exempel vatten på golvet, halkrisk, rök eller något trasigt som kan skada någon, skickas larmet <b>direkt till alla påslagna kanaler</b>, även nattetid. Kunden uppmanas att ringa 112 om liv eller hälsa är i fara.</div>
+    <label class="row" style="gap:8px;margin-bottom:10px"><label class="sw"><input type="checkbox" ${S.urgent.on?'checked':''} onchange="S.urgent.on=this.checked;save();liveCfg()"><i></i></label><b>Visa knappen ”Akut eller farligt” i formuläret</b></label>
+    <div class="sub" style="margin-bottom:6px">Exempel som kunden kan välja:</div>
+    <div class="chipsm">${S.urgent.items.map((x,i)=>`<span>${esc(x)} <a href="javascript:void 0" onclick="S.urgent.items.splice(${i},1);save();liveCfg();render()" aria-label="Ta bort">✕</a></span>`).join('')}</div>
+    <div class="row" style="margin-top:8px"><input id="nurg" placeholder="Lägg till, t.ex. Gaslukt" style="flex:1"><button class="btn sm" onclick="const v=$('nurg').value.trim();if(v){S.urgent.items.push(v);save();liveCfg();render()}">Lägg till</button></div>
+    <div class="row" style="margin-top:12px"><button class="btn pri" onclick="testAlarm()">Skicka testlarm nu</button><span class="sub">Går till alla påslagna kanaler.</span></div></div>
    <div class="card"><h2>Eskalering om ingen svarar</h2>
     <label class="row" style="gap:8px;margin-bottom:10px"><label class="sw"><input type="checkbox" ${S.esc.on?'checked':''} onchange="S.esc.on=this.checked;save()"><i></i></label><b>Påminn och eskalera brådskande ärenden</b></label>
     <div class="esc"><div><span>1</span><b>Direkt</b><p>Larm till ansvarig för platsen och den som har skift.</p></div>
@@ -990,8 +1037,8 @@ let LK='';
 /* ---------------- Intyg (certificate) ---------------- */
 let CERT={g:null,months:12,lang:'sv'};
 const PUBKEY='scansay-published-certs';
-const pubGet=()=>{try{return JSON.parse(localStorage.getItem(PUBKEY)||'{}')}catch(e){return{}}};
-const pubSet=o=>{try{localStorage.setItem(PUBKEY,JSON.stringify(o))}catch(e){}};
+const pubGet=()=>{if(window.SSLIVE&&SSLIVE.on)return JSON.parse(JSON.stringify(S.pub||{}));try{return JSON.parse(localStorage.getItem(PUBKEY)||'{}')}catch(e){return{}}};
+const pubSet=o=>{if(window.SSLIVE&&SSLIVE.on){S.pub=o;save();return}try{localStorage.setItem(PUBKEY,JSON.stringify(o))}catch(e){}};
 const SITE=location.pathname.includes('/app/')?'../index.html':'https://scansay.se/';
 const pubUrl=d=>location.pathname.includes('/app/')?'../index.html#verified/'+d.slug:'https://scansay.se/intyg/'+d.slug;
 function certData(){const gid=SC!=='all'?SC:(CERT.g&&G(CERT.g)?CERT.g:S.groups[0].id),g=G(gid);

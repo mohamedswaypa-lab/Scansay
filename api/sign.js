@@ -1,7 +1,7 @@
 /* POST /api/sign  { t, name, title, email, orgNr, accepts:{terms,pub,payment,business} }
    Verifies the sealed offer, records the signature (name, title, e-mail, IP, time, browser, contract version, SHA-256 of the contract text)
    and e-mails a signed copy to the customer and to NOTIFY_EMAIL. The e-mails are the durable record; keep them (or add a database). */
-const { send, body, unseal, sendEmail, env, escH, crypto } = require('./_lib');
+const { send, body, unseal, sendEmail, env, escH, crypto, sb, sbOn } = require('./_lib');
 const C = require('../legal/contract.js');
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return send(res, 405, { error: 'Använd POST' });
@@ -20,6 +20,7 @@ module.exports = async (req, res) => {
     version: C.VERSION, sha256: crypto.createHash('sha256').update(text).digest('hex'), offerNo: o.no, ref: o.ref || '' };
   const log = `<table style="border-collapse:collapse;font-family:Arial;font-size:13px">${Object.entries({ 'Signerings-id': record.id, 'Tidpunkt (UTC)': record.ts, 'Namn': name, 'Titel': title, 'E-post': email, 'IP-adress': record.ip, 'Webbläsare': record.ua, 'Avtalsversion': record.version, 'Kontrollsumma SHA-256': record.sha256 }).map(([k, v]) => `<tr><td style="border:1px solid #ddd;padding:6px 8px"><b>${k}</b></td><td style="border:1px solid #ddd;padding:6px 8px">${escH(v)}</td></tr>`).join('')}</table>`;
   const doc = `<!doctype html><meta charset="utf-8"><style>${C.CSS}</style><div style="font-family:Arial,sans-serif;max-width:860px;margin:auto"><p>Avtalet nedan har signerats elektroniskt. Spara mejlet som kvitto.</p>${log}<br>${html.replace('data-sign-slot>Signeras elektroniskt', 'data-sign-slot><span class="ctr-signed">' + escH(name) + '</span>').replace('Namn, titel och datum fylls i vid signering', escH(name + ', ' + title + ' · ' + record.ts.slice(0, 10)))}</div>`;
+  if (sbOn()) await sb('POST', 'signatures', { ref: record.ref, company: o.customer.name, org: o.customer.org || null, name, title, email, ip: record.ip, user_agent: record.ua, version: record.version, hash: record.sha256, data: { record, offer: o } }, 'return=minimal').catch(e => console.error('sig db', e.message));
   try {
     await sendEmail({ to: email, subject: `Signerat avtal ${o.no}: ScanSay`, text: `Tack! Avtalet ${o.no} är signerat. Signerings-id ${record.id}.`, html: doc });
     if (env('NOTIFY_EMAIL')) await sendEmail({ to: env('NOTIFY_EMAIL'), subject: `SIGNERAT ${o.no} · ${o.customer.name}`, text: JSON.stringify(record, null, 2), html: doc });
