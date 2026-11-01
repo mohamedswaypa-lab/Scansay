@@ -109,7 +109,7 @@ if($('f_cat')){const cs=$('f_cat'),is=$('f_ind');
     const g=await SSG.check({hp:$('f_web').value,minMs:5000,key:'apply',body:$('f_e').value+'|'+$('f_c').value,max:3,win:60*60*1000});
     btn.textContent=lbl;if(!g.ok){btn.disabled=false;toast(L.g[g.reason]||L.g.bot);return}
     const secs=[...$('f_secs').querySelectorAll('input:checked')].map(x=>x.value);const own=($('f_own').value||'').split(',').map(x=>x.trim()).filter(Boolean);
-    try{const a=JSON.parse(localStorage.getItem('scansay-applications')||'[]');a.push({id:'w'+Date.now(),name:$('f_n').value,company:$('f_c').value,email:$('f_e').value,phone:$('f_p').value,cat:cs.value,ind:is.value,tier:TIER,secs,own:TI.custom(TIER)?own:[],size:$('f_m').value,msg:$('f_x').value,lang,time:Date.now(),guard:{pow:g.proof.nonce,ms:g.ms}});localStorage.setItem('scansay-applications',JSON.stringify(a))}catch(err){}
+    try{const a=JSON.parse(localStorage.getItem('scansay-applications')||'[]');a.push({id:'w'+Date.now(),name:$('f_n').value,company:$('f_c').value,email:$('f_e').value,phone:$('f_p').value,cat:cs.value,ind:is.value,tier:TIER,secs,own:TI.custom(TIER)?own:[],size:$('f_m').value,msg:$('f_x').value,lang,time:Date.now(),guard:{pow:g.proof.nonce,ms:g.ms}});localStorage.setItem('scansay-applications',JSON.stringify(a));if(/^https?:$/.test(location.protocol)&&!/claude\.ai|claudeusercontent|localhost|127\.0\.0\.1/.test(location.hostname)){fetch('/api/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(a[a.length-1])}).catch(function(){})}}catch(err){}
     $('cok').style.display='block'})}
 if($('lform'))$('lform').addEventListener('submit',e=>{e.preventDefault();$('lok').style.display='block'});
 
@@ -257,11 +257,22 @@ vids.forEach(v=>io.observe(v))})();
  function show(n){i=(n+S.length)%S.length;S.forEach(function(e,k){e.classList.toggle('on',k===i)});
   B.forEach(function(e,k){e.classList.toggle('on',k===i);var bar=e.querySelector('i');if(k===i&&bar){bar.style.animation='none';void bar.offsetWidth;bar.style.animation=''}});
   var bg=S[i].dataset.bg;V.forEach(function(v){var on=v.getAttribute('data-src').indexOf(bg)>=0;v.classList.toggle('on',on);if(on)loadV(v)});
-  clearTimeout(t);if(!reduce&&!w.classList.contains('paused'))t=setTimeout(function(){show(i+1)},D)}
+  clearTimeout(t);t=setTimeout(function(){show(i+1)},D)}
  B.forEach(function(b){b.addEventListener('click',function(){show(+b.dataset.i)})});
- w.addEventListener('mouseenter',function(){w.classList.add('paused');clearTimeout(t)});
- w.addEventListener('mouseleave',function(){w.classList.remove('paused');show(i)});
+ document.addEventListener('visibilitychange',function(){if(document.hidden)clearTimeout(t);else show(i)});
  var x0=null;w.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});
  w.addEventListener('touchend',function(e){if(x0===null)return;var dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>50)show(i+(dx<0?1:-1));x0=null},{passive:true});
  show(0);
+})();
+
+/* Forgot password */
+(function(){var lf=document.getElementById('lform'),rf=document.getElementById('rform'),fg=document.getElementById('fglink'),bk=document.getElementById('rback');if(!lf||!rf)return;
+ function show(r){lf.hidden=r;rf.hidden=!r;var f=(r?rf:lf).querySelector('input');if(f)f.focus()}
+ fg&&fg.addEventListener('click',function(e){e.preventDefault();show(true)});
+ bk&&bk.addEventListener('click',function(e){e.preventDefault();show(false)});
+ rf.addEventListener('submit',function(e){e.preventDefault();var v=document.getElementById('r_e').value.trim(),ok=document.getElementById('rok');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)){ok.hidden=false;ok.textContent=window.SS_RESET_BAD||'Invalid email';return}
+  var msg=ok.getAttribute('data-ok')||ok.textContent;ok.setAttribute('data-ok',msg);
+  var api=window.SS_API||'';var done=function(){ok.hidden=false;ok.textContent=msg};
+  if(api){fetch(api+'/api/auth-reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:v,lang:document.documentElement.lang})}).then(done,done)}else done()});
 })();

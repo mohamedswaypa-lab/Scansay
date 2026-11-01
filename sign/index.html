@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Signera avtal · ScanSay</title><link rel="icon" href="../brand/scansay-icon.svg">
+<style>
+@font-face{font-family:J;src:url(../fonts/jakarta-400.woff2) format("woff2");font-weight:400}@font-face{font-family:J;src:url(../fonts/jakarta-700.woff2) format("woff2");font-weight:700}@font-face{font-family:J;src:url(../fonts/jakarta-800.woff2) format("woff2");font-weight:800}
+*{box-sizing:border-box}body{margin:0;background:#F5F7FB;color:#0A0F1C;font:15px/1.55 J,system-ui,sans-serif}
+.top{background:#fff;border-bottom:1px solid #E5E7EB;padding:14px 20px;display:flex;justify-content:space-between;align-items:center}.top b{font-size:20px;letter-spacing:-.03em}.top b span{color:#1D4ED8}
+.top .s{font-size:13px;color:#374151;display:flex;align-items:center;gap:6px}
+.wrap{max-width:880px;margin:24px auto;padding:0 16px}
+.banner{background:#FEF9C3;border:1px solid #FDE047;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:14px}
+.err{background:#FEE2E2;border:1px solid #FCA5A5;border-radius:10px;padding:14px;font-weight:700}
+.box{background:#fff;border:1px solid #E5E7EB;border-radius:14px;padding:26px;margin-top:18px}
+h1{font-size:26px;letter-spacing:-.03em;margin:0 0 6px}label{display:block;font-weight:700;font-size:14px;margin:14px 0 6px}
+input[type=text],input[type=email]{width:100%;font:inherit;border:1px solid #D1D5DB;border-radius:10px;padding:11px 12px;background:#fff;color:#0A0F1C}input:focus{outline:0;border-color:#1D4ED8;box-shadow:0 0 0 3px rgba(29,78,216,.15)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}.ck{display:flex;gap:10px;align-items:flex-start;font-weight:400;margin:10px 0;padding:10px 12px;border:1px solid #E5E7EB;border-radius:10px;cursor:pointer}
+.ck input{width:18px;height:18px;margin-top:2px;accent-color:#1D4ED8;flex:none}.ck.on{border-color:#1D4ED8;background:#EFF6FF}
+.sigprev{margin-top:10px;border-bottom:1px solid #0A0F1C;min-height:48px;font-family:"Brush Script MT","Segoe Script",cursive;font-size:30px;color:#1D4ED8;display:flex;align-items:flex-end}
+button{font:inherit;font-weight:800;border:0;border-radius:10px;padding:14px 20px;background:#1D4ED8;color:#fff;cursor:pointer;width:100%;margin-top:18px;font-size:16px}button:disabled{background:#9CA3AF;cursor:not-allowed}
+.small{font-size:12.5px;color:#4B5563}.ok{background:#DCFCE7;border:1px solid #86EFAC;border-radius:14px;padding:22px}.ok h1{color:#166534}
+table.r{border-collapse:collapse;width:100%;font-size:13.5px;margin-top:10px}table.r td{border:1px solid #E5E7EB;padding:7px 9px}
+@media (max-width:640px){.grid{grid-template-columns:1fr}.box{padding:18px}}
+@media print{.top,.box.f,.banner{display:none}body{background:#fff}}
+</style><link rel="stylesheet" href="../fonts.css">
+<style>body,button,input,select,textarea{font-family:var(--font)!important}h1,h2,h3{font-family:var(--font-h)!important}</style>
+</head>
+<body><div class="top"><b>Scan<span>Say</span></b><span class="s">🔒 Säker signering</span></div>
+<div class="wrap" id="app"><p>Laddar avtalet…</p></div>
+<script src="../legal/contract.js"></script>
+<script>
+const q=new URLSearchParams(location.search),T=q.get('t'),DEMO=q.get('demo')==='1',app=document.getElementById('app');
+const esc=SSContract.esc;let O=null;
+function decodeDemo(t){const s=t.replace(/-/g,'+').replace(/_/g,'/');return JSON.parse(decodeURIComponent(escape(atob(s))))}
+async function load(){
+  if(!T){app.innerHTML='<div class="err">Länken saknar avtal. Använd länken i mejlet från ScanSay.</div>';return}
+  try{if(DEMO){O=decodeDemo(T)}else{const r=await fetch('../api/offer?t='+encodeURIComponent(T));const j=await r.json();if(!r.ok)throw new Error(j.error||'Fel');O=j.offer}}
+  catch(e){app.innerHTML='<div class="err">'+esc(e.message||'Länken är ogiltig.')+'</div>';return}
+  draw()}
+function draw(){const c=O.customer||{},card=O.method==='stripe',per=O.interval==='year'?'år':'månad';
+  app.innerHTML=`<style>${SSContract.CSS}</style>${DEMO?'<div class="banner"><b>Demo.</b> Den här signeringen sparas inte. När servern är kopplad skickas ett signerat exemplar till båda parter.</div>':''}
+  <h1>Granska och signera</h1><p class="small">Läs igenom offerten och villkoren. Signeringen är juridiskt bindande. Ni får ett signerat exemplar per e-post.</p>
+  ${SSContract.offer(O)}
+  <form class="box f" id="f" novalidate><h1 style="font-size:22px">Signera för ${esc(c.name)}</h1>
+   <div class="grid"><div><label for="nm">Ditt fullständiga namn</label><input type="text" id="nm" autocomplete="name" required></div><div><label for="ti">Titel</label><input type="text" id="ti" placeholder="t.ex. VD eller hotellchef" required></div>
+   <div><label for="em">E-post för kvitto</label><input type="email" id="em" autocomplete="email" value="${esc(c.email||'')}" required></div><div><label for="org">Organisationsnummer</label><input type="text" id="org" value="${esc(c.org||'')}" placeholder="556677-1122"></div></div>
+   <label class="ck"><input type="checkbox" id="c1"> <span>Jag har läst och godkänner offerten och ScanSays allmänna villkor (version ${SSContract.VERSION}).</span></label>
+   <label class="ck"><input type="checkbox" id="c2"> <span>Jag godkänner personuppgiftsbiträdesavtalet.</span></label>
+   <label class="ck"><input type="checkbox" id="c3"> <span>${card?`Jag godkänner att kortet debiteras ${SSContract.kr(O.price)} exkl. moms i förskott och därefter automatiskt varje ${per} tills avtalet sägs upp enligt villkoren.`:`Jag godkänner betalning mot faktura, ${SSContract.kr(O.price)} exkl. moms per ${per}, i förskott med ${O.invoiceDays||30} dagars betalningsvillkor.`}</span></label>
+   <label class="ck"><input type="checkbox" id="c4"> <span>Jag är behörig att ingå avtal för ${esc(c.name)} och avtalet ingås i företagets verksamhet.</span></label>
+   <label>Signatur</label><div class="sigprev" id="sp"></div><p class="small">Din signatur skapas från namnet ovan. Vi sparar namn, titel, e-post, IP-adress, tidpunkt och en kontrollsumma av avtalet som bevis.</p>
+   <button type="submit" id="btn" disabled>Signera avtalet</button><p class="small" id="msg" role="status"></p></form>`;
+  const f=document.getElementById('f'),btn=document.getElementById('btn'),ids=['c1','c2','c3','c4'];
+  const chk=()=>{ids.forEach(i=>document.getElementById(i).closest('.ck').classList.toggle('on',document.getElementById(i).checked));document.getElementById('sp').textContent=document.getElementById('nm').value;btn.disabled=!(ids.every(i=>document.getElementById(i).checked)&&document.getElementById('nm').value.trim().length>2&&document.getElementById('ti').value.trim().length>1&&/^\S+@\S+\.\S+$/.test(document.getElementById('em').value))};
+  f.addEventListener('input',chk);f.addEventListener('change',chk);
+  f.addEventListener('submit',async e=>{e.preventDefault();if(btn.disabled)return;btn.disabled=true;btn.textContent='Signerar…';
+    const data={t:T,name:nm.value.trim(),title:ti.value.trim(),email:em.value.trim(),orgNr:org.value.trim(),accepts:{terms:c1.checked,pub:c2.checked,payment:c3.checked,business:c4.checked}};
+    let rec;try{if(DEMO){rec={id:'DEMO-'+Math.random().toString(36).slice(2,8).toUpperCase(),ts:new Date().toISOString(),name:data.name,title:data.title,email:data.email,version:SSContract.VERSION,sha256:await SSContract.hash(document.querySelector('.ctr').innerText)}}
+      else{const r=await fetch('../api/sign',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});const j=await r.json();if(!r.ok)throw new Error(j.error||'Fel');rec=j.record}}
+    catch(err){document.getElementById('msg').textContent=err.message;btn.disabled=false;btn.textContent='Signera avtalet';return}
+    done(rec,data)})}
+function done(r,d){const slot=document.querySelector('[data-sign-slot]');if(slot){slot.classList.remove('ctr-empty');slot.innerHTML='<span class="ctr-signed">'+esc(d.name)+'</span>'}const m=document.querySelector('[data-sign-meta]');if(m)m.textContent=d.name+', '+d.title+' · '+r.ts.slice(0,10);
+  document.getElementById('f').outerHTML=`<div class="ok"><h1>Tack! Avtalet är signerat.</h1><p>${DEMO?'Demo: inget skickades.':'Ett signerat exemplar har skickats till '+esc(d.email)+'.'} ${O.method==='stripe'?'Ni får strax en säker betalningslänk från Stripe för att lägga in kortet.':'Fakturan skickas till er e-post.'}</p>
+  <table class="r"><tr><td><b>Signerings-id</b></td><td>${esc(r.id)}</td></tr><tr><td><b>Tidpunkt</b></td><td>${esc(r.ts)}</td></tr><tr><td><b>Signerat av</b></td><td>${esc(r.name)}, ${esc(r.title)}</td></tr><tr><td><b>Avtalsversion</b></td><td>${esc(r.version)}</td></tr><tr><td><b>Kontrollsumma</b></td><td style="word-break:break-all">${esc(r.sha256||'')}</td></tr></table>
+  <button onclick="print()" style="background:#0A0F1C">Skriv ut eller spara som PDF</button></div>`;document.querySelector('.ok').scrollIntoView({behavior:'smooth',block:'center'})}
+load();
+</script></body></html>

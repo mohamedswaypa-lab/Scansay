@@ -1,14 +1,14 @@
 /* ScanSay brand + sticker renderer (shared by website, dashboard, form, mockups). Logo: pine speech bubble, coral scan corners, sun-yellow eyes, white smile. */
 (function(){
-const PAL={black:'#0F1013',black2:'#18191E',gold:'#E5384B',goldText:'#D12E48',goldLight:'#FFB547',white:'#FFFFFF',cream:'#F6F6F8',cream2:'#ECECF0',line:'#E4E4E9',ink:'#1A1A1F',muted:'#5B5B66',
-  /* legacy keys used by older code */ purple:'#0F1013',purple2:'#18191E',amber:'#E5384B',lav:'#F6F6F8',lav2:'#ECECF0',violet:'#D12E48'};
+const PAL={black:'#0F1013',black2:'#18191E',gold:'#1D4ED8',goldText:'#1D4ED8',goldLight:'#2563EB',white:'#FFFFFF',cream:'#F6F6F8',cream2:'#ECECF0',line:'#E4E4E9',ink:'#1A1A1F',muted:'#5B5B66',
+  /* legacy keys used by older code */ purple:'#0F1013',purple2:'#18191E',amber:'#1D4ED8',lav:'#F6F6F8',lav2:'#ECECF0',violet:'#1D4ED8'};
 let GID=0;
-const GOLD={l:'#FFD9A8',a:'#FFB547',b:'#FF7A45',d:'#E5384B'};
-function goldDefs(id){return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${GOLD.l}"/><stop offset=".35" stop-color="${GOLD.a}"/><stop offset=".65" stop-color="${GOLD.b}"/><stop offset="1" stop-color="${GOLD.d}"/></linearGradient><linearGradient id="${id}b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF7A45"/><stop offset=".5" stop-color="#E2502E"/><stop offset="1" stop-color="#D12E48"/></linearGradient></defs>`}
+const GOLD={l:'#FFF3C4',a:'#F4D06F',b:'#D9A93B',d:'#A97A12'};
+function goldDefs(id){return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${GOLD.l}"/><stop offset=".35" stop-color="${GOLD.a}"/><stop offset=".65" stop-color="${GOLD.b}"/><stop offset="1" stop-color="${GOLD.d}"/></linearGradient><linearGradient id="${id}b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3B82F6"/><stop offset=".5" stop-color="#2563EB"/><stop offset="1" stop-color="#1D4ED8"/></linearGradient></defs>`}
 const uid=p=>p+(++GID)+Math.random().toString(36).slice(2,6);
 /* The ScanSay mark. o.ring default true. */
 function mark(x,y,s,o){o=o||{};const k=s/64,id=uid('qm');
-  return `<g transform="translate(${x} ${y}) scale(${k})"><defs><linearGradient id="qg${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF7A45"/><stop offset="1" stop-color="#FF3D77"/></linearGradient></defs><path d="M14 2h36a11 11 0 0 1 11 11v33a11 11 0 0 1-11 11H27l-14 7v-7h-1A9 9 0 0 1 3 48V13A11 11 0 0 1 14 2z" fill="url(#qg${id})"/><rect x="13.0" y="11.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="18.5" y="11.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="24.0" y="11.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="13.0" y="16.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="24.0" y="16.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="13.0" y="22.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="18.5" y="22.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="24.0" y="22.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="35.0" y="11.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="40.5" y="11.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="46.0" y="11.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="35.0" y="16.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="46.0" y="16.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="35.0" y="22.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="40.5" y="22.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="46.0" y="22.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="13.0" y="33.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="18.5" y="33.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="24.0" y="33.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="13.0" y="38.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="24.0" y="38.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="13.0" y="44.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="18.5" y="44.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="24.0" y="44.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="35.0" y="33.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="46.0" y="33.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="40.5" y="38.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="35.0" y="44.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="29.5" y="27.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="40.5" y="27.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="29.5" y="38.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="46.0" y="44.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="29.5" y="16.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="18.5" y="27.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/></g>`}
+  return `<g transform="translate(${x} ${y}) scale(${k})"><defs><linearGradient id="qg${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3B82F6"/><stop offset="1" stop-color="#1D4ED8"/></linearGradient></defs><path d="M14 2h36a11 11 0 0 1 11 11v33a11 11 0 0 1-11 11H27l-14 7v-7h-1A9 9 0 0 1 3 48V13A11 11 0 0 1 14 2z" fill="url(#qg${id})"/><rect x="13.0" y="11.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="18.5" y="11.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="24.0" y="11.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="13.0" y="16.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="24.0" y="16.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="13.0" y="22.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="18.5" y="22.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="24.0" y="22.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="35.0" y="11.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="40.5" y="11.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="46.0" y="11.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="35.0" y="16.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="46.0" y="16.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="35.0" y="22.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="40.5" y="22.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="46.0" y="22.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="13.0" y="33.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="18.5" y="33.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="24.0" y="33.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="13.0" y="38.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="24.0" y="38.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="13.0" y="44.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="18.5" y="44.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="24.0" y="44.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="35.0" y="33.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="46.0" y="33.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="40.5" y="38.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="35.0" y="44.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="29.5" y="27.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="40.5" y="27.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="29.5" y="38.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="46.0" y="44.0" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="29.5" y="16.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/><rect x="18.5" y="27.5" width="4.6" height="4.6" rx="1.2" fill="#FFFFFF"/></g>`}
 function markSVG(size,o){return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 64 64" aria-hidden="true">${mark(0,0,64,o)}</svg>`}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 /* QR path; hole:[fraction] leaves a clear square in the middle for the logo */
@@ -26,25 +26,29 @@ function fit(text,maxW,maxH,maxFs,maxLines){text=String(text||'').trim().replace
   return best}
 function lum(hex){const h=hex.replace('#','');const v=[0,2,4].map(i=>parseInt(h.substr(i,2),16)/255).map(c=>c<=.03928?c/12.92:Math.pow((c+.055)/1.055,2.4));return .2126*v[0]+.7152*v[1]+.0722*v[2]}
 const THEMES={
-  white:{bg:'#FFFFFF',fg:'#0F1013',ac:'#D12E48',sub:'#5B5B66',frame:'gold',stroke:'#E4E4E9',pw:'#D12E48'},
-  black:{dark:true,bg:'#0F1013',fg:'#FFFFFF',ac:'#FFB547',sub:'#A1A1AA',frame:'gold',pw:'#FFB547'},
-  gold:{bg:'gold',fg:'#0F1013',ac:'#0F1013',sub:'#5A1E0E',frame:'#0F1013',pw:'#0F1013'},
-  cream:{bg:'#F6F6F8',fg:'#0F1013',ac:'#D12E48',sub:'#5B5B66',frame:'gold',stroke:'#E4E4E9',pw:'#D12E48'}
+  white:{bg:'#FFFFFF',fg:'#0F1013',ac:'#1D4ED8',sub:'#5B5B66',frame:'gold',stroke:'#E4E4E9',pw:'#1D4ED8',pws:1},
+  black:{dark:true,bg:'#0F1013',fg:'#FFFFFF',ac:'#F4D06F',sub:'#A1A1AA',frame:'gold',pw:'#F4D06F'},
+  orange:{dark:true,bg:'#F97316',fg:'#FFFFFF',ac:'#FFFFFF',sub:'rgba(255,255,255,.88)',frame:'#FFFFFF',pw:'#FFFFFF',pws:1},
+  gold:{bg:'gold',fg:'#0F1013',ac:'#0F1013',sub:'#5A3E00',frame:'#0F1013',pw:'#0F1013'},
+  green:{dark:true,bg:'#15803D',fg:'#FFFFFF',ac:'#D9F99D',sub:'rgba(255,255,255,.85)',frame:'#D9F99D',pw:'#FFFFFF',pws:1},
+  blue:{dark:true,bg:'#1D4ED8',fg:'#FFFFFF',ac:'#C8F542',sub:'rgba(255,255,255,.85)',frame:'#C8F542',pw:'#FFFFFF',pws:1},
+  lime:{bg:'#C8F542',fg:'#0A0F1C',ac:'#0A0F1C',sub:'#365314',frame:'#0A0F1C',pw:'#0A0F1C'},
+  cream:{bg:'#F6F6F8',fg:'#0F1013',ac:'#1D4ED8',sub:'#5B5B66',frame:'gold',stroke:'#E4E4E9',pw:'#1D4ED8',pws:1}
 };
 function themeFor(t,custom){if(THEMES[t])return THEMES[t];const bg=/^#[0-9a-f]{6}$/i.test(custom||'')?custom:'#FFFFFF';const dark=lum(bg)<.35;
-  return dark?{dark:true,bg,fg:'#FFFFFF',ac:'#FFB547',sub:'rgba(255,255,255,.75)',frame:'gold',pw:'#FFB547'}:{bg,fg:'#0F1013',ac:'#0F1013',sub:'rgba(0,0,0,.62)',frame:'#0F1013',pw:'#0F1013',stroke:'rgba(0,0,0,.12)'}}
+  return dark?{dark:true,bg,fg:'#FFFFFF',ac:'#2563EB',sub:'rgba(255,255,255,.75)',frame:'gold',pw:'#2563EB'}:{bg,fg:'#0F1013',ac:'#0F1013',sub:'rgba(0,0,0,.62)',frame:'#0F1013',pw:'#0F1013',stroke:'rgba(0,0,0,.12)'}}
 const TXT={sv:{cta:'Lämna feedback',by:'Drivs av',code:'Kod'},en:{cta:'Leave feedback',by:'Powered by',code:'Code'}};
 /* o: {code,url,title,cta,place,lang,theme,custom,w,h (mm),showPlace,logo(default true)} */
 function sticker(o){
   const T=themeFor(o.theme,o.custom),L=TXT[o.lang]||TXT.sv,gid=uid('sbg');
   const W=+o.w||50,H=+o.h||100,m=Math.min(W,H),pad=m*.075,url=o.url||('https://scansay.se/k/'+o.code),useLogo=o.logo!==false;
   const cta=o.cta==null||o.cta===''?L.cta:o.cta;const land=W>H*1.15;
-  const frameCol=T.frame==='gold'?`url(#${gid}b)`:T.frame;
+  const frameCol=T.frame==='gold'?(T.dark?`url(#${gid})`:`url(#${gid}b)`):T.frame;
   let body='';
   const ffs=Math.max(m*.042,1.6),mk=ffs*1.9;
-  const pwCol=T.pw==='#0F1013'?T.pw:(T.dark?`url(#${gid})`:`url(#${gid}b)`);
+  const pwCol=(T.pw==='#0F1013'||T.pw==='#0A0F1C'||T.pws)?T.pw:(T.dark?`url(#${gid})`:`url(#${gid}b)`);
   function footer(cx,y){const byW=L.by.length*ffs*.56,nameW=7*ffs*1.08*.6,tot=byW+ffs*.6+mk+ffs*.5+nameW;let x=cx-tot/2;
-    return `<text x="${x}" y="${y}" font-size="${ffs}" font-weight="700" fill="${T.pw==='#0F1013'?T.sub:pwCol}">${L.by}</text>${mark(x+byW+ffs*.6,y-mk*.78,mk,{})}<text x="${x+byW+ffs*.6+mk+ffs*.5}" y="${y}" font-size="${ffs*1.08}" font-weight="800" fill="${pwCol}">ScanSay</text>`}
+    return `<text x="${x}" y="${y}" font-size="${ffs}" font-weight="700" fill="${(T.pw==='#0F1013'||T.pw==='#0A0F1C')?T.sub:pwCol}">${L.by}</text>${mark(x+byW+ffs*.6,y-mk*.78,mk,{})}<text x="${x+byW+ffs*.6+mk+ffs*.5}" y="${y}" font-size="${ffs*1.08}" font-weight="800" fill="${pwCol}">ScanSay</text>`}
   function qrBlock(x,y,s){const fr=s*.055,br=s*.16,sw=Math.max(s*.022,.5),q=s-fr*2;
     const c=(d)=>`<path d="${d}" fill="none" stroke="${frameCol}" stroke-width="${sw}" stroke-linecap="round"/>`;const o2=-sw*1.6,X=x+o2,Y=y+o2,S=s-o2*2;
     return `<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="${s*.07}" fill="#fff"/>`+(useLogo?qrWithLogo(url,x+fr,y+fr,q):`<path d="${qrPath(url,x+fr,y+fr,q)}" fill="#0F1013"/>`)+
@@ -62,7 +66,7 @@ function sticker(o){
     body+=qrBlock((W-qs)/2,y,qs);y+=qs+gap;
     body+=txt(ct.lines,W/2,y,ct.fs,T.ac,800);y+=cH;
     if(plFs)body+=`<text x="${W/2}" y="${y+plFs*1.15}" text-anchor="middle" font-size="${plFs.toFixed(2)}" font-weight="600" fill="${T.sub}">${esc(o.place)}</text>`;
-    body+=`<line x1="${W*.2}" x2="${W*.8}" y1="${H-pad*.55-fh}" y2="${H-pad*.55-fh}" stroke="${T.pw==='#0F1013'?'#0F1013':'#E5384B'}" stroke-opacity=".45" stroke-width="${m*.004}"/>`+footer(W/2,H-pad*.55-ffs*.55);
+    body+=`<line x1="${W*.2}" x2="${W*.8}" y1="${H-pad*.55-fh}" y2="${H-pad*.55-fh}" stroke="${T.pw==='#0F1013'?'#0F1013':'#1D4ED8'}" stroke-opacity=".45" stroke-width="${m*.004}"/>`+footer(W/2,H-pad*.55-ffs*.55);
   }else{
     const qs=H-pad*2,lw=W-qs-pad*3,lx=pad;
     const ttl=fit(o.title,lw,H*.42,H*.2,3),ct=fit(cta,lw,H*.2,H*.13,2);
@@ -72,7 +76,7 @@ function sticker(o){
     body+=footer(lx+lw/2,H-pad);body+=qrBlock(W-pad-qs,pad,qs);
   }
   const bgFill=T.bg==='gold'?`url(#${gid})`:T.bg;
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}mm" height="${H}mm" font-family="'Plus Jakarta Sans',Arial,sans-serif">${goldDefs(gid)}<rect width="${W}" height="${H}" rx="${m*.07}" fill="${bgFill}" ${T.stroke?`stroke="${T.stroke}" stroke-width="${m*.006}"`:''}/>${body}</svg>`}
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}mm" height="${H}mm" font-family="Inter,'Plus Jakarta Sans',Arial,sans-serif">${goldDefs(gid)}<rect width="${W}" height="${H}" rx="${m*.07}" fill="${bgFill}" ${T.stroke?`stroke="${T.stroke}" stroke-width="${m*.006}"`:''}/>${body}</svg>`}
 const SIZES=[
  {id:'5x10',w:50,h:100,sv:'5 × 10 cm (ca 2 × 4 tum)',en:'5 × 10 cm (about 2 × 4 in)'},
  {id:'7x10',w:70,h:100,sv:'7 × 10 cm',en:'7 × 10 cm'},
@@ -82,7 +86,7 @@ const SIZES=[
  {id:'5x5',w:50,h:50,sv:'5 × 5 cm liten',en:'5 × 5 cm small'},
  {id:'10x5',w:100,h:50,sv:'10 × 5 cm liggande',en:'10 × 5 cm landscape'}
 ];
-const THEME_NAMES={white:{sv:'Vit',en:'White'},black:{sv:'Svart',en:'Black'},gold:{sv:'Guld',en:'Gold'},cream:{sv:'Krämvit',en:'Cream'},custom:{sv:'Egen färg',en:'Custom colour'}};
-const SWATCH={white:'#FFFFFF',black:'#0F1013',gold:'linear-gradient(135deg,#FFD9A8,#FFB547 35%,#FF7A45 65%,#E5384B)',cream:'#F6F6F8'};
+const THEME_NAMES={white:{sv:'Vit',en:'White'},black:{sv:'Svart',en:'Black'},orange:{sv:'Orange',en:'Orange'},gold:{sv:'Guld',en:'Gold'},green:{sv:'Grön',en:'Green'},blue:{sv:'Blå',en:'Blue'},lime:{sv:'Lime',en:'Lime'},cream:{sv:'Krämvit',en:'Cream'},custom:{sv:'Egen färg',en:'Custom colour'}};
+const SWATCH={white:'#FFFFFF',black:'#0F1013',orange:'#F97316',gold:'linear-gradient(135deg,#FFF3C4,#F4D06F 35%,#D9A93B 65%,#A97A12)',green:'#15803D',blue:'#1D4ED8',lime:'#C8F542',cream:'#F6F6F8'};
 window.SSB={PAL,GOLD,goldDefs,mark,markSVG,sticker,SIZES,THEMES,THEME_NAMES,SWATCH,TXT,qrPath,qrWithLogo,esc,themeFor};
 })();
