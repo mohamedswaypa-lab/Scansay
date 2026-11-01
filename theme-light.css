@@ -323,3 +323,6 @@ html body .vdet .certimg2:not(#x){background:#F5F7FB!important;border-radius:18p
 html body .docbox{margin:14px 0 6px;padding:14px 16px;border-radius:14px;background:#F5F7FB;border:1px solid #E5E7EB}
 html body .docbox b{display:block;margin-bottom:6px;color:#0A0F1C}html body .docbox ul{margin:0;padding:0;list-style:none;display:grid;gap:4px;font-size:14.5px;color:#1F2937}
 html body .docbox p{margin:8px 0 0;font-size:13.5px;color:#4B5563}
+/* header "Logga in": readable on hover/press */
+html body header a.login:not(#x):not(#y){color:#0A0F1C!important;-webkit-text-fill-color:#0A0F1C!important;border-radius:10px;padding:8px 12px}
+html body header a.login:not(#x):not(#y):hover,html body header a.login:not(#x):not(#y):active,html body header a.login:not(#x):not(#y):focus-visible{color:#1D4ED8!important;-webkit-text-fill-color:#1D4ED8!important;background:#EFF6FF!important}
