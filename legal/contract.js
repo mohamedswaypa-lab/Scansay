@@ -35,7 +35,9 @@
 <tr><td>Tjänst</td><td><b>ScanSay ${esc(PLAN_NAMES[d.plan] || d.plan)}</b>: QR-baserad feedback med verifiering av avsändare (engångskod via sms eller e-post), översikt med inkorg, larm, statistik och svar till gäst.</td></tr>
 <tr><td>Bransch</td><td>${esc(d.industry || '')}</td></tr>
 <tr><td>Antal platser</td><td>${esc(d.places)} ${esc(d.unit)} (en unik QR-kod per plats)</td></tr>
-<tr><td>Antal agenter</td><td>${esc(d.agents)} inloggningar för kundens personal</td></tr>
+<tr><td>Antal agenter</td><td>${esc(d.agents)} inloggningar för kundens chefer och handläggare</td></tr>
+<tr><td>Personalmodul</td><td>${d.staff ? '<b>Ingår.</b> Medarbetare kan logga in, checka in på sitt pass och se sin egen feedback. Särskilda villkor i bilaga 2.' : 'Ingår inte. Kan läggas till senare genom ett tillägg till avtalet.'}</td></tr>
+<tr><td>AI-funktioner</td><td>${d.ai === false ? 'Avstängda.' : 'Sammanfattningar och svarsförslag. AI-leverantören finns inom EU och tränar inte på Kundens data. AI fattar inga beslut om enskilda personer.'}</td></tr>
 <tr><td>Dekaler</td><td>Kunden skapar och skriver ut dekaler i översikten. Tryckta dekaler beställs separat.</td></tr>
 <tr><td>Support</td><td>E-post vardagar 09–17, svar inom en arbetsdag</td></tr>
 </table>
@@ -58,10 +60,24 @@ ${TERMS(d)}
 
 <h3 class="ctr-s">Bilaga 1. Personuppgiftsbiträdesavtal (sammanfattning)</h3>
 ${PUB(d)}
+${d.staff ? STAFF(d) : ''}
 
 <div class="ctr-sign" id="ctr-sign"><div><small>För ${esc(s.name)}</small><span class="ctr-sigl">${SIG}</span><span>Behörig firmatecknare · ${date(d.date)}</span></div>
 <div><small>För ${esc(c.name)}</small><span class="ctr-sigl ctr-empty" data-sign-slot>Signeras elektroniskt</span><span data-sign-meta>Namn, titel och datum fylls i vid signering</span></div></div>
 </div>`;
+  }
+
+
+  function STAFF(d) {
+    const L = [
+      ['Syfte', 'Personalmodulen gör det möjligt för medarbetare att logga in, checka in på sitt pass och se feedback som rör deras arbetsplats. Syftet är att förbättra service och arbetsmiljö, inte att kontrollera enskilda medarbetare.'],
+      ['Kundens ansvar före start', 'Innan modulen används ska Kunden (a) göra en konsekvensbedömning (DPIA) enligt artikel 35 i dataskyddsförordningen, (b) informera berörda medarbetare skriftligt enligt artikel 13, och (c) fullgöra sin informations- och förhandlingsskyldighet enligt lagen (1976:580) om medbestämmande i arbetslivet (MBL) om arbetsplatsen har kollektivavtal. ScanSay tillhandahåller mallar men ansvarar inte för att Kunden fullgör dessa skyldigheter.'],
+      ['Statistik per medarbetare', 'Statistik kopplad till namngivna medarbetare är avstängd som standard. Kunden kan slå på den först när punkterna ovan är uppfyllda och ett datum för MBL-förhandling har angetts i översikten. Gäster ser aldrig medarbetares namn.'],
+      ['Begränsningar', 'Uppgifterna får inte användas som enda underlag för beslut om anställning, lön, omplacering eller disciplinära åtgärder. AI används aldrig för sådana beslut. Medarbetare har rätt att se sina egna uppgifter.'],
+      ['Lagring', 'Incheckningar och kopplingar till pass raderas efter 12 månader om inte Kunden väljer kortare tid. Anonym statistik får sparas längre.'],
+      ['Avstängning', 'Kunden eller ScanSay kan stänga av modulen när som helst. Uppgifter som samlats in via modulen raderas då inom 30 dagar.']
+    ];
+    return '<h3 class="ctr-s">Bilaga 2. Personalmodul: särskilda villkor</h3><ol class="ctr-ol">' + L.map(([h, t]) => '<li><b>' + h + '.</b> ' + t + '</li>').join('') + '</ol>';
   }
 
   function TERMS(d) {
