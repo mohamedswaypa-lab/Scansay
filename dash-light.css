@@ -120,3 +120,11 @@ html body .av:not(#x){box-shadow:inset 0 0 0 100px rgba(10,15,28,.28)!important;
 html body .aib:not(#x){color:#fff!important;-webkit-text-fill-color:#fff!important}
 html body .cav:not(#x){color:#FFFFFF!important;-webkit-text-fill-color:#fff!important;box-shadow:inset 0 0 0 100px rgba(10,15,28,.32)!important}
 html body .hzones .hz small:not(#x){color:#374151!important}
+/* v19 */
+html body .rbox{margin-top:10px}html body .rbox textarea{width:100%;min-height:84px;border-radius:12px;padding:10px 12px;font-size:15px;line-height:1.5}
+html body .reply.sent{border-left:4px solid #15803D!important;background:#F0FDF4!important}
+html body .chf label{display:grid;gap:4px;margin:8px 0;font-weight:600;font-size:13.5px;color:#374151}
+html body .chf input,html body .chf select{width:100%}
+html body .esc span:not(#x){background:#1D4ED8!important;color:#FFFFFF!important;-webkit-text-fill-color:#fff!important}
+html body .qbar{padding:10px 12px;margin-bottom:6px;border-radius:12px;background:#F5F7FB;border:1px solid #E5E7EB}
+html body .chipsm span a{color:#B91C1C!important;text-decoration:none;margin-left:4px}

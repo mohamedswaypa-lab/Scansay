@@ -58,7 +58,7 @@ function builder(el){if(!el)return;const st={title:L.deftitle,cta:L.ctadef,place
    <label for="${el.id}t">${L.title}</label><input id="${el.id}t" value="${esc(st.title)}" maxlength="60">
    <label for="${el.id}c">${L.cta}</label><input id="${el.id}c" value="${esc(st.cta)}" maxlength="40">
    <label for="${el.id}p">${L.place}</label><input id="${el.id}p" value="${esc(st.place)}" maxlength="40">
-   <label>${L.color}</label><div class="seg" data-k="theme">${Object.keys(SSB.THEMES).map(t=>`<button type="button" class="sw" data-v="${t}" title="${L.th[t]}" aria-label="${L.th[t]}" style="background:${SSB.THEMES[t].bg}"></button>`).join('')}</div>
+   <label>${L.color}</label><div class="seg" data-k="theme">${Object.keys(SSB.THEMES).map(t=>`<button type="button" class="sw" data-v="${t}" title="${(SSB.THEME_NAMES[t]||{})[L.lang]||t}" aria-label="${(SSB.THEME_NAMES[t]||{})[L.lang]||t}" style="background:${SSB.SWATCH[t]||SSB.THEMES[t].bg}!important"></button>`).join('')}</div>
    <p class="note" id="${el.id}w"></p><p class="note">${L.sbnote}</p><div class="ctas" style="margin-top:12px"><a class="btn btn-p" href="app/index.html#qr">${L.tryit}</a></div></div><div class="sbprev" id="${el.id}v"></div>`;
   const draw=()=>{const s=SSB.SIZES.find(x=>x.id===st.size);$(el.id+'v').innerHTML=SSB.sticker({code:'K3F9A',title:st.title,cta:st.cta,place:st.place,lang,theme:st.theme,w:s.w,h:s.h});
     const sv=$(el.id+'v').firstChild;sv.removeAttribute('width');sv.removeAttribute('height');const k=Math.min(1,s.w/s.h);sv.style.width=(s.w>=s.h?'100%':Math.round(320*s.w/s.h*1.25)+'px');
@@ -109,9 +109,20 @@ if($('f_cat')){const cs=$('f_cat'),is=$('f_ind');
     const g=await SSG.check({hp:$('f_web').value,minMs:5000,key:'apply',body:$('f_e').value+'|'+$('f_c').value,max:3,win:60*60*1000});
     btn.textContent=lbl;if(!g.ok){btn.disabled=false;toast(L.g[g.reason]||L.g.bot);return}
     const secs=[...$('f_secs').querySelectorAll('input:checked')].map(x=>x.value);const own=($('f_own').value||'').split(',').map(x=>x.trim()).filter(Boolean);
-    try{const a=JSON.parse(localStorage.getItem('scansay-applications')||'[]');a.push({id:'w'+Date.now(),name:$('f_n').value,company:$('f_c').value,email:$('f_e').value,phone:$('f_p').value,cat:cs.value,ind:is.value,tier:TIER,secs,own:TI.custom(TIER)?own:[],size:$('f_m').value,msg:$('f_x').value,lang,time:Date.now(),guard:{pow:g.proof.nonce,ms:g.ms}});localStorage.setItem('scansay-applications',JSON.stringify(a));if(/^https?:$/.test(location.protocol)&&!/claude\.ai|claudeusercontent|localhost|127\.0\.0\.1/.test(location.hostname)){fetch('/api/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(a[a.length-1])}).catch(function(){})}}catch(err){}
+    try{const a=JSON.parse(localStorage.getItem('scansay-applications')||'[]');a.push({id:'w'+Date.now(),name:$('f_n').value,company:$('f_c').value,email:$('f_e').value,phone:$('f_p').value,cat:cs.value,ind:is.value,tier:TIER,secs,own:TI.custom(TIER)?own:[],size:$('f_m').value,msg:$('f_x').value,org:($('f_org')||{}).value||'',staff:!!($('f_staff')&&$('f_staff').checked),lang,time:Date.now(),guard:{pow:g.proof.nonce,ms:g.ms}});localStorage.setItem('scansay-applications',JSON.stringify(a));if(/^https?:$/.test(location.protocol)&&!/claude\.ai|claudeusercontent|localhost|127\.0\.0\.1/.test(location.hostname)){fetch('/api/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(a[a.length-1])}).catch(function(){})}}catch(err){}
     $('cok').style.display='block'})}
-if($('lform'))$('lform').addEventListener('submit',e=>{e.preventDefault();$('lok').style.display='block'});
+if($('f_staff'))$('f_staff').addEventListener('change',e=>{$('f_d3').hidden=!e.target.checked});
+window.SSLIVE_SITE=function(){return /^https?:$/.test(location.protocol)&&!/claude\.ai|claudeusercontent|localhost|127\.0\.0\.1/.test(location.hostname)};
+if($('lform')){const en=lang==='en',M={wrong:en?'Wrong email or password.':'Fel e-post eller lösenord.',rate:en?'Too many attempts. Wait 15 minutes.':'För många försök. Vänta 15 minuter.',noaccount:en?'This login is not linked to an active company.':'Inloggningen är inte kopplad till något aktivt företag.',expired:en?'You have been logged out. Log in again.':'Du har loggats ut. Logga in igen.',locked:en?'The account is paused. Contact hello@scansay.se.':'Kontot är pausat. Kontakta hello@scansay.se.',missing:en?'Enter email and password.':'Skriv e-post och lösenord.',net:en?'Could not connect. Try again.':'Kunde inte ansluta. Försök igen.'};
+  const show=(t,bad)=>{const o=$('lok');o.textContent=t;o.style.display='block';o.style.background=bad?'#FEF2F2':'#EFF6FF';o.style.color=bad?'#991B1B':'#1E3A8A'};
+  const m=new URLSearchParams(location.search).get('m');if(m&&M[m])setTimeout(()=>show(M[m],true),300);
+  if(SSLIVE_SITE())document.querySelectorAll('a[href="app/index.html"]').forEach(a=>a.href='app/index.html?demo=1');
+  $('lform').addEventListener('submit',async e=>{e.preventDefault();if(!SSLIVE_SITE()){show(en?'Login opens when your account is approved. Try the demo account meanwhile.':'Inloggningen öppnar när ert konto är godkänt. Prova demokontot så länge.');return}
+    const b=$('lform').querySelector('button[type=submit]');b.disabled=true;
+    try{const r=await fetch('/api/auth?a=login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:$('l_e').value,password:$('l_p').value})});const j=await r.json().catch(()=>({}));
+      if(!r.ok){show(M[j.error]||M.wrong,true);b.disabled=false;return}
+      localStorage.setItem('ss-auth',JSON.stringify({access_token:j.access_token,refresh_token:j.refresh_token,exp:Date.now()+(j.expires_in||3600)*1000}));location.href='app/'}
+    catch(err){show(M.net,true);b.disabled=false}})}
 
 /* ---------- certificates ---------- */
 function exampleCerts(){const mk=(name,group,ind,secs,n,sd,boost)=>{let seed=sd;const r=()=>(seed=(seed*16807)%2147483647)/2147483647;const now=new Date('2026-10-24T18:00:00').getTime();const fb=[];
@@ -122,7 +133,7 @@ function exampleCerts(){const mk=(name,group,ind,secs,n,sd,boost)=>{let seed=sd;
   return [C(mk(sv?'Exempel Hotell':'Example Hotel',sv?'Exempel Hotell Göteborg':'Example Hotel Gothenburg','hotel',['Rum|Rooms','Reception|Reception','Restaurang och frukost|Restaurant and breakfast','Spa och gym|Spa and gym','Toaletter|Toilets'],1400,5,.96),sv?'Göteborg':'Gothenburg'),
           C(mk(sv?'Exempel Taxi':'Example Taxi',sv?'Exempel Taxi Stad':'Example Taxi City','taxi',['Bilar|Cars','Bokning|Booking','Förare|Drivers'],2100,21,.93),'Stockholm')]}
 const EX=exampleCerts();
-function published(){let p={};try{p=JSON.parse(localStorage.getItem('scansay-published-certs')||'{}')}catch(e){}return Object.values(p).map(x=>{const d=x[lang]||x.sv;d.pubDate=x.pubDate;return d}).filter(Boolean)}
+function published(){let p={};try{p=JSON.parse(localStorage.getItem('scansay-published-certs')||'{}')}catch(e){}if(window.SSLIVE_SITE&&window.SSLIVE_SITE()){if(!window.__certs){try{const x=new XMLHttpRequest();x.open('GET','/api/form?a=certs',false);x.send();window.__certs=x.status===200?JSON.parse(x.responseText).certs:[]}catch(e){window.__certs=[]}}p=Object.assign({},window.__certs)}return Object.values(p).map(x=>{const d=x[lang]||x.sv;d.pubDate=x.pubDate;return d}).filter(Boolean)}
 function allCerts(){const pub=published();return pub.concat(EX.filter(e=>!pub.find(p=>p.slug===e.slug)))}
 document.querySelectorAll('.certimg').forEach(el=>{const d=EX[0];el.innerHTML=el.dataset.ex==='social'?SSC.social(d):SSC.svg(d);const sv=el.firstChild;sv.removeAttribute('width');sv.removeAttribute('height');sv.style.cssText='width:100%;height:auto;background:#fff;box-shadow:0 24px 60px -20px rgba(15,16,19,.45);border-radius:6px'});
 const INDL={hotel:['Hotell','Hotels'],taxi:['Taxi','Taxis'],restaurant:['Restaurang','Restaurants'],cafe:['Kafé','Cafés'],gym:['Gym','Gyms'],workshop:['Verkstad','Workshops'],salon:['Frisör och skönhet','Hair and beauty'],cleaning:['Städ och fastighet','Cleaning and property'],shop:['Butik','Shops']};
@@ -274,5 +285,5 @@ vids.forEach(v=>io.observe(v))})();
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)){ok.hidden=false;ok.textContent=window.SS_RESET_BAD||'Invalid email';return}
   var msg=ok.getAttribute('data-ok')||ok.textContent;ok.setAttribute('data-ok',msg);
   var api=window.SS_API||'';var done=function(){ok.hidden=false;ok.textContent=msg};
-  if(api){fetch(api+'/api/auth-reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:v,lang:document.documentElement.lang})}).then(done,done)}else done()});
+  if(window.SSLIVE_SITE()){fetch('/api/auth?a=reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:v,lang:document.documentElement.lang})}).then(done,done)}else done()});
 })();

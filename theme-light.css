@@ -168,8 +168,7 @@ html body :is(.indpick button.on,.indpick button[aria-pressed=true],button.on,.h
 html body .indpick button:not(.on):not(#x):not(#y){border:1px solid #D1D5DB!important}
 html body .glist>li:not(#x) :is(b,h3,span):first-child{color:#1D4ED8!important}
 /* product mock-ups stay dark, with white text inside */
-html body :is(.hpanel,.phone,.pbar,.hph,.dtop,.dcardx,.alertcard,span.on):not(#x) :is(*):not(#x):not(#y){color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important}
-html body :is(.hpanel,.phone,.pbar,.hph,.dtop,.dcardx,.alertcard,span.on):not(#x):not(#y){color:#FFFFFF!important}
+html body :is(.pbar,.hph,.dtop,.dcardx,.alertcard):not(#x):not(#y){color:#FFFFFF!important}
 html body .alertcard:not(#x) :is(small,.k,label):not(#x):not(#y){color:#A1A1AA!important;-webkit-text-fill-color:#A1A1AA!important}
 html body .hsl-tab.on:not(#x):not(#y){background:transparent!important;color:#0A0F1C!important;-webkit-text-fill-color:#0A0F1C!important;border:0!important}
 html body .ttab.on:not(#x):not(#y){background:#FFFFFF!important;color:#0A0F1C!important;-webkit-text-fill-color:#0A0F1C!important;border-color:#1D4ED8!important}
@@ -294,3 +293,33 @@ html body .alc:not(#x):not(#y) :is(small,em){color:#4B5563!important;-webkit-tex
 html body .jp .c:not(#x):not(#y){background:#1D4ED8!important;color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important}
 html body .prin .pr .ck:not(#x):not(#y){background:#1D4ED8!important;color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important}
 html body .hzones .hz small:not(#x):not(#y){color:#374151!important;-webkit-text-fill-color:#374151!important}
+/* v19 · mockups: text colour follows the background it sits on */
+html body :is(.hpanel,.dcardx,.dtop,.acb,.acf,.pbar,.ach):not(#x):not(#y) :is(h3,h4,h5,b,strong,.eyebrow,span){color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important}
+html body :is(.hpanel,.dcardx,.dtop,.acb,.acf,.pbar):not(#x):not(#y) :is(p,small,.note,.mut){color:#D1D5DB!important;-webkit-text-fill-color:#D1D5DB!important}
+html body .dtop .tabs span:not(.on):not(#x):not(#y){color:#9CA3AF!important;-webkit-text-fill-color:#9CA3AF!important}
+html body .hpanel .eyebrow:not(#x):not(#y){color:#C8F542!important;-webkit-text-fill-color:#C8F542!important}
+html body :is(.hpanel .chips .chip,.hpanel .chip,.msg .tag,.dcardx .tag):not(#x):not(#y){background:#FFFFFF!important;color:#0A0F1C!important;-webkit-text-fill-color:#0A0F1C!important;border:1px solid #E5E7EB!important}
+html body .msg .tag.g:not(#x):not(#y){background:#DCFCE7!important;color:#166534!important;-webkit-text-fill-color:#166534!important}
+html body .msg .tag.r:not(#x):not(#y){background:#FEE2E2!important;color:#991B1B!important;-webkit-text-fill-color:#991B1B!important}
+html body .hpanel .qq:not(#x):not(#y),html body .hpanel .qq:not(#x):not(#y) *{color:#0A0F1C!important;-webkit-text-fill-color:#0A0F1C!important}
+html body .hpanel .qq small:not(#x):not(#y){color:#1D4ED8!important;-webkit-text-fill-color:#1D4ED8!important}
+html body .pbody:not(#x):not(#y) :is(h4,.ptxt,.ppow b,span,b){color:#0A0F1C!important;-webkit-text-fill-color:#0A0F1C!important}
+html body .pbody:not(#x):not(#y) :is(.mut,.ppow){color:#4B5563!important;-webkit-text-fill-color:#4B5563!important}
+html body .pbody .pchips span:not(.on):not(#x):not(#y){background:#FFFFFF!important;border:1px solid #D1D5DB!important}
+html body .pbody .rate span:not(.on):not(#x):not(#y){background:#F3F4F6!important}
+html body .pbody:not(#x):not(#y) :is(.pchips span.on,.rate span.on,.psend){color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important}
+html body .dcardx .ai:not(#x):not(#y) b{color:#C8F542!important;-webkit-text-fill-color:#C8F542!important}
+html body .seg button.sw:not(#x):not(#y){width:34px;height:34px;padding:0!important;border:2px solid #D1D5DB!important;border-radius:10px!important;box-shadow:none!important}
+html body .seg button.sw.on:not(#x):not(#y){outline:3px solid #1D4ED8!important;outline-offset:2px;border-color:#FFFFFF!important}
+html body .vdet:not(#x):not(#y){background:#FFFFFF!important;border:1px solid #E5E7EB!important;box-shadow:0 10px 30px -18px rgba(10,15,28,.25)!important;color:#0A0F1C!important}
+html body .vdet:not(#x):not(#y) h2{color:#0A0F1C!important;-webkit-text-fill-color:#0A0F1C!important;background:none!important}
+html body .vdet:not(#x):not(#y) :is(p,.vsub){color:#374151!important;-webkit-text-fill-color:#374151!important}
+html body .vdet:not(#x):not(#y) p.note{color:#4B5563!important;-webkit-text-fill-color:#4B5563!important;background:#F5F7FB!important;border:0!important}
+html body .vdet .crumbback:not(#x):not(#y){color:#1D4ED8!important;-webkit-text-fill-color:#1D4ED8!important}
+html body .vdet .vok:not(#x):not(#y){background:#DCFCE7!important;color:#166534!important;-webkit-text-fill-color:#166534!important;display:inline-flex;margin:12px 0}
+html body .vdet .badge:not(#x):not(#y){background:#F3F4F6!important;color:#374151!important;-webkit-text-fill-color:#374151!important}
+html body .vdet .vnums>div:not(#x):not(#y){background:#F5F7FB!important;border-radius:14px;padding:14px!important}
+html body .vdet .certimg2:not(#x){background:#F5F7FB!important;border-radius:18px;padding:14px}
+html body .docbox{margin:14px 0 6px;padding:14px 16px;border-radius:14px;background:#F5F7FB;border:1px solid #E5E7EB}
+html body .docbox b{display:block;margin-bottom:6px;color:#0A0F1C}html body .docbox ul{margin:0;padding:0;list-style:none;display:grid;gap:4px;font-size:14.5px;color:#1F2937}
+html body .docbox p{margin:8px 0 0;font-size:13.5px;color:#4B5563}
