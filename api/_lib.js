@@ -13,7 +13,7 @@
      STRIPE_SECRET_KEY / STRIPE_WEBHOOK_SECRET  card payments (optional) */
 const crypto = require('crypto');
 
-const env = k => process.env[k] || '';
+const env = k => String(process.env[k] || '').trim().replace(/^["']|["']$/g, '');   // tolerate spaces or quotes pasted around a value
 function send(res, status, obj) { res.statusCode = status; res.setHeader('Content-Type', 'application/json'); res.setHeader('Cache-Control', 'no-store'); res.end(JSON.stringify(obj)); }
 async function body(req) {
   if (req.body && typeof req.body === 'object') return req.body;
@@ -53,12 +53,13 @@ async function sendSms({ to, text }) {
 }
 
 /* ---------- database (Supabase REST, service key) ---------- */
-const SB = () => env('SUPABASE_URL').replace(/\/$/, '');
+const SB = () => { const v = env('SUPABASE_URL'); const d = v.match(/project\/([a-z0-9]{10,})/i); if (d) return 'https://' + d[1].toLowerCase() + '.supabase.co'; const m = v.match(/https?:\/\/[a-z0-9-]+\.supabase\.(co|in)/i); try { return m ? m[0].replace(/^http:/i, 'https:') : new URL(v).origin; } catch (e) { return v.replace(/\/$/, ''); } };   // accepts https://xxxx.supabase.co, a longer API link, or the dashboard link
 function sbOn() { return !!(env('SUPABASE_URL') && env('SUPABASE_SERVICE_KEY')); }
 async function sb(method, path, data, prefer) {
   if (!sbOn()) throw Object.assign(new Error('Databasen är inte ansluten (SUPABASE_URL saknas)'), { status: 503 });
   const k = env('SUPABASE_SERVICE_KEY'), h = { apikey: k, 'Content-Type': 'application/json', Prefer: prefer || 'return=representation' }; if (!k.startsWith('sb_')) h.Authorization = 'Bearer ' + k;
-  const r = await fetch(SB() + '/rest/v1/' + path, { method, headers: h, body: data === undefined ? undefined : JSON.stringify(data) });
+  let r; try { r = await fetch(SB() + '/rest/v1/' + path, { method, headers: h, body: data === undefined ? undefined : JSON.stringify(data) }); }
+  catch (e) { const c = e.cause && (e.cause.code || e.cause.message) || e.message; throw Object.assign(new Error('Kan inte nå ' + SB() + ' (' + c + '). Kontrollera SUPABASE_URL.'), { status: 502 }); }
   const t = await r.text(); let j = null; try { j = t ? JSON.parse(t) : null; } catch (e) { j = t; }
   if (!r.ok) throw Object.assign(new Error('DB ' + r.status + ': ' + (j && j.message || t).toString().slice(0, 200)), { status: 500 });
   return j;
