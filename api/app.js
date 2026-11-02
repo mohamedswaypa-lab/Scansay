@@ -5,7 +5,10 @@
    POST /api/app?a=status   {id,status}       → new | prog | fix
    POST /api/app?a=alarm    {only}            → sends a test alarm to the channels that are on
    POST /api/app?a=invite   {email,name,role} → invites a colleague (counts against the number of agents)
-   POST /api/app?a=remove   {user_id}         → removes a colleague */
+   POST /api/app?a=remove   {user_id}         → removes a colleague
+   POST /api/app?a=push_sub {sub,level,secs,device} → turns on notifications on this phone/computer
+   POST /api/app?a=push_off {endpoint}        → turns them off
+   POST /api/app?a=push_test                  → sends a test notification to my own devices */
 const L = require('./_lib');
 const ADMIN_ROLES = ['Ägare', 'Gruppadmin'], REPLY_ROLES = ['Ägare', 'Gruppadmin', 'Handläggare'];
 const mask = (c, via) => !c ? '' : via === 'sms' ? c.slice(0, 3) + ' ••• ' + c.slice(-4) : c.replace(/^(.).*?(.{0,3})@/, (m, a, b) => a + '***' + b + '@');
@@ -23,8 +26,10 @@ module.exports = async (req, res) => {
       const since = new Date(Date.now() - 365 * 864e5).toISOString();
       const fb = await L.sb('GET', 'feedback?account_id=eq.' + L.q(acc.id) + '&created_at=gte.' + L.q(since) + '&select=*&order=created_at.desc&limit=3000');
       const mem = await L.sb('GET', 'members?account_id=eq.' + L.q(acc.id) + '&select=user_id,role,name,email,created_at');
+      let push = { key: null, mine: [] };
+      try { push.key = require('./_push').publicKey(); push.mine = (await L.sb('GET', 'push_subs?user_id=eq.' + L.q(M.user.id) + '&account_id=eq.' + L.q(acc.id) + '&select=endpoint,level,secs,device,created_at')); } catch (e) { console.error('push state', e.message); }
       return L.send(res, 200, { account: { id: acc.id, name: acc.name, org: acc.org, ind: acc.ind, seats: acc.seats, plan: acc.plan, mods: acc.mods || {}, city: acc.city },
-        me: { id: M.user.id, email: M.user.email, role, name: M.member.name }, state: acc.state || {}, feedback: fb.map(mapFb), members: mem });
+        me: { id: M.user.id, email: M.user.email, role, name: M.member.name }, state: acc.state || {}, feedback: fb.map(mapFb), members: mem, push });
     }
     if (req.method !== 'POST') return L.send(res, 405, { error: 'method' });
     const b = await L.body(req);
@@ -93,10 +98,28 @@ module.exports = async (req, res) => {
       const r = await invite(email, b.name, acc, ['Gruppadmin', 'Handläggare', 'Läsare'].includes(b.role) ? b.role : 'Handläggare');
       return L.send(res, 200, r);
     }
+    if (a === 'push_sub') {
+      const sub = b.sub || {}, k = sub.keys || {}, ep = String(sub.endpoint || '');
+      if (!/^https:\/\/[^\s]{10,900}$/.test(ep) || !/^[A-Za-z0-9_-]{80,100}$/.test(k.p256dh || '') || !/^[A-Za-z0-9_-]{16,30}$/.test(k.auth || '')) return L.send(res, 400, { error: 'sub' });
+      const mine = await L.sb('GET', 'push_subs?user_id=eq.' + L.q(M.user.id) + '&select=endpoint');
+      if (mine.length >= 10 && !mine.some(x => x.endpoint === ep)) return L.send(res, 400, { error: 'devices' });
+      const secs = Array.isArray(b.secs) ? b.secs.map(x => String(x).slice(0, 80)).slice(0, 30) : [];
+      await L.sb('POST', 'push_subs?on_conflict=endpoint', { endpoint: ep, p256dh: k.p256dh, auth: k.auth, account_id: acc.id, user_id: M.user.id, level: ['urgent', 'c', 'all'].includes(b.level) ? b.level : 'c', secs, device: String(b.device || '').slice(0, 60) || null }, 'resolution=merge-duplicates,return=minimal');
+      return L.send(res, 200, { ok: true });
+    }
+    if (a === 'push_off') {
+      await L.sb('DELETE', 'push_subs?endpoint=eq.' + L.q(String(b.endpoint || '')) + '&user_id=eq.' + L.q(M.user.id), undefined, 'return=minimal');
+      return L.send(res, 200, { ok: true });
+    }
+    if (a === 'push_test') {
+      const r = await L.pushAccount(acc, { id: 'test', urgent: false, type: 'c', rating: 5, sec_name: 'Test', place: 'Testnotis', topic: 'Test', message: 'Notiserna fungerar på den här enheten.' }, { test: true, user: M.user.id }, 'Testnotis från ScanSay');
+      return L.send(res, 200, r);
+    }
     if (a === 'remove') {
       if (!ADMIN_ROLES.includes(role)) return L.send(res, 403, { error: 'role' });
       if (b.user_id === M.user.id) return L.send(res, 400, { error: 'self' });
       await L.sb('DELETE', 'members?account_id=eq.' + L.q(acc.id) + '&user_id=eq.' + L.q(String(b.user_id || '')), undefined, 'return=minimal');
+      await L.sb('DELETE', 'push_subs?account_id=eq.' + L.q(acc.id) + '&user_id=eq.' + L.q(String(b.user_id || '')), undefined, 'return=minimal').catch(() => {});
       return L.send(res, 200, { ok: true });
     }
     return L.send(res, 400, { error: 'action' });

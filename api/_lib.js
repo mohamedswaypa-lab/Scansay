@@ -191,7 +191,34 @@ async function routeAlarm(account, fb, opts) {
       sent.push(c.n || c.id);
     } catch (e) { failed.push((c.n || c.id) + ' (' + e.message + ')'); }
   }
+  if (!opts.only || opts.only === 'push') {
+    try { const r = await pushAccount(account, fb, opts, head); if (r.n) sent.push('Mobilnotis (' + r.n + ')'); if (r.bad) failed.push('Mobilnotis (' + r.bad + ' misslyckades)'); }
+    catch (e) { failed.push('Mobilnotis (' + e.message + ')'); }
+  }
   return { sent, failed };
+}
+/* push notifications to the phones/computers that turned them on in the dashboard.
+   level per device: 'urgent' = only urgent, 'c' = complaints + urgent (default), 'all' = every message; secs = only these sections (urgent always comes) */
+async function pushAccount(account, fb, opts, head) {
+  if (!sbOn()) return { n: 0 };
+  const P = require('./_push');
+  let subs = await sb('GET', 'push_subs?account_id=eq.' + q(account.id) + (opts.user ? '&user_id=eq.' + q(opts.user) : '') + '&select=*&limit=500');
+  if (!opts.test) subs = subs.filter(s => {
+    const lv = s.level || 'c';
+    if (lv === 'urgent' && !fb.urgent) return false;
+    if (lv === 'c' && !fb.urgent && fb.type !== 'c') return false;
+    if (Array.isArray(s.secs) && s.secs.length && !fb.urgent && fb.sec_name && !s.secs.includes(fb.sec_name)) return false;
+    return true;
+  });
+  if (!subs.length) return { n: 0 };
+  const body = [fb.topic ? fb.topic : '', fb.rating ? fb.rating + ' av 5' : ''].filter(Boolean).join(' · ') + (fb.message ? '\n' + String(fb.message).slice(0, 160) : '');
+  const msg = { title: head + (account.name ? ' · ' + account.name : ''), body: body || 'Öppna för att se meddelandet.', url: '/app/#inbox', tag: String(fb.id || 'scansay'), urgent: !!fb.urgent };
+  let n = 0, bad = 0;
+  await Promise.all(subs.map(async s => {
+    try { const r = await P.sendPush(s, msg); if (r.ok) n++; else if (r.gone) await sb('DELETE', 'push_subs?endpoint=eq.' + q(s.endpoint), undefined, 'return=minimal'); else bad++; }
+    catch (e) { bad++; }
+  }));
+  return { n, bad };
 }
 /* security events go to Vercel → Logs as one JSON line each (search for "sec") */
 function secLog(event, req, extra) { try { console.warn(JSON.stringify(Object.assign({ sec: event, t: new Date().toISOString(), ip: req ? hmac(ipOf(req)).slice(0, 12) : null, path: req ? String(req.url || '').split('?')[0] : null }, extra || {}))); } catch (e) {} }
@@ -212,4 +239,4 @@ function fail(res, e, req) {
   send(res, st, { error: st === 401 ? 'auth' : st >= 500 && !admin ? 'server' : e.message });
 }
 
-module.exports = { brandMail, offerMail, welcomeMail, subTable, seller, secLog, recent, adminGate, env, send, body, isAdmin, seal, unseal, sendEmail, sendSms, escH, crypto, sb, sbOn, q, authApi, member, limited, ipOf, hmac, site, mailHtml, routeAlarm, fail };
+module.exports = { brandMail, offerMail, welcomeMail, subTable, seller, secLog, recent, adminGate, env, send, body, isAdmin, seal, unseal, sendEmail, sendSms, escH, crypto, sb, sbOn, q, authApi, member, limited, ipOf, hmac, site, mailHtml, routeAlarm, pushAccount, fail };
