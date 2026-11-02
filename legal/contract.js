@@ -6,7 +6,7 @@
   const kr = n => Math.round(+n || 0).toLocaleString('sv-SE') + ' kr';
   const date = t => { const d = t ? new Date(t) : new Date(); return isNaN(d) ? String(t) : d.toLocaleDateString('sv-SE', { year: 'numeric', month: 'long', day: 'numeric' }); };
   const SELLER = { name: 'ScanSay AB', org: '559XXX-XXXX', address: 'Adress, postnummer och ort', email: 'hello@scansay.se', web: 'scansay.se', bankgiro: 'XXX-XXXX', vatNo: 'SE559XXXXXXX01' };
-  const PLAN_NAMES = { start: 'Start', pro: 'Pro', business: 'Business', enterprise: 'Enterprise', s: 'Liten', m: 'Mellan', l: 'Stor', e: 'Företag' };
+  const PLAN_NAMES = { start: 'Liten', pro: 'Mellan', business: 'Stor', enterprise: 'Företag', s: 'Liten', m: 'Mellan', l: 'Stor', e: 'Företag' };
 
   /* d = { no, date, seller{}, customer{name,org,contact,email,phone,address}, plan, industry, places, unit, agents, price, interval:'month'|'year',
            method:'stripe'|'invoice', start, termMonths, autoRenew, noticeDays, invoiceDays, vat, note, validDays } */
