@@ -281,6 +281,7 @@ vids.forEach(v=>io.observe(v))})();
  function show(r){lf.hidden=r;rf.hidden=!r;var f=(r?rf:lf).querySelector('input');if(f)f.focus()}
  fg&&fg.addEventListener('click',function(e){e.preventDefault();show(true)});
  bk&&bk.addEventListener('click',function(e){e.preventDefault();show(false)});
+ if(/[?&]reset=1/.test(location.search))setTimeout(function(){show(true)},400);
  rf.addEventListener('submit',function(e){e.preventDefault();var v=document.getElementById('r_e').value.trim(),ok=document.getElementById('rok');
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)){ok.hidden=false;ok.textContent=window.SS_RESET_BAD||'Invalid email';return}
   var msg=ok.getAttribute('data-ok')||ok.textContent;ok.setAttribute('data-ok',msg);

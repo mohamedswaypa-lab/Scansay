@@ -326,3 +326,7 @@ html body .docbox p{margin:8px 0 0;font-size:13.5px;color:#4B5563}
 /* header "Logga in": readable on hover/press */
 html body header a.login:not(#x):not(#y){color:#0A0F1C!important;-webkit-text-fill-color:#0A0F1C!important;border-radius:10px;padding:8px 12px}
 html body header a.login:not(#x):not(#y):hover,html body header a.login:not(#x):not(#y):active,html body header a.login:not(#x):not(#y):focus-visible{color:#1D4ED8!important;-webkit-text-fill-color:#1D4ED8!important;background:#EFF6FF!important}
+/* hero: drawn map of locations behind the slider */
+html body section.hero.hsl:not(#x):not(#y){position:relative;background:linear-gradient(90deg,#fff 0%,rgba(255,255,255,.96) 36%,rgba(255,255,255,.4) 60%,rgba(255,255,255,0) 80%),url(img/map-bg.svg) center/cover no-repeat,#F9FAFD!important}
+html[lang=en] body section.hero.hsl:not(#x):not(#y){background:linear-gradient(90deg,#fff 0%,rgba(255,255,255,.96) 36%,rgba(255,255,255,.4) 60%,rgba(255,255,255,0) 80%),url(img/map-bg_en.svg) center/cover no-repeat,#F9FAFD!important}
+@media (max-width:900px){html body section.hero.hsl:not(#x):not(#y),html[lang=en] body section.hero.hsl:not(#x):not(#y){background:linear-gradient(rgba(255,255,255,.88),rgba(255,255,255,.88)),url(img/map-bg.svg) center/cover no-repeat!important}}
