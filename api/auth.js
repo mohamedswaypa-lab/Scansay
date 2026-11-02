@@ -11,12 +11,12 @@ module.exports = async (req, res) => {
   try {
     const b = await L.body(req), ip = L.ipOf(req);
     if (a === 'login') {
-      if (await L.limited('login:' + L.hmac(ip), 10, 15 * 60e3)) return L.send(res, 429, { error: 'rate' });
+      if (await L.limited('login:' + L.hmac(ip), 10, 15 * 60e3)) { L.secLog('login_rate', req); return L.send(res, 429, { error: 'rate' }); }
       const email = String(b.email || '').trim().toLowerCase(), password = String(b.password || '');
       if (!email || !password) return L.send(res, 400, { error: 'missing' });
       if (await L.limited('loginu:' + L.hmac(email), 8, 15 * 60e3)) return L.send(res, 429, { error: 'rate' });
       const r = await L.authApi('POST', 'token?grant_type=password', { email, password });
-      if (!r.ok) return L.send(res, 401, { error: 'wrong' });
+      if (!r.ok) { L.secLog('login_failed', req, { user: L.hmac(email).slice(0, 12) }); return L.send(res, 401, { error: 'wrong' }); }
       const ms = await L.sb('GET', 'members?user_id=eq.' + L.q(r.data.user.id) + '&select=account_id');
       if (!ms.length) return L.send(res, 403, { error: 'noaccount' });
       return L.send(res, 200, { access_token: r.data.access_token, refresh_token: r.data.refresh_token, expires_in: r.data.expires_in });
@@ -32,7 +32,7 @@ module.exports = async (req, res) => {
       if (await L.limited('reset:' + L.hmac(ip), 5, 60 * 60e3) || await L.limited('resetu:' + L.hmac(email), 3, 60 * 60e3)) return L.send(res, 200, { ok: true });
       const r = await L.authApi('POST', 'admin/generate_link', { type: 'recovery', email, redirect_to: L.site() + '/app/' });
       const link = r.ok && (r.data.action_link || (r.data.properties && r.data.properties.action_link));
-      if (link) await L.sendEmail({ to: email, subject: 'Välj ett nytt lösenord till ScanSay', text: 'Öppna länken för att välja ett nytt lösenord: ' + link + '\nLänken gäller i 1 timme. Har du inte bett om det? Ignorera mejlet.', html: L.mailHtml('Välj ett nytt lösenord', '<p>Någon (förhoppningsvis du) bad om ett nytt lösenord till ScanSay. Länken gäller i 1 timme.</p><p style="color:#6B7280;font-size:13px">Har du inte bett om det? Ignorera mejlet, inget ändras.</p>', ['Välj nytt lösenord', link]) }).catch(e => console.error('reset mail', e.message));
+      if (link) await L.sendEmail({ to: email, subject: 'Välj ett nytt lösenord till ScanSay', text: 'Öppna länken för att välja ett nytt lösenord: ' + link + '\nLänken gäller i 1 timme. Har du inte bett om det? Ignorera mejlet.', html: L.mailHtml('Välj ett nytt lösenord', '<p>Någon (förhoppningsvis du) bad om ett nytt lösenord till ditt ScanSay-konto. Länken gäller i 1 timme och kan bara användas en gång.</p><p style="color:#6B7280;font-size:13px">Har du inte bett om det? Ignorera mejlet. Ditt nuvarande lösenord fortsätter att fungera.</p>', [['Välj nytt lösenord', link], ['Logga in', L.site() + '/#login']], { preheader: 'Länk för att välja ett nytt lösenord', reason: 'Det här är ett servicemeddelande om ditt konto hos ScanSay.' }) }).catch(e => console.error('reset mail', e.message));
       return L.send(res, 200, { ok: true });   // same answer whether or not the address exists
     }
     if (a === 'password') {
@@ -44,5 +44,5 @@ module.exports = async (req, res) => {
       return L.send(res, 200, { ok: true });
     }
     return L.send(res, 400, { error: 'action' });
-  } catch (e) { L.fail(res, e); }
+  } catch (e) { L.fail(res, e, req); }
 };

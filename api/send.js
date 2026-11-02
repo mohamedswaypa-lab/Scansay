@@ -1,9 +1,9 @@
 /* POST /api/send  (admin only)
    { email:{to,subject,text}, sms:{to,text} }  or  { test:true } */
-const { send, body, isAdmin, sendEmail, sendSms } = require('./_lib');
+const { adminGate, send, body, isAdmin, sendEmail, sendSms } = require('./_lib');
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return send(res, 405, { error: 'Använd POST' });
-  if (!isAdmin(req)) return send(res, 401, { error: 'Fel admin-nyckel' });
+  if (!(await adminGate(req, res))) return;
   let b; try { b = await body(req); } catch (e) { return send(res, 400, { error: 'Ogiltig data' }); }
   if (b.test) return send(res, 200, { ok: true });
   const out = {};

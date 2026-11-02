@@ -36,6 +36,8 @@ const escH = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&
 
 async function sendEmail({ to, subject, text, html, replyTo }) {
   if (!env('BREVO_API_KEY')) throw new Error('BREVO_API_KEY saknas');
+  if (html && html.includes('<!--FOOTER-->')) { try { html = html.replace('<!--FOOTER-->', await footerHtml()); } catch (e) { html = html.replace('<!--FOOTER-->', ''); } }
+  else if (!html) { html = mailHtml(escH(subject), `<div style="white-space:pre-wrap">${escH(text)}</div>`); try { html = html.replace('<!--FOOTER-->', await footerHtml()); } catch (e) {} }
   const from = env('MAIL_FROM') || 'ScanSay <hello@scansay.se>'; const m = from.match(/^(.*)<(.+)>$/);
   const r = await fetch('https://api.brevo.com/v3/smtp/email', { method: 'POST', headers: { 'api-key': env('BREVO_API_KEY'), 'Content-Type': 'application/json', accept: 'application/json' },
     body: JSON.stringify({ sender: m ? { name: m[1].trim(), email: m[2].trim() } : { email: from }, to: [].concat(to).map(e => ({ email: e })), subject, textContent: text, htmlContent: html || `<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#0A0F1C;white-space:pre-wrap">${escH(text)}</div>`, replyTo: replyTo ? { email: replyTo } : undefined }) });
@@ -100,12 +102,70 @@ const hmac = s => crypto.createHmac('sha256', env('OTP_SECRET') || env('SIGN_SEC
 const site = () => (env('SITE_URL') || 'https://scansay.se').replace(/\/$/, '');
 
 /* ---------- branded email ---------- */
-function mailHtml(title, bodyHtml, btn) {
-  return `<div style="background:#F5F7FB;padding:24px 12px;font-family:Inter,Arial,sans-serif"><div style="max-width:520px;margin:0 auto;background:#fff;border:1px solid #E5E7EB;border-radius:16px;padding:28px">
-  <div style="font-weight:800;font-size:20px;color:#0A0F1C;margin-bottom:18px">Scan<span style="color:#1D4ED8">Say</span></div>
-  <h1 style="font-size:22px;line-height:1.3;color:#0A0F1C;margin:0 0 12px">${title}</h1><div style="font-size:15px;line-height:1.6;color:#1F2937">${bodyHtml}</div>
-  ${btn ? `<p style="margin:22px 0 6px"><a href="${btn[1]}" style="display:inline-block;background:#1D4ED8;color:#fff;text-decoration:none;font-weight:700;padding:12px 20px;border-radius:10px">${btn[0]}</a></p>` : ''}
-  <p style="font-size:12px;color:#6B7280;margin-top:26px;border-top:1px solid #E5E7EB;padding-top:12px">ScanSay · Skanna. Säg det. · ${site().replace(/^https?:\/\//, '')}</p></div></div>`;
+/* Company details in every email footer (e-handelslagen 8 §): taken from Admin → Inställningar → Företagsuppgifter,
+   or the variables COMPANY_NAME, COMPANY_ORG, COMPANY_ADDRESS. */
+let SELLER = null, SELLER_AT = 0;
+async function seller() {
+  if (SELLER && Date.now() - SELLER_AT < 10 * 60e3) return SELLER;
+  let s = {};
+  try { if (sbOn()) { const [r] = await sb('GET', 'admin_state?id=eq.1&select=doc'); s = (r && r.doc && r.doc.settings && r.doc.settings.seller) || {}; } } catch (e) {}
+  const ok = v => v && !/[\[\]]|XXX|X{3,}/.test(String(v)) ? String(v) : '';
+  SELLER = { name: ok(s.name) || env('COMPANY_NAME') || 'ScanSay', org: ok(s.org) || env('COMPANY_ORG'), address: ok(s.address) || env('COMPANY_ADDRESS'), email: ok(s.email) || env('NOTIFY_EMAIL') || 'hello@scansay.se', vat: ok(s.vat) };
+  SELLER_AT = Date.now(); return SELLER;
+}
+const BTN = (label, url, alt) => `<a href="${url}" style="display:inline-block;background:${alt ? '#FFFFFF' : '#1D4ED8'};color:${alt ? '#0A0F1C' : '#FFFFFF'};border:1px solid ${alt ? '#D1D5DB' : '#1D4ED8'};text-decoration:none;font-weight:700;font-size:15px;padding:12px 20px;border-radius:10px;margin:0 8px 8px 0">${label}</a>`;
+/* mailHtml(title, bodyHtml, button?, opts?) · button = [label,url] or a list of them (first is the main one) */
+function mailHtml(title, bodyHtml, btn, opts) {
+  opts = opts || {}; const btns = !btn ? [] : Array.isArray(btn[0]) ? btn : [btn];
+  return `<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta name="color-scheme" content="light"><title>${escH(String(title).replace(/<[^>]+>/g, ''))}</title></head>
+<body style="margin:0;padding:0;background:#F3F5F9">${opts.preheader ? `<div style="display:none;max-height:0;overflow:hidden">${escH(opts.preheader)}</div>` : ''}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3F5F9"><tr><td align="center" style="padding:28px 12px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;font-family:Inter,'Segoe UI',Arial,sans-serif;color:#0A0F1C">
+<tr><td style="padding:0 6px 18px"><a href="${site()}"><img src="${site()}/brand/email-logo.png" width="152" height="40" alt="ScanSay" style="display:block;border:0"></a></td></tr>
+<tr><td style="background:#FFFFFF;border:1px solid #E5E7EB;border-radius:18px;padding:34px 34px 30px">
+<div style="height:4px;width:44px;background:#C8F542;border-radius:4px;margin-bottom:18px"></div>
+<h1 style="margin:0 0 14px;font-size:24px;line-height:1.25;letter-spacing:-.02em;color:#0A0F1C">${title}</h1>
+<div style="font-size:15.5px;line-height:1.65;color:#1F2937">${bodyHtml}</div>
+${btns.length ? `<div style="margin-top:22px">${btns.map((x, i) => BTN(x[0], x[1], i > 0)).join('')}</div>` : ''}
+${btns.length ? `<p style="font-size:12.5px;color:#6B7280;margin:14px 0 0">Fungerar inte knappen? Kopiera länken: <span style="word-break:break-all;color:#1D4ED8">${escH(btns[0][1])}</span></p>` : ''}
+</td></tr>
+<tr><td style="padding:18px 10px 0;font-size:12px;line-height:1.6;color:#6B7280">
+${opts.reason ? `<p style="margin:0 0 8px">${opts.reason}</p>` : ''}
+<!--FOOTER-->
+<p style="margin:8px 0 0"><a href="${site()}/#privacy-policy" style="color:#6B7280">Integritetspolicy</a> · <a href="${site()}/legal/villkor.html" style="color:#6B7280">Villkor</a> · <a href="${site()}/legal/pub-avtal.html" style="color:#6B7280">Biträdesavtal</a></p>
+</td></tr></table></td></tr></table></body></html>`;
+}
+async function footerHtml() {
+  const s = await seller();
+  return `<p style="margin:0"><b style="color:#374151">${escH(s.name)}</b>${s.org ? ' · Org.nr ' + escH(s.org) : ''}${s.vat ? ' · Momsreg.nr ' + escH(s.vat) : ''}${s.address ? '<br>' + escH(s.address) : ''}<br><a href="mailto:${escH(s.email)}" style="color:#6B7280">${escH(s.email)}</a> · <a href="${site()}" style="color:#6B7280">${site().replace(/^https?:\/\//, '')}</a></p>`;
+}
+async function brandMail(title, body, btns, opts) { return mailHtml(title, body, btns, opts); }
+const PLAN_N = { start: 'Liten', pro: 'Mellan', business: 'Stor', enterprise: 'Företag' };
+const krf = n => Math.round(+n || 0).toLocaleString('sv-SE').replace(/ /g, ' ') + ' kr';
+function subTable(o) {
+  const per = o.interval === 'year' ? 'år' : 'månad', vat = +o.vat || 25, p = +o.price || 0;
+  const rows = [['Paket', 'ScanSay ' + (PLAN_N[o.plan] || o.plan || '')], ['Pris', krf(p) + ' per ' + per + ' exkl. moms (' + krf(p * (1 + vat / 100)) + ' inkl. ' + vat + ' % moms)'], ['Betalsätt', o.method === 'stripe' ? 'Kort, dras automatiskt i förskott varje ' + per : 'Faktura, ' + (o.invoiceDays || 30) + ' dagar netto, i förskott']];
+  if (o.places) rows.push(['Omfattning', o.places + ' ' + (o.unit || 'platser') + ' (en QR-kod per plats)' + (o.agents ? ', ' + o.agents + ' inloggningar' : '')]);
+  if (o.start) rows.push(['Start', new Date(o.start).toLocaleDateString('sv-SE')]);
+  rows.push(['Avtalstid', o.termMonths ? o.termMonths + ' månader' : 'Löpande per ' + per]);
+  rows.push(['Förlängning och uppsägning', o.autoRenew === false ? 'Upphör vid periodens slut' : 'Förlängs automatiskt med samma period. Uppsägning senast ' + (o.noticeDays || 30) + ' dagar före periodens slut till ' + 'hello@scansay.se']);
+  rows.push(['Moduler', (o.staff ? 'Personalmodul ingår. ' : '') + (o.ai === false ? 'AI-funktioner avstängda.' : 'AI-sammanfattningar ingår.')]);
+  return '<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;margin:16px 0;font-size:14px">' + rows.map(([k, v]) => `<tr><td style="padding:9px 12px;border:1px solid #E5E7EB;background:#F9FAFB;color:#4B5563;width:38%;vertical-align:top">${escH(k)}</td><td style="padding:9px 12px;border:1px solid #E5E7EB;color:#0A0F1C">${escH(v)}</td></tr>`).join('') + '</table>';
+}
+async function offerMail(o, url, note, version) {
+  const c = o.customer || {};
+  return mailHtml((version > 1 ? 'Uppdaterad offert' : 'Er offert') + ' från ScanSay', `<p>Hej ${escH(String(c.contact || '').split(' ')[0] || '')}!</p><p>${version > 1 ? 'Här är den uppdaterade offerten' : 'Tack för er registrering. Här är offerten'} för <b>${escH(c.name || '')}</b>.</p>${note ? `<blockquote style="border-left:4px solid #C8F542;margin:12px 0;padding:8px 14px;background:#F7FEE7;white-space:pre-wrap">${escH(note)}</blockquote>` : ''}${subTable(o)}
+<p><b>Så går det till:</b></p><ol style="padding-left:20px;margin:6px 0"><li>Öppna offerten och läs avtal och villkor.</li><li>Signera direkt, eller tryck på <b>Jag vill ändra något</b> om ni vill justera pris eller innehåll.</li><li>När ni har signerat aktiverar vi kontot och skickar inloggningen.</li></ol><p style="font-size:13.5px;color:#4B5563">Offertnummer ${escH(o.no || '')}. Länken gäller i 30 dagar.</p>`,
+    [['Öppna och signera offerten', url]], { preheader: 'Offert för ' + (c.name || '') + ' – signera eller be om ändringar', reason: 'Du får det här mejlet eftersom ' + escH(c.name || 'ert företag') + ' har registrerat sig hos ScanSay och vill ha en offert.' });
+}
+async function welcomeMail(acc, link, sub, role) {
+  const owner = role === 'Ägare';
+  return mailHtml(owner ? 'Välkommen till ScanSay, ' + escH(acc.name) + '!' : 'Du har fått en inloggning till ScanSay', `<p>${owner ? 'Ert konto är aktiverat. Så kommer ni igång:' : 'Du har fått en inloggning till <b>' + escH(acc.name) + '</b> som <b>' + escH(role) + '</b>.'}</p>
+<ol style="padding-left:20px;margin:8px 0 4px"><li><b>Välj ditt lösenord</b> med knappen nedan. Länken gäller i 24 timmar.</li><li><b>Logga in</b> på ${site().replace(/^https?:\/\//, '')} med din e-post och ditt lösenord.</li>${owner ? '<li><b>Lägg in era platser</b> under QR-koder och skriv ut dekalerna.</li>' : ''}</ol>
+<p style="font-size:14px;color:#4B5563">Har länken gått ut eller glömt lösenordet? Använd <b>Glömt lösenord</b> så får du en ny länk direkt.</p>
+${owner && sub ? '<h2 style="font-size:17px;margin:22px 0 4px">Er prenumeration</h2>' + subTable(sub) + '<p style="font-size:13.5px;color:#4B5563">Fullständiga villkor finns i ert avtal och i <a href="' + site() + '/legal/villkor.html">de allmänna villkoren</a>. Biträdesavtalet hittar ni <a href="' + site() + '/legal/pub-avtal.html">här</a>. Frågor om fakturor och uppsägning: hello@scansay.se.</p>' : ''}`,
+    [['Välj lösenord', link], ['Logga in', site() + '/#login'], ['Glömt lösenord', site() + '/?reset=1#login']],
+    { preheader: owner ? 'Ert ScanSay-konto är klart – välj lösenord och logga in' : 'Välj lösenord och logga in', reason: 'Du får det här mejlet eftersom ett konto har skapats åt dig hos ScanSay. Det är ett servicemeddelande om ditt konto.' });
 }
 
 /* ---------- alarms: email, SMS, Teams, Slack, webhook ---------- */
@@ -133,6 +193,23 @@ async function routeAlarm(account, fb, opts) {
   }
   return { sent, failed };
 }
-function fail(res, e) { const st = e.status || 500; if (st >= 500) console.error(e); send(res, st, { error: st === 401 ? 'auth' : e.message }); }
+/* security events go to Vercel → Logs as one JSON line each (search for "sec") */
+function secLog(event, req, extra) { try { console.warn(JSON.stringify(Object.assign({ sec: event, t: new Date().toISOString(), ip: req ? hmac(ipOf(req)).slice(0, 12) : null, path: req ? String(req.url || '').split('?')[0] : null }, extra || {}))); } catch (e) {} }
+async function recent(bucket, winMs) { if (!sbOn()) return 0; const since = new Date(Date.now() - winMs).toISOString(); const rows = await sb('GET', 'hits?bucket=eq.' + q(bucket) + '&ts=gte.' + q(since) + '&select=ts&limit=50'); return rows.length; }
+/* admin check with lockout: 20 wrong keys in 15 minutes from one address blocks that address for 15 minutes */
+async function adminGate(req, res) {
+  const b = 'admfail:' + hmac(ipOf(req));
+  try { if (await recent(b, 15 * 60e3) >= 20) { secLog('admin_locked', req); send(res, 429, { error: 'rate' }); return false; } } catch (e) {}
+  if (isAdmin(req)) return true;
+  secLog('admin_bad_key', req);
+  try { if (sbOn()) await sb('POST', 'hits', { bucket: b }, 'return=minimal'); } catch (e) {}
+  send(res, 401, { error: 'auth' }); return false;
+}
+/* errors: details only to the admin; everyone else gets a short code, the details go to the log */
+function fail(res, e, req) {
+  const st = e.status || 500; if (st >= 500) console.error(e);
+  const admin = req && isAdmin(req);
+  send(res, st, { error: st === 401 ? 'auth' : st >= 500 && !admin ? 'server' : e.message });
+}
 
-module.exports = { env, send, body, isAdmin, seal, unseal, sendEmail, sendSms, escH, crypto, sb, sbOn, q, authApi, member, limited, ipOf, hmac, site, mailHtml, routeAlarm, fail };
+module.exports = { brandMail, offerMail, welcomeMail, subTable, seller, secLog, recent, adminGate, env, send, body, isAdmin, seal, unseal, sendEmail, sendSms, escH, crypto, sb, sbOn, q, authApi, member, limited, ipOf, hmac, site, mailHtml, routeAlarm, fail };

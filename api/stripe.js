@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
   try {
     let raw = ''; for await (const c of req) raw += c;
     if (!raw && req.body) raw = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
-    if (!verify(raw, req.headers['stripe-signature'])) return L.send(res, 400, { error: 'signature' });
+    if (!verify(raw, req.headers['stripe-signature'])) { L.secLog('stripe_bad_signature', req); return L.send(res, 400, { error: 'signature' }); }
     const ev = JSON.parse(raw);
     const seen = await L.sb('GET', 'stripe_events?id=eq.' + L.q(ev.id) + '&select=id'); if (seen.length) return L.send(res, 200, { ok: true });
     await L.sb('POST', 'stripe_events', { id: ev.id }, 'return=minimal');
@@ -29,5 +29,5 @@ module.exports = async (req, res) => {
     bl.log = log;
     await L.sb('PATCH', 'accounts?id=eq.' + L.q(accId), { billing: bl }, 'return=minimal');
     return L.send(res, 200, { ok: true });
-  } catch (e) { L.fail(res, e); }
+  } catch (e) { L.fail(res, e, req); }
 };

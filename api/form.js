@@ -41,7 +41,7 @@ module.exports = async (req, res) => {
 
     if (a === 'start') {
       const ge = guard(b); if (ge) return L.send(res, 400, { error: ge });
-      if (await L.limited('vip:' + L.hmac(ip), 6, 10 * 60e3)) return L.send(res, 429, { error: 'rate' });
+      if (await L.limited('vip:' + L.hmac(ip), 6, 10 * 60e3)) { L.secLog('otp_rate', req); return L.send(res, 429, { error: 'rate' }); }
       const method = b.method === 'sms' && L.env('ELKS_USER') ? 'sms' : 'email';
       const [contact, ce] = method === 'sms' ? normPhone(b.contact) : normEmail(b.contact);
       if (ce) return L.send(res, 400, { error: ce });
@@ -67,7 +67,7 @@ module.exports = async (req, res) => {
       const [v] = await L.sb('GET', 'otps?id=eq.' + L.q(String(b.verifyId || '')) + '&select=*');
       if (!v) return L.send(res, 400, { error: 'expired' });
       if (Date.now() > Date.parse(v.expires_at)) { await L.sb('DELETE', 'otps?id=eq.' + L.q(v.id), undefined, 'return=minimal'); return L.send(res, 400, { error: 'expired' }); }
-      if (v.tries + 1 > TRIES) { await L.sb('DELETE', 'otps?id=eq.' + L.q(v.id), undefined, 'return=minimal'); return L.send(res, 429, { error: 'tries' }); }
+      if (v.tries + 1 > TRIES) { L.secLog('otp_too_many_tries', req); await L.sb('DELETE', 'otps?id=eq.' + L.q(v.id), undefined, 'return=minimal'); return L.send(res, 429, { error: 'tries' }); }
       const otp = String(b.otp || '').replace(/\D/g, '');
       if (L.hmac(v.id + ':' + otp) !== v.hash) { await L.sb('PATCH', 'otps?id=eq.' + L.q(v.id), { tries: v.tries + 1 }, 'return=minimal'); return L.send(res, 400, { error: 'wrong', triesLeft: TRIES - v.tries - 1 }); }
       await L.sb('DELETE', 'otps?id=eq.' + L.q(v.id), undefined, 'return=minimal');
@@ -77,7 +77,7 @@ module.exports = async (req, res) => {
       if (/https?:\/\/|www\./i.test(msg)) return L.send(res, 400, { error: 'text' });
       const name = String(b.name || '').trim().slice(0, 60) || null;
       if (name && /[0-9@#$%^*_=+<>{}\[\]|\\\/]|https?:/i.test(name)) return L.send(res, 400, { error: 'name' });
-      let img = typeof b.image === 'string' && /^data:image\/(jpeg|png|webp);base64,/.test(b.image) && b.image.length < 600000 ? b.image : null;
+      let img = typeof b.image === 'string' && b.image.length < 600000 && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/]+=*$/.test(b.image) ? b.image : null;   // only a real base64 picture, nothing else
       const row = { account_id: c.account_id, code: c.code, group_id: c.group_id, sec_key: c.sec_key, sec_name: c.sec_name, place: c.place,
         type: ['c', 'p', 'i'].includes(b.type) ? b.type : 'c', topic: String(b.topic || '').slice(0, 80), rating: Math.min(5, Math.max(1, +b.rating || 1)), quick: ['yes', 'no'].includes(b.quick) ? b.quick : null,
         urgent: !!b.urgent, message: msg, name, via: v.method, contact: v.contact, contact_key: v.contact_key, image: img };
@@ -90,5 +90,5 @@ module.exports = async (req, res) => {
       return L.send(res, 200, { ok: true, id: saved.id, ref: c.code + '-' + saved.id.slice(0, 5).toUpperCase() });
     }
     return L.send(res, 400, { error: 'action' });
-  } catch (e) { L.fail(res, e); }
+  } catch (e) { L.fail(res, e, req); }
 };

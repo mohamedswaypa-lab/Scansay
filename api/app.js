@@ -100,18 +100,19 @@ module.exports = async (req, res) => {
       return L.send(res, 200, { ok: true });
     }
     return L.send(res, 400, { error: 'action' });
-  } catch (e) { L.fail(res, e); }
+  } catch (e) { L.fail(res, e, req); }
 };
 
 /* create or find the login, link it to the company and email a link to choose a password */
-async function invite(email, name, acc, role) {
+async function invite(email, name, acc, role, sub) {
   let r = await L.authApi('POST', 'admin/generate_link', { type: 'invite', email, redirect_to: L.site() + '/app/' });
   if (!r.ok) r = await L.authApi('POST', 'admin/generate_link', { type: 'recovery', email, redirect_to: L.site() + '/app/' });
   if (!r.ok) throw new Error('Kunde inte skapa inloggning: ' + JSON.stringify(r.data).slice(0, 160));
   const user = r.data.user || r.data, link = r.data.action_link || (r.data.properties && r.data.properties.action_link);
   await L.sb('POST', 'members?on_conflict=user_id,account_id', { user_id: user.id, account_id: acc.id, role, name: name || null, email }, 'resolution=merge-duplicates,return=minimal');
-  await L.sendEmail({ to: email, subject: 'Du är inbjuden till ScanSay · ' + acc.name, text: 'Du har fått en inloggning till ' + acc.name + ' i ScanSay. Välj lösenord här: ' + link + '\nLänken gäller i 24 timmar.',
-    html: L.mailHtml('Välkommen till ScanSay', `<p>Du har fått en inloggning till <b>${L.escH(acc.name)}</b> som <b>${L.escH(role)}</b>.</p><p>Tryck på knappen och välj ett lösenord. Länken gäller i 24 timmar. Därefter loggar du in på ${L.site().replace(/^https?:\/\//, '')}.</p>`, ['Välj lösenord', link]) });
+  await L.sendEmail({ to: email, subject: role === 'Ägare' ? 'Välkommen till ScanSay – välj lösenord · ' + acc.name : 'Din inloggning till ScanSay · ' + acc.name,
+    text: 'Välkommen till ScanSay (' + acc.name + '). Välj lösenord här (gäller i 24 timmar): ' + link + '\nLogga in: ' + L.site() + '/#login\nGlömt lösenord: ' + L.site() + '/?reset=1#login',
+    html: await L.welcomeMail(acc, link, sub, role) });
   return { ok: true, user_id: user.id };
 }
 module.exports.invite = invite;

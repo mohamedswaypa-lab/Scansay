@@ -8,7 +8,7 @@
 const L = require('./_lib');
 const { invite } = require('./app');
 module.exports = async (req, res) => {
-  if (!L.isAdmin(req)) return L.send(res, 401, { error: 'auth' });
+  if (!(await L.adminGate(req, res))) return;
   const a = (req.query && req.query.a) || new URL(req.url, 'http://x').searchParams.get('a');
   try {
     if (req.method === 'GET' && a === 'state') {
@@ -18,7 +18,8 @@ module.exports = async (req, res) => {
       const mem = await L.sb('GET', 'members?select=account_id,user_id,role,name,email');
       const since = new Date(Date.now() - 30 * 864e5).toISOString();
       const fb = await L.sb('GET', 'feedback?created_at=gte.' + L.q(since) + '&select=account_id,type,status');
-      return L.send(res, 200, { doc: st ? st.doc : null, apps, accounts: accs, members: mem, fb30: fb });
+      let offers = []; try { offers = await L.sb('GET', 'offers?select=id,app_id,version,status,note,reply,replied_at,created_at,data&order=created_at.desc&limit=1000'); } catch (e) { offers = null; }
+      return L.send(res, 200, { doc: st ? st.doc : null, apps, accounts: accs, members: mem, fb30: fb, offers });
     }
     if (req.method !== 'POST') return L.send(res, 405, { error: 'method' });
     const b = await L.body(req);
@@ -28,7 +29,8 @@ module.exports = async (req, res) => {
       if (!x.name || !/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(x.email || '')) return L.send(res, 400, { error: 'Företagsnamn och e-post krävs' });
       const [acc] = await L.sb('POST', 'accounts', { name: x.name, org: x.org || null, ind: x.ind || 'hotel', city: x.city || null, email: x.email, phone: x.phone || null, plan: x.plan || null, seats: Math.max(1, +x.seats || 3), places: +x.places || null,
         mods: { staff: !!(x.mods && x.mods.staff), ai: !(x.mods && x.mods.ai === false) }, billing: x.billing || {}, state: { channels: [{ id: 'email', n: 'E-post', on: true, to: 'Ägaren' }, { id: 'sms', n: 'SMS', on: false, to: 'Den som har skift' }, { id: 'teams', n: 'Microsoft Teams', on: false, to: 'Kanal' }, { id: 'slack', n: 'Slack', on: false, to: 'Kanal' }, { id: 'hook', n: 'Webhook till eget system', on: false, to: 'Eget system' }], chcfg: { email: { v: x.email, to: 'Ägaren', lv: 'low' } }, urgent: { on: true } } });
-      const inv = await invite(x.email, x.contact, acc, 'Ägare');
+      const b0 = x.billing || {};
+      const inv = await invite(x.email, x.contact, acc, 'Ägare', { plan: x.plan, price: b0.price, interval: b0.interval, method: b0.method, invoiceDays: b0.invoiceDays, vat: 25, places: x.places, unit: x.unit, agents: x.seats, start: b0.start || Date.now(), termMonths: b0.termMonths, autoRenew: b0.autoRenew, staff: !!(x.mods && x.mods.staff), ai: !(x.mods && x.mods.ai === false) });
       let pay = null;
       if (x.billing && x.billing.useStripe && L.env('STRIPE_SECRET_KEY')) {
         try { pay = await require('./_stripe').subscribe({ accountId: acc.id, company: acc.name, email: acc.email, org: acc.org, plan: x.plan, interval: x.billing.interval, price: x.billing.price, method: x.billing.method, places: x.places, invoiceDays: x.billing.invoiceDays });
@@ -45,6 +47,31 @@ module.exports = async (req, res) => {
       await L.sb('PATCH', 'accounts?id=eq.' + L.q(String(b.id || '')), allow, 'return=minimal');
       return L.send(res, 200, { ok: true });
     }
+
+    if (a === 'offer_send') {
+      const o = b.offer || {}; if (!o.customer || !/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(o.customer.email || '')) return L.send(res, 400, { error: 'Kundens e-post saknas i offerten' });
+      if (!(+o.price > 0)) return L.send(res, 400, { error: 'Pris saknas' });
+      let appId = b.app_id && /^[0-9a-f-]{36}$/i.test(b.app_id) ? b.app_id : null;
+      if (!appId) { const [ap] = await L.sb('POST', 'applications', { data: { company: o.customer.name, email: o.customer.email, name: o.customer.contact, phone: o.customer.phone, created_by: 'admin' }, status: 'new' }); appId = ap.id; }
+      const prev = await L.sb('GET', 'offers?app_id=eq.' + L.q(appId) + '&select=id,status,version&order=version.desc');
+      const open = prev.filter(x => x.status === 'sent' || x.status === 'changes').map(x => '"' + x.id + '"');
+      if (open.length) await L.sb('PATCH', 'offers?id=in.(' + encodeURIComponent(open.join(',')) + ')', { status: 'superseded' }, 'return=minimal');
+      const version = (prev[0] ? prev[0].version : 0) + 1;
+      o.no = 'OFF-' + appId.slice(0, 6).toUpperCase() + '-' + version; o.date = Date.now();
+      const [row] = await L.sb('POST', 'offers', { app_id: appId, version, data: o, note: String(b.note || '').slice(0, 2000) || null });
+      const url = L.site() + '/sign/?t=' + encodeURIComponent(L.seal({ oid: row.id, exp: Date.now() + 30 * 864e5 }));
+      await L.sb('PATCH', 'applications?id=eq.' + L.q(appId), { status: 'offer_sent' }, 'return=minimal');
+      await L.sendEmail({ to: o.customer.email, replyTo: L.env('NOTIFY_EMAIL') || undefined, subject: (version > 1 ? 'Uppdaterad offert' : 'Offert') + ' från ScanSay · ' + o.customer.name, text: 'Hej! Här är ' + (version > 1 ? 'den uppdaterade ' : '') + 'offerten för ' + o.customer.name + ': ' + url + '\nNi kan signera direkt eller be om ändringar via länken. Länken gäller i 30 dagar.',
+        html: await L.offerMail(o, url, b.note, version) });
+      return L.send(res, 200, { ok: true, url, offer_id: row.id, version, app_id: appId });
+    }
+    if (a === 'info_request') {
+      const [ap] = await L.sb('GET', 'applications?id=eq.' + L.q(String(b.app_id || '')) + '&select=*'); if (!ap) return L.send(res, 404, { error: 'notfound' });
+      const to = (ap.data || {}).email, msg = String(b.message || '').slice(0, 4000); if (!to || msg.length < 5) return L.send(res, 400, { error: 'Meddelande eller e-post saknas' });
+      await L.sendEmail({ to, replyTo: L.env('NOTIFY_EMAIL') || undefined, subject: b.subject || 'Några frågor om er registrering hos ScanSay', text: msg, html: await L.brandMail('Några frågor innan vi skickar offerten', '<p style="white-space:pre-wrap">' + L.escH(msg) + '</p><p>Svara gärna direkt på det här mejlet.</p>') });
+      await L.sb('PATCH', 'applications?id=eq.' + L.q(ap.id), { status: 'info' }, 'return=minimal');
+      return L.send(res, 200, { ok: true });
+    }
     if (a === 'app') { await L.sb('PATCH', 'applications?id=eq.' + L.q(String(b.id || '')), { status: String(b.status || 'new') }, 'return=minimal'); return L.send(res, 200, { ok: true }); }
     if (a === 'delete') {
       const id = String(b.id || ''); const mem = await L.sb('GET', 'members?account_id=eq.' + L.q(id) + '&select=user_id');
@@ -53,5 +80,5 @@ module.exports = async (req, res) => {
       return L.send(res, 200, { ok: true });
     }
     return L.send(res, 400, { error: 'action' });
-  } catch (e) { L.fail(res, e); }
+  } catch (e) { L.fail(res, e, req); }
 };
