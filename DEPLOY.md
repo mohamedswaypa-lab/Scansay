@@ -95,3 +95,25 @@ Card payments with Stripe (optional):
 - Register the company and enter its org.nr everywhere.
 - Sign data processing agreements with Supabase, Brevo, 46elks, Vercel and Stripe. All offer standard agreements.
 - Keep the signed-contract emails. They are your evidence if a card payment is disputed. A copy is also saved in the database (`signatures`).
+
+## 8. The app on the phone (notifications)
+The dashboard can be installed as an app on phones and computers, and every user can turn on notifications for their own device.
+
+**One-time setup:**
+1. In Supabase → SQL Editor → New query, paste all of `supabase/update-3.sql` and click Run. This creates the `push_subs` table.
+2. Upload the new files to GitHub as usual. Nothing else has to be set: the notification key is made from `SIGN_SECRET`.
+   - Optional: set your own key with `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` and `VAPID_SUBJECT` (`mailto:hello@scansay.se`).
+   - If you later change `SIGN_SECRET` (or the VAPID key), every device has to turn notifications on again.
+
+**What each staff member does (tell your customers this):**
+- **Android (Chrome):** log in at scansay.se → menu ⋮ → *Install app*. Open ScanSay from the home screen → **Larm** → *ScanSay i mobilen* → **Slå på notiser** → *Allow*.
+- **iPhone (iOS 16.4 or later):** open scansay.se in **Safari** → Share button → *Add to Home Screen*. Open ScanSay from the home screen, log in → **Larm** → **Slå på notiser** → *Allow*. (iPhone only allows notifications from apps on the home screen.)
+- **Computer:** Chrome or Edge → the install icon in the address bar, or just turn on notifications on the Larm page.
+
+**How it works:**
+- Each device chooses *only urgent*, *complaints + urgent* (default) or *everything*, and can be limited to some departments. Urgent alarms always come through.
+- A notification shows the department, place, topic and the guest's text. The guest's email or phone number is never sent.
+- The message is encrypted end to end; Apple/Google only carry it.
+- Logging out turns notifications off on that device. Removing a colleague under Användare removes their devices.
+- **Skicka testlarm** on the Larm page also sends a notification to every device of the company, and **Skicka testnotis** sends one only to your own devices.
+- The app opens without internet but needs internet for new data. A screen then says there is no connection.
