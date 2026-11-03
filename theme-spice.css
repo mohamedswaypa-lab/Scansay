@@ -1,0 +1,78 @@
+/* ScanSay · a little more colour on the main page (loaded last). Calm base, small bright accents. */
+:root{--sp-blue:#1D4ED8;--sp-lime:#C8F542;--sp-green:#15803D;--sp-orange:#EA580C;--sp-violet:#7C3AED;--sp-pink:#DB2777;--sp-teal:#0D9488;--sp-amber:#B45309}
+
+/* hero: soft colour glows behind the phone */
+html body section.hero.hsl:not(#x):not(#y){position:relative;overflow:hidden;background:
+  radial-gradient(520px 380px at 82% 20%,rgba(29,78,216,.14),transparent 70%),
+  radial-gradient(460px 320px at 70% 95%,rgba(200,245,66,.40),transparent 70%),
+  linear-gradient(90deg,#fff 0%,rgba(255,255,255,.96) 36%,rgba(255,255,255,.4) 60%,rgba(255,255,255,0) 80%),url(img/map-bg.svg) center/cover no-repeat,#F9FAFD!important}
+html[lang=en] body section.hero.hsl:not(#x):not(#y){background:
+  radial-gradient(520px 380px at 82% 20%,rgba(29,78,216,.14),transparent 70%),
+  radial-gradient(460px 320px at 70% 95%,rgba(200,245,66,.40),transparent 70%),
+  linear-gradient(90deg,#fff 0%,rgba(255,255,255,.96) 36%,rgba(255,255,255,.4) 60%,rgba(255,255,255,0) 80%),url(img/map-bg_en.svg) center/cover no-repeat,#F9FAFD!important}
+@media (max-width:900px){html body section.hero.hsl:not(#x):not(#y),html[lang=en] body section.hero.hsl:not(#x):not(#y){background:radial-gradient(360px 260px at 90% 85%,rgba(200,245,66,.40),transparent 70%),linear-gradient(rgba(255,255,255,.88),rgba(255,255,255,.88)),url(img/map-bg.svg) center/cover no-repeat!important}}
+html body section.hero.hsl .hsl-tags li:not(#x):not(#y){background:#fff!important;border:1px solid #E5E7EB!important;border-radius:999px!important;padding:5px 11px!important}
+html body section.hero.hsl .hsl-tags li:nth-child(1)::before:not(#x){color:var(--sp-green)}
+
+/* industry cards: each gets its own accent */
+html body .vsec-l .fcards .fcard:not(#x):not(#y){border-top:4px solid var(--c,#1D4ED8)!important;transition:transform .2s,box-shadow .2s}
+html body .vsec-l .fcards .fcard:hover:not(#x):not(#y){transform:translateY(-3px);box-shadow:0 18px 34px -22px var(--c,#1D4ED8)!important}
+html body .vsec-l .fcards .fcard .nic:not(#x):not(#y){background:var(--cb,#EFF6FF)!important;color:var(--c,#1D4ED8)!important}
+html body .vsec-l .fcards .fcard .nic svg:not(#x):not(#y){stroke:var(--c,#1D4ED8)!important;color:var(--c,#1D4ED8)!important}
+html body .vsec-l .fcards .fcard:nth-child(8n+1){--c:#1D4ED8;--cb:#DBEAFE}
+html body .vsec-l .fcards .fcard:nth-child(8n+2){--c:#EA580C;--cb:#FFEDD5}
+html body .vsec-l .fcards .fcard:nth-child(8n+3){--c:#15803D;--cb:#DCFCE7}
+html body .vsec-l .fcards .fcard:nth-child(8n+4){--c:#7C3AED;--cb:#EDE9FE}
+html body .vsec-l .fcards .fcard:nth-child(8n+5){--c:#DB2777;--cb:#FCE7F3}
+html body .vsec-l .fcards .fcard:nth-child(8n+6){--c:#0D9488;--cb:#CCFBF1}
+html body .vsec-l .fcards .fcard:nth-child(8n+7){--c:#B45309;--cb:#FEF3C7}
+html body .vsec-l .fcards .fcard:nth-child(8n+8){--c:#4D7C0F;--cb:#ECFCCB}
+
+/* features: light blue band */
+html body section.fsec:not(#x):not(#y){background:linear-gradient(180deg,#F1F6FF 0%,#F8FAFF 100%)!important}
+html body section.fsec .bento:not(#x):not(#y){background:#fff!important}
+html body section.fsec .bento:nth-child(1):not(#x):not(#y){box-shadow:inset 0 4px 0 #1D4ED8!important}
+html body section.fsec .bento:nth-child(2):not(#x):not(#y){box-shadow:inset 0 4px 0 #C8F542!important}
+html body section.fsec .bento:nth-child(3):not(#x):not(#y){box-shadow:inset 0 4px 0 #15803D!important}
+html body section.fsec .bento:nth-child(4):not(#x):not(#y){box-shadow:inset 0 4px 0 #EA580C!important}
+html body section.fsec .bento:nth-child(5):not(#x):not(#y){box-shadow:inset 0 4px 0 #7C3AED!important}
+html body section.fsec .bento:nth-child(6):not(#x):not(#y){box-shadow:inset 0 4px 0 #0D9488!important}
+
+/* stickers: fresh lime band */
+html body section.stickers:not(#x):not(#y){background:radial-gradient(700px 360px at 85% 60%,rgba(200,245,66,.45),transparent 70%),#FBFEF2!important}
+
+/* verified guests + certificate finder: soft green / violet tints */
+html body section.versec:not(#x):not(#y){background:radial-gradient(520px 320px at 85% 50%,rgba(29,78,216,.10),transparent 70%),#fff!important}
+html body section.finder.verif:not(#x):not(#y){background:linear-gradient(180deg,#F5F3FF 0%,#FFFFFF 70%)!important}
+
+/* numbers: one colour each */
+html body section.v-center .nums .num:not(#x):not(#y){border-top:4px solid var(--c,#1D4ED8)!important}
+html body section.v-center .nums .num:nth-child(1){--c:#1D4ED8}
+html body section.v-center .nums .num:nth-child(2){--c:#15803D}
+html body section.v-center .nums .num:nth-child(3){--c:#7C3AED}
+html body section.v-center .nums .num:nth-child(1) b:not(#x):not(#y),html body section.v-center .nums .num:nth-child(1) strong:not(#x):not(#y){color:#1D4ED8!important;-webkit-text-fill-color:#1D4ED8!important}
+html body section.v-center .nums .num:nth-child(2) b:not(#x):not(#y),html body section.v-center .nums .num:nth-child(2) strong:not(#x):not(#y){color:#15803D!important;-webkit-text-fill-color:#15803D!important}
+html body section.v-center .nums .num:nth-child(3) b:not(#x):not(#y),html body section.v-center .nums .num:nth-child(3) strong:not(#x):not(#y){color:#7C3AED!important;-webkit-text-fill-color:#7C3AED!important}
+
+/* blog: coloured category chips */
+html body .vsec-m .bcard:nth-child(1) .bcat:not(#x):not(#y){background:#DBEAFE!important;color:#1E3A8A!important;-webkit-text-fill-color:#1E3A8A!important}
+html body .vsec-m .bcard:nth-child(2) .bcat:not(#x):not(#y){background:#ECFCCB!important;color:#365314!important;-webkit-text-fill-color:#365314!important}
+html body .vsec-m .bcard:nth-child(3) .bcat:not(#x):not(#y){background:#FFEDD5!important;color:#7C2D12!important;-webkit-text-fill-color:#7C2D12!important}
+
+/* call to action: deep blue with a lime glow */
+html body .ctab.vbox:not(#x):not(#y){background:radial-gradient(420px 260px at 90% 0%,rgba(200,245,66,.35),transparent 70%),linear-gradient(120deg,#0A0F1C 0%,#13245C 55%,#1D4ED8 100%)!important;border:0!important}
+
+/* small eyebrow labels get a lime dot */
+html body .eyebrow:not(#x):not(#y)::before{background:#C8F542!important}
+@media (prefers-reduced-motion:reduce){html body .vsec-l .fcards .fcard{transition:none}}
+
+/* ---------- moving backgrounds (videos made for ScanSay: map with QR pins, soft light waves) ---------- */
+html body section.hero.hsl .sv.hvbg:not(#x):not(#y){display:block!important;position:absolute!important;inset:0!important;z-index:0!important;opacity:1!important;background:none!important;pointer-events:none}
+html body section.hero.hsl .sv.hvbg video:not(#x):not(#y){display:block!important;width:100%;height:100%;object-fit:cover;object-position:70% 50%;opacity:.9}
+html body section.hero.hsl .sv.hvbg:not(#x):not(#y)::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#fff 0%,rgba(255,255,255,.96) 32%,rgba(255,255,255,.55) 52%,rgba(255,255,255,.05) 74%,rgba(255,255,255,0) 100%)!important}
+html body section.hero.hsl>.wrap:not(#x):not(#y){position:relative;z-index:1}
+html body .ctab.vbox .sv.ctav:not(#x):not(#y){display:block!important;position:absolute!important;inset:0!important;z-index:0!important;opacity:1!important;background:none!important;border-radius:inherit;overflow:hidden}
+html body .ctab.vbox .sv.ctav video:not(#x):not(#y){display:block!important;width:100%;height:100%;object-fit:cover}
+html body .ctab.vbox .sv.ctav:not(#x):not(#y)::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,15,28,.55) 0%,rgba(10,15,28,.15) 60%,rgba(10,15,28,0) 100%)!important}
+html body .ctab.vbox>*:not(.sv):not(#x){position:relative;z-index:1}
+@media (max-width:900px),(prefers-reduced-motion:reduce){html body section.hero.hsl .sv.hvbg:not(#x):not(#y){display:none!important}}
