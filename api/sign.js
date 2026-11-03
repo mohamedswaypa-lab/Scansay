@@ -21,6 +21,10 @@ module.exports = async (req, res) => {
     if (row.status === 'signed') return send(res, 409, { error: 'Offerten är redan signerad.' });
     if (row.status !== 'sent') return send(res, 409, { error: 'Ni har redan svarat på den här offerten. Vänta på en uppdaterad offert från ScanSay.' });
     o = row.data; }
+  if (Array.isArray(o.options) && o.options.length) {   // several packages in one offer: the customer signs the one they chose
+    const i = parseInt(b.choice); if (!(i >= 0 && i < o.options.length)) return send(res, 400, { error: 'Välj ett av paketen först.' });
+    o = Object.assign({}, o, o.options[i], { chosen: i + 1 }); delete o.options;
+  }
   if (b.orgNr) o.customer.org = String(b.orgNr).slice(0, 20);
   const html = C.offer(o), text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   const record = { id: 'SIG-' + crypto.randomBytes(5).toString('hex').toUpperCase(), ts: new Date().toISOString(), name, title, email,
@@ -33,6 +37,6 @@ module.exports = async (req, res) => {
     await sendEmail({ to: email, subject: `Signerat avtal ${o.no}: ScanSay`, text: `Tack! Avtalet ${o.no} är signerat. Signerings-id ${record.id}.`, html: doc });
     if (env('NOTIFY_EMAIL')) await sendEmail({ to: env('NOTIFY_EMAIL'), subject: `SIGNERAT ${o.no} · ${o.customer.name}`, text: JSON.stringify(record, null, 2), html: doc });
   } catch (e) { console.error('sign mail', e.message); return send(res, 502, { error: 'Avtalet är signerat men mejlet kunde inte skickas. Kontakta hello@scansay.se.' }); }
-  if (row) { try { await sb('PATCH', 'offers?id=eq.' + encodeURIComponent(row.id), { status: 'signed', reply: { record }, replied_at: record.ts }, 'return=minimal'); if (row.app_id) await sb('PATCH', 'applications?id=eq.' + encodeURIComponent(row.app_id), { status: 'signed' }, 'return=minimal'); } catch (e) { console.error('sign status', e.message); } }
+  if (row) { try { await sb('PATCH', 'offers?id=eq.' + encodeURIComponent(row.id), { status: 'signed', reply: { record }, replied_at: record.ts, data: o }, 'return=minimal'); if (row.app_id) await sb('PATCH', 'applications?id=eq.' + encodeURIComponent(row.app_id), { status: 'signed' }, 'return=minimal'); } catch (e) { console.error('sign status', e.message); } }
   send(res, 200, { ok: true, record });
 };

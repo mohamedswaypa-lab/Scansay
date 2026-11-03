@@ -30,6 +30,62 @@ module.exports = async (req, res) => {
       const sec = (g.secs || []).find(x => x.k === c.sec_key) || {};
       return L.send(res, 200, { code: c.code, c: acc.name, g: c.group_name || g.name || '', i: c.ind || g.ind || 'hotel', s: c.sec_key, sn: c.sec_name || sec.name || '', p: c.place, topics: sec.topics || null, quick: sec.quick || null, urgent: st.urgent || { on: true }, sms: !!(L.env('ELKS_USER') && L.env('ELKS_PASS')) });
     }
+    if (req.method === 'GET' && a === 'r') {   // review link in a reply: counts the click, then goes to Google/Tripadvisor
+      const go = url => { res.statusCode = 302; res.setHeader('Location', url); res.setHeader('Cache-Control', 'no-store'); res.setHeader('Referrer-Policy', 'no-referrer'); res.end(); };
+      const t = (req.query && req.query.t) || new URL(req.url, 'http://x').searchParams.get('t'), s = L.unseal(t);
+      if (!s || !s.f || !s.exp || s.exp < Date.now()) return go(L.site() + '/');
+      const [f] = await L.sb('GET', 'feedback?id=eq.' + L.q(String(s.f)) + '&select=id,account_id,review_clicked_at');
+      if (!f) return go(L.site() + '/');
+      const [acc] = await L.sb('GET', 'accounts?id=eq.' + L.q(f.account_id) + '&select=state');
+      const r = (acc && acc.state && acc.state.reviews) || {}, url = s.k === 't' ? r.trip : r.google;
+      if (!/^https:\/\/\S{8,}$/.test(url || '')) return go(L.site() + '/');
+      if (!f.review_clicked_at) await L.sb('PATCH', 'feedback?id=eq.' + L.q(f.id), { review_clicked_at: new Date().toISOString() }, 'return=minimal').catch(() => {});
+      return go(url);
+    }
+    if (a === 'lookup' && req.method === 'POST') {   // "follow up my case": case number + the email/phone used → a fresh answer link is sent there
+      const b = await L.body(req), ip = L.ipOf(req);
+      if (await L.limited('lookup:' + L.hmac(ip), 10, 36e5)) return L.send(res, 429, { error: 'rate' });
+      const m = String(b.ref || '').toUpperCase().replace(/\s/g, '').match(/^([A-Z0-9]{3,12})-([A-F0-9]{5})$/);
+      const raw = String(b.contact || '').trim(); const isMail = raw.includes('@');
+      const [ct] = isMail ? normEmail(raw) : normPhone(raw);
+      if (m && ct) {
+        const rows = await L.sb('GET', 'feedback?code=eq.' + L.q(m[1]) + '&select=id,contact,via,account_id&order=created_at.desc&limit=5000');
+        const f = rows.find(x => x.id.slice(0, 5).toUpperCase() === m[2] && x.contact === ct);
+        if (f) {
+          const [acc] = await L.sb('GET', 'accounts?id=eq.' + L.q(f.account_id) + '&select=name,locked');
+          if (acc && !acc.locked) {
+            const link = L.guestLink(f);
+            if (f.via === 'sms') await L.sendSms({ to: f.contact, text: acc.name + ': här är länken till ditt ärende ' + m[0] + ': ' + link }).catch(() => {});
+            else await L.sendEmail({ to: f.contact, subject: 'Ditt ärende ' + m[0] + ' hos ' + acc.name, text: 'Öppna ditt ärende och svara här: ' + link + '\nLänken gäller i 30 dagar.',
+              html: L.mailHtml('Ditt ärende ' + L.escH(m[0]), `<p>Här är länken till ditt ärende hos <b>${L.escH(acc.name)}</b>. Där ser du svaren och kan skriva till dem igen.</p><p style="color:#6B7280;font-size:13px">Länken gäller i 30 dagar. Har du inte bett om den kan du ignorera mejlet.</p>`, ['Öppna ärendet', link]) }).catch(() => {});
+          }
+        }
+      }
+      return L.send(res, 200, { ok: true });   // same answer either way, so nobody can test case numbers
+    }
+    if (a === 'thread' || a === 'greply') {   // the guest's answer to a reply, from the link in the email or SMS
+      const pb = req.method === 'POST' ? await L.body(req) : {}, t = req.method === 'GET' ? ((req.query && req.query.t) || new URL(req.url, 'http://x').searchParams.get('t')) : pb.t;
+      const s = L.unseal(t);
+      if (!s || s.k !== 'r' || !s.f || !s.exp || s.exp < Date.now()) return L.send(res, 410, { error: 'expired' });
+      const [f] = await L.sb('GET', 'feedback?id=eq.' + L.q(String(s.f)) + '&select=*');
+      if (!f) return L.send(res, 410, { error: 'expired' });
+      const [acc] = await L.sb('GET', 'accounts?id=eq.' + L.q(f.account_id) + '&select=*');
+      if (!acc || acc.locked) return L.send(res, 410, { error: 'paused' });
+      const view = () => ({ ref: (f.code || '') + '-' + f.id.slice(0, 5).toUpperCase(), company: acc.name, place: (f.sec_name ? f.sec_name + ' › ' : '') + (f.place || ''), msg: f.message, ts: Date.parse(f.created_at), status: f.status,
+        thread: (f.replies || []).filter(r => !r.internal).map(r => ({ txt: r.txt, ts: r.ts, guest: !!r.guest, by: r.guest ? 'Du' : acc.name })) });
+      if (req.method === 'GET') return L.send(res, 200, view());
+      const text = String(pb.text || '').trim().slice(0, 1000);
+      if (text.length < 2) return L.send(res, 400, { error: 'text' });
+      if (await L.limited('greply:' + f.id, 6, 864e5)) return L.send(res, 429, { error: 'rate' });
+      const replies = (f.replies || []).concat({ txt: text, ts: Date.now(), by: 'Gästen', guest: true });
+      await L.sb('PATCH', 'feedback?id=eq.' + L.q(f.id), { replies, status: 'new', fixed_at: null }, 'return=minimal');
+      // tell the staff: only the person who answered the guest last gets an email (or the company address)
+      const last = (f.replies || []).filter(r => r.email).pop(), to = (last && last.email) || acc.email;
+      const head = 'Gästen svarade: ' + (f.sec_name ? f.sec_name + ' › ' : '') + (f.place || '');
+      if (to) await L.sendEmail({ to, subject: head + ' · ' + acc.name, text: 'Gästen svarade på ert meddelande:\n\n"' + text + '"\n\nÖppna: ' + L.site() + '/app/#inbox',
+        html: L.mailHtml(L.escH(head), `<p>Gästen svarade på ert meddelande:</p><blockquote style="border-left:4px solid #1D4ED8;margin:0;padding:8px 12px;background:#F5F7FB">${L.escH(text)}</blockquote><p style="color:#6B7280;font-size:13px;margin-top:14px">Ärendet är öppnat igen och ligger under Öppna i inkorgen.</p>`, ['Öppna ärendet', L.site() + '/app/#inbox']) }).catch(e => console.error('greply mail', e.message));
+      f.replies = replies; return L.send(res, 200, Object.assign({ ok: true }, view()));
+    }
     if (req.method === 'GET' && a === 'certs') {
       const rows = await L.sb('GET', 'accounts?locked=eq.false&select=state');
       const list = []; rows.forEach(r => { const p = (r.state && r.state.pub) || {}; Object.values(p).forEach(x => list.push(x)); });

@@ -82,12 +82,15 @@ async function member(req, accountId) {
   const u = await authApi('GET', 'user', null, tok);
   if (!u.ok || !u.data.id) throw Object.assign(new Error('auth'), { status: 401 });
   const ms = await sb('GET', 'members?user_id=eq.' + q(u.data.id) + '&select=*');
-  const m = (accountId && ms.find(x => x.account_id === accountId)) || ms[0];
-  if (!m) throw Object.assign(new Error('noaccount'), { status: 403 });
-  const [a] = await sb('GET', 'accounts?id=eq.' + q(m.account_id) + '&select=*');
+  if (!ms.length) throw Object.assign(new Error('noaccount'), { status: 403 });
+  const accs = await sb('GET', 'accounts?id=in.(' + encodeURIComponent(ms.map(x => '"' + x.account_id + '"').join(',')) + ')&select=*');
+  const open = ms.filter(x => accs.some(y => y.id === x.account_id && !y.locked));
+  const m = (accountId && ms.find(x => x.account_id === accountId)) || open[0] || ms[0];
+  const a = accs.find(y => y.id === m.account_id);
   if (!a) throw Object.assign(new Error('noaccount'), { status: 403 });
   if (a.locked) throw Object.assign(new Error('locked'), { status: 423 });
-  return { user: u.data, member: m, account: a };
+  const all = ms.map(x => { const y = accs.find(z => z.id === x.account_id) || {}; return { id: x.account_id, name: y.name, kind: y.kind || 'site', role: x.role, locked: !!y.locked }; });
+  return { user: u.data, member: m, account: a, all };
 }
 async function limited(bucket, max, winMs) {
   if (!sbOn()) return false;
@@ -220,6 +223,34 @@ async function pushAccount(account, fb, opts, head) {
   }));
   return { n, bad };
 }
+
+/* Review invitation, sent with the reply that closes a case (status → fix).
+   Every guest whose case is closed gets the same invitation, whatever their rating or type of message:
+   Google forbids asking only happy guests ("selectively soliciting positive reviews"). Never add a rating check here. */
+function reviewCfg(acc) {
+  const r = (acc.state || {}).reviews || {}; if (r.on === false) return null;
+  const links = [];
+  if (/^https:\/\/\S{8,}$/.test(r.google || '')) links.push(['g', 'Google', r.google]);
+  if (/^https:\/\/\S{8,}$/.test(r.trip || '')) links.push(['t', 'Tripadvisor', r.trip]);
+  return links.length ? links : null;
+}
+/* logins per role that ScanSay sells in the package (the owner is always one extra) */
+const ROLE_KEYS = ['Gruppadmin', 'Handläggare', 'Medarbetare', 'Läsare'];
+function cleanRoles(r) { const o = {}; ROLE_KEYS.forEach(k => { const n = parseInt((r || {})[k]); if (n >= 0) o[k] = Math.min(10000, n); }); return o; }
+/* link for the guest to answer a reply: the answer is added to the same case in the dashboard (valid 30 days) */
+function guestLink(f) { return site() + '/svar/?t=' + seal({ f: f.id, k: 'r', exp: Date.now() + 30 * 864e5 }); }
+function reviewInvite(acc, f) {
+  if (!f || !f.contact || f.review_invited_at) return null;
+  const links = reviewCfg(acc); if (!links) return null;
+  const exp = Date.now() + 60 * 864e5;
+  const items = links.map(([k, n]) => [n, site() + '/api/form?a=r&t=' + seal({ f: f.id, k, exp })]);
+  const intro = 'Tack för att du hörde av dig. Om du vill får du gärna dela din upplevelse med andra resenärer.';
+  return {
+    text: intro + '\n' + items.map(i => i[0] + ': ' + i[1]).join('\n') + '\nVi frågar alla gäster vars ärende är avslutat. Du får bara frågan en gång.',
+    sms: 'Vill du dela din upplevelse? ' + items[0][1],
+    html: `<div style="margin-top:22px;padding:16px 18px;border-radius:12px;background:#F5F7FB;border:1px solid #E5E7EB"><p style="margin:0 0 12px">${intro}</p>${items.map(i => `<a href="${escH(i[1])}" style="display:inline-block;margin:0 8px 8px 0;padding:10px 16px;border-radius:10px;background:#1D4ED8;color:#ffffff;text-decoration:none;font-weight:700">Recensera på ${escH(i[0])}</a>`).join('')}<p style="margin:6px 0 0;color:#6B7280;font-size:12px">Vi frågar alla gäster vars ärende är avslutat, oavsett vad de tyckte. Du får bara den här frågan en gång.</p></div>`
+  };
+}
 /* security events go to Vercel → Logs as one JSON line each (search for "sec") */
 function secLog(event, req, extra) { try { console.warn(JSON.stringify(Object.assign({ sec: event, t: new Date().toISOString(), ip: req ? hmac(ipOf(req)).slice(0, 12) : null, path: req ? String(req.url || '').split('?')[0] : null }, extra || {}))); } catch (e) {} }
 async function recent(bucket, winMs) { if (!sbOn()) return 0; const since = new Date(Date.now() - winMs).toISOString(); const rows = await sb('GET', 'hits?bucket=eq.' + q(bucket) + '&ts=gte.' + q(since) + '&select=ts&limit=50'); return rows.length; }
@@ -239,4 +270,4 @@ function fail(res, e, req) {
   send(res, st, { error: st === 401 ? 'auth' : st >= 500 && !admin ? 'server' : e.message });
 }
 
-module.exports = { brandMail, offerMail, welcomeMail, subTable, seller, secLog, recent, adminGate, env, send, body, isAdmin, seal, unseal, sendEmail, sendSms, escH, crypto, sb, sbOn, q, authApi, member, limited, ipOf, hmac, site, mailHtml, routeAlarm, pushAccount, fail };
+module.exports = { brandMail, offerMail, welcomeMail, subTable, seller, secLog, recent, adminGate, env, send, body, isAdmin, seal, unseal, sendEmail, sendSms, escH, crypto, sb, sbOn, q, authApi, member, limited, ipOf, hmac, site, mailHtml, routeAlarm, pushAccount, reviewInvite, reviewCfg, guestLink, cleanRoles, ROLE_KEYS, fail };

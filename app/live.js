@@ -5,6 +5,7 @@
   var host = location.hostname, demo = /[?&]demo/.test(location.search);
   var on = /^https?:$/.test(location.protocol) && !/localhost|127\.0\.0\.1|claude\.ai|claudeusercontent/.test(host) && !demo;
   var AK = 'ss-auth';
+  function accQ() { var x = null; try { x = localStorage.getItem('ss-acc'); } catch (e) {} return x ? '&acc=' + encodeURIComponent(x) : ''; }
   function auth() { try { return JSON.parse(localStorage.getItem(AK) || 'null'); } catch (e) { return null; } }
   function setAuth(a) { try { if (a) localStorage.setItem(AK, JSON.stringify(a)); else localStorage.removeItem(AK); } catch (e) {} }
   function toLogin(msg) { setAuth(null); location.replace('../index.html' + (msg ? '?m=' + msg : '') + '#login'); throw new Error('redirect'); }
@@ -13,14 +14,14 @@
   async function call(method, a, body) {
     var at = auth(); if (!at) toLogin();
     if (at.exp && at.exp - Date.now() < 60e3) { refreshSync(); at = auth(); }
-    var r = await fetch('/api/app?a=' + a, { method: method, headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + at.access_token }, body: body ? JSON.stringify(body) : undefined });
+    var r = await fetch('/api/app?a=' + a + accQ(), { method: method, headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + at.access_token }, body: body ? JSON.stringify(body) : undefined });
     if (r.status === 401 && refreshSync()) return call(method, a, body);
     if (r.status === 401) toLogin('expired');
     var j = await r.json().catch(function () { return {}; });
     if (!r.ok) { var e = new Error(ERR[j.error] || j.error || ('Fel ' + r.status)); e.data = j; e.status = r.status; throw e; }
     return j;
   }
-  var ERR = { role: 'Din roll får inte göra det. Be ägaren om hjälp.', seats: 'Alla agentinloggningar används. Kontakta ScanSay för fler.', nocontact: 'Kunden lämnade ingen e-post eller telefon, så svaret kan inte skickas.', taken: 'En kod var upptagen. Försök igen.', locked: 'Kontot är pausat. Kontakta ScanSay.', size: 'För mycket data på en gång.', format: 'Skriv en giltig e-postadress.' };
+  var ERR = { role: 'Din roll får inte göra det. Be ägaren om hjälp.', seats: 'Alla inloggningar för den rollen används. Kontakta ScanSay för fler.', nocontact: 'Kunden lämnade ingen e-post eller telefon, så svaret kan inte skickas.', taken: 'En kod var upptagen. Försök igen.', locked: 'Kontot är pausat. Kontakta ScanSay.', size: 'För mycket data på en gång.', format: 'Skriv en giltig e-postadress.', children: 'Ni har skapat alla dotterbolag som ingår. Kontakta ScanSay för fler.', nouser: 'Kollegan finns inte längre.', name: 'Skriv företagets namn.', self: 'Du kan inte ändra dig själv.', notfound: 'Ärendet finns inte längre.' };
 
   /* invite or password-reset link: #access_token=…&type=invite|recovery */
   var hp = new URLSearchParams((location.hash || '').slice(1));
@@ -31,22 +32,25 @@
   }
 
   var SSLIVE = window.SSLIVE = { on: on, setPw: setPw, data: null };
+  window.SSLIVE_switch = function (id) { try { localStorage.setItem('ss-acc', id); } catch (e) {} location.replace('/app/'); };
   if (!on) return;
   document.documentElement.classList.add('live');
 
   SSLIVE.boot = function () {
     if (setPw) { document.addEventListener('DOMContentLoaded', pwScreen); return emptyS(); }
     var a = auth(); if (!a) toLogin();
-    var r = xhr('GET', '/api/app?a=state', null, a.access_token);
+    var r = xhr('GET', '/api/app?a=state' + accQ(), null, a.access_token);
     if (r.status === 0) { location.replace('/app/offline.html'); return emptyS(); }
-    if (r.status === 401 && refreshSync()) r = xhr('GET', '/api/app?a=state', null, auth().access_token);
+    if (r.status === 401 && refreshSync()) r = xhr('GET', '/api/app?a=state' + accQ(), null, auth().access_token);
     if (r.status === 401) toLogin('expired');
     if (r.status === 423) toLogin('locked');
     if (r.status === 403) toLogin('noaccount');
     if (r.status !== 200) { document.addEventListener('DOMContentLoaded', function () { document.body.innerHTML = '<div style="max-width:520px;margin:80px auto;font-family:Inter,Arial;padding:20px"><h1>Översikten kunde inte laddas</h1><p>Försök igen om en stund. Om felet finns kvar, mejla hello@scansay.se.</p><p style="color:#6B7280">' + (r.data.error || r.status) + '</p><button onclick="location.reload()" style="padding:10px 16px;border-radius:10px;border:0;background:#1D4ED8;color:#fff;font-weight:700">Försök igen</button></div>'; }); return emptyS(); }
     var d = SSLIVE.data = r.data, st = d.state || {}, acc = d.account;
+    SSLIVE.role = d.me.role; SSLIVE.full = /Ägare|Gruppadmin/.test(d.me.role);
+    if (d.group) { SSLIVE.group = true; document.addEventListener('DOMContentLoaded', function () { var sc = document.createElement('script'); sc.src = '/app/group.js?v=2'; document.body.appendChild(sc); }); return emptyS(); }
     var S = { groups: st.groups || [], staff: st.staff || [], roster: st.roster || [], alerts: st.alerts || [], alertLog: st.alertLog || [], invites: [], companies: [],
-      mbl: st.mbl || {}, retention: st.retention || 12, channels: st.channels, chcfg: st.chcfg || {}, urgent: st.urgent, esc: st.esc, pub: st.pub, fb: d.feedback || [], imported: [],
+      mbl: st.mbl || {}, retention: st.retention || 12, channels: st.channels, chcfg: st.chcfg || {}, urgent: st.urgent, esc: st.esc, pub: st.pub, reviews: st.reviews || {}, fb: d.feedback || [], imported: [],
       features: { staff: !!(acc.mods && acc.mods.staff), ai: !(acc.mods && acc.mods.ai === false) } };
     if (!S.groups.length) {
       var ind = (window.TP && TP.IND[acc.ind]) ? acc.ind : 'hotel', secs = (TP.IND[ind].sec || []).slice(0, 4).map(function (t) { return [t.k, []]; });
@@ -61,7 +65,7 @@
   SSLIVE.save = function (S) { clearTimeout(tmr); tmr = setTimeout(function () { push(S); }, 800); };
   async function push(S, retry) {
     if (saving) { SSLIVE.save(S); return; } saving = true;
-    var st = {}; ['groups', 'staff', 'roster', 'alerts', 'alertLog', 'mbl', 'retention', 'channels', 'chcfg', 'urgent', 'esc', 'pub'].forEach(function (k) { if (S[k] !== undefined) st[k] = S[k]; });
+    var st = {}; ['reviews', 'groups', 'staff', 'roster', 'alerts', 'alertLog', 'mbl', 'retention', 'channels', 'chcfg', 'urgent', 'esc', 'pub'].forEach(function (k) { if (S[k] !== undefined) st[k] = S[k]; });
     try { await call('POST', 'save', { state: st }); flag(''); }
     catch (e) {
       if (e.status === 409 && e.data && e.data.codes && !retry) { var bad = new Set(e.data.codes); S.groups.forEach(function (g) { g.secs.forEach(function (s) { s.places.forEach(function (p) { if (bad.has(p.code)) p.code = newCode(Math.random); }); }); }); saving = false; render(); return push(S, true); }
@@ -77,13 +81,16 @@
   SSLIVE.testAlarm = async function (only) { await SSLIVE.flush(); return call('POST', 'alarm', { only: only || null }); };
   SSLIVE.saveCfg = function () { SSLIVE.save(SSLIVE.getS()); };
   SSLIVE.saveGroup = function () { SSLIVE.save(SSLIVE.getS()); };
-  SSLIVE.invite = function (email, name, role) { return call('POST', 'invite', { email: email, name: name, role: role }); };
+  SSLIVE.invite = function (email, name, role, secs) { return call('POST', 'invite', { email: email, name: name, role: role, secs: secs || [] }); };
   SSLIVE.remove = function (uid) { return call('POST', 'remove', { user_id: uid }); };
+  SSLIVE.forward = function (F, uid, note) { return call('POST', 'forward', { id: F.id, user_id: uid, note: note }); };
+  SSLIVE.setMember = function (uid, patch) { return call('POST', 'member', Object.assign({ user_id: uid }, patch)); };
+  SSLIVE.call = call;
   SSLIVE.logout = async function () {
     try { if (PS.sub) { var ep = PS.sub.endpoint; await Promise.race([call('POST', 'push_off', { endpoint: ep }), new Promise(function (r) { setTimeout(r, 2500); })]); await PS.sub.unsubscribe(); } } catch (e) {}
     setAuth(null); location.href = '../index.html#login';
   };
-  SSLIVE.reload = async function () { var d = await call('GET', 'state'); SSLIVE.getS().fb = d.feedback || []; SSLIVE.data.members = d.members; render(); };
+  SSLIVE.reload = async function () { var d = await call('GET', 'state'); if (SSLIVE.group) { return; } SSLIVE.getS().fb = d.feedback || []; SSLIVE.data.members = d.members; SSLIVE.data.messages = d.messages; render(); };
 
   function pwScreen() {
     document.body.innerHTML = '<div class="pwbox"><div style="font-weight:800;font-size:24px;margin-bottom:18px">Scan<span style="color:#1D4ED8">Say</span></div><h1>Välj ditt lösenord</h1><p>Minst 10 tecken med både bokstäver och siffror.</p><label>Nytt lösenord<input id="pw1" type="password" autocomplete="new-password"></label><label>Skriv lösenordet igen<input id="pw2" type="password" autocomplete="new-password"></label><p id="pwe" class="pwe"></p><button id="pwb">Spara och öppna översikten</button></div>';
@@ -102,10 +109,14 @@
     if (setPw || !SSLIVE.data) return;
     var d = SSLIVE.data;
     var sub = document.querySelector('header .logo small, header .logo .sub2');
-    document.querySelectorAll('header .logo div div, header .logo small').forEach(function (el) { if (/Företagsöversikt/.test(el.textContent)) el.textContent = 'Företagsöversikt · ' + d.account.name; });
+    document.querySelectorAll('header .logo div div, header .logo small').forEach(function (el) { if (/Företagsöversikt/.test(el.textContent)) el.textContent = (SSLIVE.group ? 'Koncernöversikt · ' : 'Företagsöversikt · ') + d.account.name; });
+    if (SSLIVE.group) { var sc = document.getElementById('scope'); if (sc) (sc.closest('.scope') || sc).style.display = 'none'; }
     var h = document.querySelector('header');
-    if (h && !document.getElementById('lo')) h.insertAdjacentHTML('beforeend', '<div class="liveme"><span>' + esc(d.me.email) + ' · ' + esc(d.me.role) + '</span><button id="lo" class="btn sm line" onclick="SSLIVE.logout()">Logga ut</button></div>');
+    var sw = (d.accounts || []).length > 1 ? '<select onchange="SSLIVE_switch(this.value)" style="padding:6px 8px;border-radius:9px;border:1px solid #D1D5DB;background:#fff;color:#0F1013;font-weight:600">' + d.accounts.map(function (x) { return '<option value="' + x.id + '"' + (x.id === d.account.id ? ' selected' : '') + '>' + esc(x.name || '') + (x.kind === 'group' ? ' (koncern)' : '') + '</option>'; }).join('') + '</select>' : '';
+    if (h && !document.getElementById('lo')) h.insertAdjacentHTML('beforeend', '<div class="liveme">' + sw + '<span>' + esc(d.me.email) + ' · ' + esc(roleName(d.me.role)) + '</span><button id="lo" class="btn sm line" onclick="SSLIVE.logout()">Logga ut</button></div>');
+    if (d.account.parent) document.querySelectorAll('header .logo div div, header .logo small').forEach(function (el) { if (/Företagsöversikt/.test(el.textContent)) el.textContent = 'Företagsöversikt · ' + d.account.name + ' · del av ' + d.account.parent; });
     document.body.insertAdjacentHTML('beforeend', '<div id="livebar" style="display:none;position:fixed;bottom:12px;left:50%;transform:translateX(-50%);background:#B91C1C;color:#fff;padding:10px 16px;border-radius:12px;z-index:200;font-weight:700"></div>');
+    if (SSLIVE.group) return;
     window.users = liveUsers;
     if (SSLIVE.dirty) SSLIVE.save(SSLIVE.getS());
     setInterval(function () { if (document.visibilityState === 'visible' && !document.querySelector('.rbox textarea:focus,input:focus,textarea:focus')) SSLIVE.reload().catch(function () {}); }, 60000);
@@ -195,17 +206,49 @@
     if (hid || !PS.ready || PS.sub || (PS.sup && Notification.permission === 'denied') || (!PS.sup && !PS.ios)) return '';
     return '<div class="pban"><span class="pic">' + phoneSvg() + '</span><div><b style="color:#fff!important;-webkit-text-fill-color:#fff!important">Få notiser i mobilen</b><span>Se nya ärenden och akuta larm direkt, utan att ha datorn öppen.</span></div><button class="btn pri sm" onclick="TAB=\'alerts\';render();scrollTo(0,0)">Slå på</button><button class="px" aria-label="Dölj" onclick="SSLIVE.hideBanner()">×</button></div>';
   };
+  /* ---------- messages between the company and ScanSay ---------- */
+  var MT = null;
+  function threads() { var m = (SSLIVE.data && SSLIVE.data.messages) || [], t = {}; m.forEach(function (x) { (t[x.thread] = t[x.thread] || { id: x.thread, subject: x.subject, msgs: [], unread: 0 }).msgs.push(x); if (x.sender === 'admin' && !x.read_company) t[x.thread].unread++; });
+    return Object.keys(t).map(function (k) { return t[k]; }).sort(function (a, b) { return Date.parse(b.msgs[b.msgs.length - 1].created_at) - Date.parse(a.msgs[a.msgs.length - 1].created_at); }); }
+  SSLIVE.unread = function () { return threads().reduce(function (s, t) { return s + t.unread; }, 0); };
+  SSLIVE.msgsV = function () {
+    var L = threads(); if (MT === null && L[0]) MT = L[0].id; var t = L.find(function (x) { return x.id === MT; });
+    if (t && t.unread) { t.msgs.forEach(function (x) { x.read_company = true; }); call('POST', 'msg_read', { thread: t.id }).catch(function () {}); }
+    var dt = function (s) { var d = new Date(s); return d.toLocaleDateString('sv-SE') + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
+    return '<div class="row between" style="margin-bottom:12px"><div><h1>Meddelanden</h1><div class="sub">Er kontakt med ScanSay: frågor om avtal, faktura, fler QR-koder eller hjälp. Svar kommer hit och som e-post.</div></div><button class="btn pri" onclick="SSLIVE.msgNew()">Nytt meddelande</button></div>' +
+      '<div class="grid g32"><div class="card">' + (MT === 'new' ? '<h2>Nytt meddelande till ScanSay</h2><div class="grid" style="gap:8px"><input id="mn_s" type="text" placeholder="Ämne, t.ex. Fler QR-koder till nya flygeln"><textarea id="mn_t" rows="6" placeholder="Skriv ditt meddelande…"></textarea><div class="row"><button class="btn pri" onclick="SSLIVE.msgSend()">Skicka</button><button class="btn line" onclick="SSLIVE.msgOpen(null)">Avbryt</button></div></div>'
+        : t ? '<h2>' + esc(t.subject || 'Meddelande') + '</h2><div class="thr">' + t.msgs.map(function (x) { return '<div class="tm ' + (x.sender === 'admin' ? 'g' : 's') + '"><div class="tw">' + (x.sender === 'admin' ? 'ScanSay' : esc(x.by_name || 'Ni')) + ' · ' + dt(x.created_at) + '</div>' + esc(x.body) + '</div>'; }).join('') + '</div><div class="grid" style="gap:8px;margin-top:10px"><textarea id="mr_t" rows="3" placeholder="Skriv ett svar till ScanSay…"></textarea><div class="row"><button class="btn pri" onclick="SSLIVE.msgSend(\'' + t.id + '\')">Skicka svar</button></div></div>'
+        : '<div class="sub">Inga meddelanden ännu. Tryck på <b>Nytt meddelande</b> för att skriva till ScanSay.</div>') + '</div>' +
+      '<div class="card"><h2>Konversationer</h2>' + (L.map(function (x) { var last = x.msgs[x.msgs.length - 1]; return '<button class="btn line" style="display:block;width:100%;text-align:left;margin:0 0 8px;padding:10px 12px;' + (x.id === MT ? 'border-color:#1D4ED8;background:#EFF6FF' : '') + '" onclick="SSLIVE.msgOpen(\'' + x.id + '\')"><b>' + esc(x.subject || 'Meddelande') + '</b>' + (x.unread ? ' <span class="cnt">' + x.unread + '</span>' : '') + '<div class="sub" style="font-weight:500">' + esc(String(last.body).slice(0, 70)) + '</div></button>'; }).join('') || '<div class="sub">Inga konversationer.</div>') + '</div></div>';
+  };
+  SSLIVE.msgOpen = function (id) { MT = id; render(); };
+  SSLIVE.msgNew = function () { MT = 'new'; render(); };
+  SSLIVE.msgSend = async function (thread) {
+    var tx = document.getElementById(thread ? 'mr_t' : 'mn_t').value.trim(); if (tx.length < 2) return toast('Skriv ett meddelande först.');
+    try { var r = await call('POST', thread ? 'msg_reply' : 'msg_new', { thread: thread, subject: thread ? undefined : document.getElementById('mn_s').value.trim(), text: tx }); var d = await call('GET', 'state'); SSLIVE.data.messages = d.messages; MT = r.thread; render(); toast('Skickat till ScanSay'); }
+    catch (e) { toast('Kunde inte skicka: ' + e.message); }
+  };
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function liveUsers() {
-    var d = SSLIVE.data, m = d.members || [], admin = /Ägare|Gruppadmin/.test(d.me.role);
-    return '<h1>Användare</h1><div class="sub" style="margin-bottom:12px">' + m.length + ' av ' + d.account.seats + ' agentinloggningar används. Varje person får en egen inloggning via e-post.</div><div class="grid g32">' +
-      '<div class="card" style="overflow-x:auto"><table><thead><tr><th>Namn</th><th>E-post</th><th>Roll</th><th></th></tr></thead><tbody>' +
-      m.map(function (x) { return '<tr><td><b>' + esc(x.name || '–') + '</b></td><td>' + esc(x.email || '') + '</td><td><span class="tag t-p">' + esc(x.role) + '</span></td><td>' + (admin && x.user_id !== d.me.id ? '<button class="btn sm red" onclick="liveRemove(\'' + x.user_id + '\')">Ta bort</button>' : '') + '</td></tr>'; }).join('') + '</tbody></table></div>' +
-      (admin ? '<div class="card"><h2>Bjud in en kollega</h2><div class="grid" style="gap:8px"><input id="ln" placeholder="Namn"><input type="email" id="le" placeholder="namn@foretag.se"><select id="lr"><option>Handläggare</option><option>Gruppadmin</option><option>Läsare</option></select><button class="btn pri" onclick="liveInvite()">Skicka inbjudan</button></div><div class="sub" style="margin-top:10px"><b>Gruppadmin</b> ändrar platser, QR-koder och larm. <b>Handläggare</b> svarar på ärenden. <b>Läsare</b> ser statistik. Länken i mejlet gäller i 24 timmar.</div></div>' : '<div class="card sub">Bara ägare och gruppadmin kan bjuda in.</div>') + '</div>';
+    var d = SSLIVE.data, m = d.members || [], admin = SSLIVE.full, secs = secNames();
+    var RD = { 'Gruppadmin': 'Chef: allt utom att ta bort ägaren – statistik, inkorg, platser, QR-koder, larm och användare.', 'Handläggare': 'Handläggare: inkorgen. Svarar gäster, skickar vidare ärenden och får notiser.', 'Medarbetare': 'Medarbetare: bara ärenden från sina avdelningar. Markerar som åtgärdat, svarar inte gäster.', 'Läsare': 'Läsare: bara statistik, inga meddelanden.' };
+    var roleSel = function (id, cur, dis) { return '<select id="' + id + '"' + (dis ? ' disabled' : '') + ' onchange="liveRole(this)">' + ['Gruppadmin', 'Handläggare', 'Medarbetare', 'Läsare'].map(function (r) { return '<option value="' + r + '"' + (r === cur ? ' selected' : '') + '>' + roleName(r) + '</option>'; }).join('') + '</select>'; };
+    var secBox = function (pre, cur) { return secs.length ? '<div class="psecs" style="margin-top:6px">' + secs.map(function (n) { return '<label><input type="checkbox" class="' + pre + '" value="' + esc(n) + '"' + (cur.indexOf(n) >= 0 ? ' checked' : '') + '> ' + esc(n) + '</label>'; }).join('') + '</div>' : '<div class="sub">Lägg till avdelningar under Platser först.</div>'; };
+    return '<h1>Användare</h1><div class="sub" style="margin-bottom:12px">' + m.length + ' av ' + d.account.seats + ' inloggningar används. Varje person får en egen inloggning via e-post och ser bara det hens roll tillåter.</div><div class="grid g32">' +
+      '<div class="card" style="overflow-x:auto"><table><thead><tr><th>Namn</th><th>E-post</th><th>Roll</th><th>Avdelningar</th><th></th></tr></thead><tbody>' +
+      m.map(function (x) { var own = x.role === 'Ägare' || x.user_id === d.me.id;
+        return '<tr data-u="' + x.user_id + '"><td><b>' + esc(x.name || '–') + '</b></td><td>' + esc(x.email || '') + '</td><td>' + (admin && !own ? roleSel('r_' + x.user_id, x.role) : '<span class="tag t-p">' + esc(roleName(x.role)) + '</span>') + '</td><td>' +
+          (x.role === 'Medarbetare' ? (admin ? secBox('ms_' + x.user_id, x.secs || []) + '<button class="btn sm line" style="margin-top:6px" onclick="liveSecs(\'' + x.user_id + '\')">Spara avdelningar</button>' : esc((x.secs || []).join(', ') || 'Alla')) : '<span class="sub">Alla</span>') + '</td><td>' + (admin && !own ? '<button class="btn sm red" onclick="liveRemove(\'' + x.user_id + '\')">Ta bort</button>' : '') + '</td></tr>'; }).join('') + '</tbody></table></div>' +
+      (admin ? '<div class="card"><h2>Bjud in en kollega</h2><div class="grid" style="gap:8px"><input id="ln" type="text" placeholder="Namn"><input type="email" id="le" placeholder="namn@foretag.se"><select id="lr" onchange="document.getElementById(\'lsecs\').style.display=this.value===\'Medarbetare\'?\'block\':\'none\';document.getElementById(\'lrd\').textContent=(' + JSON.stringify(RD).replace(/"/g, '&quot;') + ')[this.value]">' + ['Handläggare', 'Medarbetare', 'Gruppadmin', 'Läsare'].map(function (r) { return '<option value="' + r + '">' + roleName(r) + '</option>'; }).join('') + '</select>' +
+        '<div class="sub" id="lrd">' + RD['Handläggare'] + '</div><div id="lsecs" style="display:none"><b style="font-size:13px">Vilka avdelningar?</b>' + secBox('ls', []) + '</div><button class="btn pri" onclick="liveInvite()">Skicka inbjudan</button></div><div class="sub" style="margin-top:10px">Länken i mejlet gäller i 24 timmar. Personen väljer själv sitt lösenord.</div></div>' : '<div class="card sub">Bara ägare och chefer kan bjuda in.</div>') + '</div>';
   }
   window.liveInvite = async function () {
     var e = document.getElementById('le').value.trim(), n = document.getElementById('ln').value.trim(), r = document.getElementById('lr').value;
-    try { await SSLIVE.invite(e, n, r); toast('Inbjudan skickad till ' + e); await SSLIVE.reload(); } catch (x) { toast(x.message); }
+    var secs = [].slice.call(document.querySelectorAll('.ls:checked')).map(function (x) { return x.value; });
+    if (r === 'Medarbetare' && !secs.length) { toast('Välj minst en avdelning för medarbetaren.'); return; }
+    try { await SSLIVE.invite(e, n, r, secs); toast('Inbjudan skickad till ' + e); await SSLIVE.reload(); } catch (x) { toast(x.message); }
   };
+  window.liveRole = async function (el) { var uid = el.id.slice(2); try { await SSLIVE.setMember(uid, { role: el.value }); toast('Rollen är ändrad'); await SSLIVE.reload(); } catch (x) { toast(x.message); } };
+  window.liveSecs = async function (uid) { var secs = [].slice.call(document.querySelectorAll('.ms_' + uid + ':checked')).map(function (x) { return x.value; }); try { await SSLIVE.setMember(uid, { secs: secs }); toast('Avdelningarna är sparade'); await SSLIVE.reload(); } catch (x) { toast(x.message); } };
   window.liveRemove = async function (uid) { if (!confirm('Ta bort personens inloggning?')) return; try { await SSLIVE.remove(uid); toast('Borttagen'); await SSLIVE.reload(); } catch (x) { toast(x.message); } };
 })();
