@@ -35,7 +35,8 @@
 <tr><td>Tjänst</td><td><b>ScanSay ${esc(PLAN_NAMES[d.plan] || d.plan)}</b>: QR-baserad feedback med verifiering av avsändare (engångskod via sms eller e-post), översikt med inkorg, larm, statistik och svar till gäst.</td></tr>
 <tr><td>Bransch</td><td>${esc(d.industry || '')}</td></tr>
 <tr><td>Antal platser</td><td>${esc(d.places)} ${esc(d.unit)} (en unik QR-kod per plats)</td></tr>
-<tr><td>Antal agenter</td><td>${esc(d.agents)} inloggningar för kundens chefer och handläggare</td></tr>
+${d.roles && Object.keys(d.roles).length ? `<tr><td>Inloggningar</td><td>1 ägare${['Gruppadmin', 'Handläggare', 'Medarbetare', 'Läsare'].filter(k => d.roles[k] > 0).map(k => ', ' + esc(d.roles[k]) + ' ' + ({ Gruppadmin: d.roles[k] === 1 ? 'chef' : 'chefer', Handläggare: 'handläggare', Medarbetare: 'medarbetare', Läsare: 'läsare' })[k]).join('')}${d.kind === 'group' ? ' per företag' : ''}. Chefer ser allt, handläggare svarar gäster, medarbetare ser sina avdelningar och läsare ser statistik.</td></tr>` : `<tr><td>Antal agenter</td><td>${esc(d.agents)} inloggningar för kundens chefer och handläggare</td></tr>`}
+${d.kind === 'group' ? `<tr><td>Koncern</td><td><b>Moderbolag med upp till ${esc(d.children || 0)} dotterbolag.</b> Moderbolaget ser statistik för alla dotterbolag men inte gästernas meddelanden, och skapar själv dotterbolagen i översikten. Varje dotterbolag får samma innehåll som anges ovan.</td></tr>` : ''}
 <tr><td>Personalmodul</td><td>${d.staff ? '<b>Ingår.</b> Medarbetare kan logga in, checka in på sitt pass och se sin egen feedback. Särskilda villkor i bilaga 2.' : 'Ingår inte. Kan läggas till senare genom ett tillägg till avtalet.'}</td></tr>
 <tr><td>AI-funktioner</td><td>${d.ai === false ? 'Avstängda.' : 'Sammanfattningar och svarsförslag. AI-leverantören finns inom EU och tränar inte på Kundens data. AI fattar inga beslut om enskilda personer.'}</td></tr>
 <tr><td>Dekaler</td><td>Kunden skapar och skriver ut dekaler i översikten. Tryckta dekaler beställs separat.</td></tr>
@@ -141,6 +142,6 @@ ${d.staff ? STAFF(d) : ''}
     if (root.crypto && root.crypto.subtle) { const b = await root.crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
     return require('crypto').createHash('sha256').update(text).digest('hex');
   }
-  const api = { VERSION, SELLER, offer, terms: TERMS, pub: PUB, CSS, esc, kr, date, hash, norm };
+  const api = { VERSION, SELLER, offer, terms: TERMS, pub: PUB, CSS, esc, kr, date, hash, norm, PLAN_NAMES };
   if (typeof module !== 'undefined') module.exports = api; else root.SSContract = api;
 })(typeof window !== 'undefined' ? window : globalThis);

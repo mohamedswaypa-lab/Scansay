@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta name="referrer" content="no-referrer">
+<title>Ditt ärende · ScanSay</title><link rel="icon" href="/brand/scansay-icon.svg" type="image/svg+xml"><link rel="stylesheet" href="/fonts.css">
+<style>
+:root{--ink:#0A0F1C;--mut:#4B5563;--line:#E5E7EB;--blue:#1D4ED8}
+*{box-sizing:border-box}body{margin:0;background:#F4F6FA;color:var(--ink);font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+.w{max-width:560px;margin:0 auto;padding:22px 16px 60px}.lg{display:flex;gap:9px;align-items:center;font-weight:800;font-size:19px;letter-spacing:-.02em;margin-bottom:16px}.lg span{color:var(--blue)}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px}h1{font-size:22px;letter-spacing:-.02em;margin:0 0 4px}.sub{color:var(--mut);font-size:14px}
+.m{padding:10px 13px;border-radius:14px;margin-top:10px;white-space:pre-wrap;font-size:15px}.m small{display:block;font-size:12px;font-weight:700;color:#6B7280;margin-bottom:2px}
+.m.me{background:#F7FEE7;border:1px solid #D9F99D;margin-left:28px}.m.co{background:#EFF6FF;border:1px solid #DBEAFE;margin-right:28px}.m.orig{background:#F9FAFB;border:1px solid var(--line)}
+textarea{width:100%;min-height:110px;border:1px solid #D1D5DB;border-radius:12px;padding:12px;font:inherit;margin-top:14px;color:var(--ink);background:#fff}
+button{width:100%;margin-top:10px;background:var(--blue);color:#fff;border:0;border-radius:12px;padding:14px;font:inherit;font-weight:700;cursor:pointer}button:disabled{opacity:.6}
+.err{color:#B91C1C;font-weight:600;min-height:20px;margin-top:8px;font-size:14px}.ok{background:#ECFDF5;border:1px solid #BBF7D0;color:#14532D;border-radius:12px;padding:12px;margin-top:12px;font-weight:600}
+.f{font-size:12.5px;color:#6B7280;margin-top:16px;text-align:center}.f a{color:#6B7280}
+</style></head>
+<body><div class="w"><div class="lg"><img src="/brand/scansay-icon.svg" width="30" height="30" alt=""><b>Scan<span>Say</span></b></div><div class="card" id="c"><div class="sub">Laddar…</div></div>
+<div class="f">Ditt svar går direkt till verksamheten. Dina kontaktuppgifter visas inte för personalen. · <a href="/#privacy">Integritet</a></div></div>
+<script>
+(function(){
+  var t=new URLSearchParams(location.search).get('t')||'',c=document.getElementById('c');
+  if(!t){lookup();return}
+  try{history.replaceState(null,'',location.pathname+'?t='+encodeURIComponent(t))}catch(e){}
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(x){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]})};
+  var dt=function(ts){var d=new Date(ts);return d.toLocaleDateString('sv-SE')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+  function lookup(){
+    c.innerHTML='<h1>Följ upp ditt ärende</h1><p class="sub">Skriv ärendenumret du fick när du skickade ditt meddelande, och samma e-post eller mobilnummer som du använde. Vi skickar en länk dit.</p>'+
+      '<label style="display:block;font-weight:700;font-size:14px;margin-top:14px">Ärendenummer<input id="rf" placeholder="t.ex. AB12C-3F9E1" style="width:100%;border:1px solid #D1D5DB;border-radius:12px;padding:12px;font:inherit;margin-top:6px;text-transform:uppercase"></label>'+
+      '<label style="display:block;font-weight:700;font-size:14px;margin-top:12px">E-post eller mobilnummer<input id="ct" placeholder="namn@exempel.se eller 070…" style="width:100%;border:1px solid #D1D5DB;border-radius:12px;padding:12px;font:inherit;margin-top:6px"></label>'+
+      '<div class="err" id="er"></div><button id="bt">Skicka länk</button>';
+    document.getElementById('bt').onclick=async function(){var rf=document.getElementById('rf').value.trim(),ct=document.getElementById('ct').value.trim(),er=document.getElementById('er');
+      if(!/^[A-Za-z0-9]{3,12}-[A-Fa-f0-9]{5}$/.test(rf.replace(/\s/g,''))){er.textContent='Skriv ärendenumret så som det stod, t.ex. AB12C-3F9E1.';return}
+      if(ct.length<5){er.textContent='Skriv din e-post eller ditt mobilnummer.';return}
+      this.disabled=true;this.textContent='Skickar…';
+      var r=await fetch('/api/form?a=lookup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ref:rf,contact:ct})}).catch(function(){return null});
+      if(r&&r.status===429){er.textContent='För många försök. Vänta en stund.';this.disabled=false;this.textContent='Skicka länk';return}
+      c.innerHTML='<h1>Kolla din inkorg</h1><p class="sub">Om ärendenumret och kontaktuppgiften stämmer har vi skickat en länk till ärendet. Den gäller i 30 dagar.</p>'};
+  }
+  function show(d,okMsg){
+    c.innerHTML='<h1>Svara '+esc(d.company)+'</h1><div class="sub">'+esc(d.place)+(d.ref?' · ärende '+esc(d.ref):'')+'</div>'+
+      '<div class="m orig"><small>Ditt meddelande · '+dt(d.ts)+'</small>'+esc(d.msg||'')+'</div>'+
+      d.thread.map(function(r){return '<div class="m '+(r.guest?'me':'co')+'"><small>'+(r.guest?'Du':esc(d.company))+' · '+dt(r.ts)+'</small>'+esc(r.txt)+'</div>'}).join('')+
+      (okMsg?'<div class="ok">'+okMsg+'</div>':'')+
+      '<textarea id="tx" maxlength="1000" placeholder="Skriv ditt svar…"></textarea><div class="err" id="er"></div><button id="bt">Skicka svar</button>';
+    document.getElementById('bt').onclick=send;
+  }
+  async function send(){
+    var tx=document.getElementById('tx').value.trim(),er=document.getElementById('er'),bt=document.getElementById('bt');
+    if(tx.length<2){er.textContent='Skriv ett svar först.';return}
+    bt.disabled=true;bt.textContent='Skickar…';
+    try{var r=await fetch('/api/form?a=greply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({t:t,text:tx})}),j=await r.json().catch(function(){return{}});
+      if(r.ok){show(j,'Tack! Ditt svar är skickat.');return}
+      er.textContent=r.status===429?'Du har skickat många svar i dag. Försök igen i morgon.':r.status===410?'Länken har gått ut. Skanna QR-koden igen om du vill skriva något nytt.':'Det gick inte att skicka. Försök igen.';
+    }catch(e){er.textContent='Ingen anslutning. Försök igen.'}
+    bt.disabled=false;bt.textContent='Skicka svar';
+  }
+  fetch('/api/form?a=thread&t='+encodeURIComponent(t)).then(function(r){return r.json().then(function(j){return[r,j]})}).then(function(x){
+    if(x[0].ok)show(x[1]);else c.innerHTML='<h1>Länken fungerar inte längre</h1><p class="sub">Svarslänken gäller i 30 dagar. Vill du skriva något nytt kan du skanna QR-koden på plats igen.</p>';
+  }).catch(function(){c.innerHTML='<h1>Ingen anslutning</h1><p class="sub">Försök igen om en stund.</p>'});
+})();
+</script></body></html>

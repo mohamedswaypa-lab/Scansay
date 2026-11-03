@@ -1,4 +1,4 @@
--- ScanSay update 3: mobile notifications (the dashboard as an app on the phone).
+-- ScanSay update 3: mobile notifications (the dashboard as an app on the phone) and review invitations.
 -- Run once in Supabase → SQL Editor → New query → paste → Run (safe to run again).
 create table if not exists push_subs (
   endpoint text primary key,                 -- the phone's push address (from Apple/Google/Mozilla)
@@ -14,3 +14,7 @@ create table if not exists push_subs (
 create index if not exists push_subs_acc on push_subs(account_id);
 create index if not exists push_subs_user on push_subs(user_id);
 alter table push_subs enable row level security;
+
+-- Review invitations (sent with the reply that closes a case) and clicks
+alter table feedback add column if not exists review_invited_at timestamptz;
+alter table feedback add column if not exists review_clicked_at timestamptz;
