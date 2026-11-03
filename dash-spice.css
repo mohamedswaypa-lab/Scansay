@@ -1,0 +1,48 @@
+/* ScanSay dashboards · more colour: blue and white base, lime accents, dark text, a few coloured words. Loaded last. */
+html body header:not(#x):not(#y){border-bottom:0!important;box-shadow:0 1px 0 #E5E7EB!important;position:sticky;background:#fff!important}
+html body header:not(#x):not(#y)::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:3px;background:linear-gradient(90deg,#1D4ED8 0%,#3B82F6 45%,#C8F542 100%)}
+/* side menu */
+html body nav:not(#x):not(#y){background:linear-gradient(180deg,#F7F9FE 0%,#FFFFFF 60%)!important}
+html body nav button:not(.on):not(#x):not(#y) .ni svg{color:#1D4ED8!important;stroke:#1D4ED8!important}
+html body nav button.on:not(#x):not(#y){background:linear-gradient(135deg,#0A0F1C 0%,#13245C 100%)!important;color:#fff!important;-webkit-text-fill-color:#fff!important;box-shadow:inset 4px 0 0 #C8F542,0 10px 20px -14px rgba(19,36,92,.8)!important}
+html body nav button.on:not(#x):not(#y) .ni{background:rgba(200,245,66,.18)!important}
+html body nav button.on:not(#x):not(#y) .ni svg{color:#C8F542!important;stroke:#C8F542!important}
+html body nav button .cnt:not(#x):not(#y){background:#C8F542!important;color:#0A0F1C!important;-webkit-text-fill-color:#0A0F1C!important;font-weight:800!important}
+/* page titles get a lime underline */
+html body #app>h1:not(#x):not(#y),html body #app .row>div>h1:not(#x):not(#y),html body #app .hello h1:not(#x):not(#y){position:relative;display:inline-block;padding-bottom:6px}
+html body #app>h1:not(#x):not(#y)::after,html body #app .row>div>h1:not(#x):not(#y)::after,html body #app .hello h1:not(#x):not(#y)::after{content:"";position:absolute;left:0;bottom:0;width:46px;height:4px;border-radius:4px;background:linear-gradient(90deg,#1D4ED8,#C8F542)}
+/* greeting card */
+html body .hello:not(#x):not(#y){background:radial-gradient(420px 220px at 95% 0%,rgba(200,245,66,.40),transparent 70%),radial-gradient(520px 260px at 0% 100%,rgba(29,78,216,.12),transparent 70%),#FFFFFF!important;border:1px solid #DBEAFE!important}
+html body .hello .hg:not(#x):not(#y){color:#1D4ED8!important;-webkit-text-fill-color:#1D4ED8!important}
+/* KPI cards: own colour each */
+html body .card.kpi:not(#x):not(#y){border-top:4px solid var(--k,#1D4ED8)!important;transition:transform .15s,box-shadow .15s}
+html body .card.kpi:hover:not(#x):not(#y){transform:translateY(-2px);box-shadow:0 16px 30px -22px var(--k,#1D4ED8)!important}
+html body .card.kpi .ki:not(#x):not(#y){background:var(--kb,#EFF6FF)!important}
+html body .card.kpi .ki svg:not(#x):not(#y){stroke:var(--k,#1D4ED8)!important;color:var(--k,#1D4ED8)!important}
+html body .grid>.card.kpi:nth-child(5n+1){--k:#1D4ED8;--kb:#DBEAFE}
+html body .grid>.card.kpi:nth-child(5n+2){--k:#65A30D;--kb:#ECFCCB}
+html body .grid>.card.kpi:nth-child(5n+3){--k:#7C3AED;--kb:#EDE9FE}
+html body .grid>.card.kpi:nth-child(5n+4){--k:#0D9488;--kb:#CCFBF1}
+html body .grid>.card.kpi:nth-child(5n+5){--k:#EA580C;--kb:#FFEDD5}
+html body .card.kpi em.up:not(#x):not(#y){color:#15803D!important;-webkit-text-fill-color:#15803D!important}
+html body .card.kpi em.dn:not(#x):not(#y){color:#B91C1C!important;-webkit-text-fill-color:#B91C1C!important}
+/* cases: colour by kind */
+html body .case:not(#x):not(#y){border-left-width:5px!important}
+html body .case.c:not(#x):not(#y){border-left-color:#DC2626!important}
+html body .case.p:not(#x):not(#y){border-left-color:#65A30D!important;background:linear-gradient(90deg,#F7FEE7 0%,#FFFFFF 30%)!important}
+html body .case.q:not(#x):not(#y){border-left-color:#7C3AED!important}
+html body .case.i:not(#x):not(#y){border-left-color:#0EA5E9!important}
+html body .tag.t-p:not(#x):not(#y){background:#ECFCCB!important;color:#365314!important;-webkit-text-fill-color:#365314!important}
+/* tables */
+html body #app table thead th:not(#x):not(#y){background:#F1F6FF!important;color:#1E3A8A!important;-webkit-text-fill-color:#1E3A8A!important}
+html body #app table tbody tr:hover td:not(#x):not(#y){background:#FAFCFF!important}
+/* cards */
+html body #app .card:not(.kpi):not(#x):not(#y){transition:box-shadow .15s}
+html body #app .card:not(.kpi):hover:not(#x):not(#y){box-shadow:0 14px 30px -24px rgba(29,78,216,.55)!important}
+/* conversation bubbles */
+html body .tm.g:not(#x):not(#y){background:#F7FEE7!important;border-color:#BEF264!important}
+html body .tm.s:not(#x):not(#y){background:#EFF6FF!important;border-color:#BFDBFE!important}
+/* primary buttons: blue, the important "lime" ones stay lime */
+html body #app .btn.pri:not(#x):not(#y){background:linear-gradient(135deg,#1D4ED8,#2563EB)!important;border-color:#1D4ED8!important}
+@media (prefers-reduced-motion:reduce){html body .card.kpi{transition:none}}
+html body #iq:not(#x):not(#y){padding:9px 12px!important;border:1px solid #D1D5DB!important;border-radius:11px!important;background:#fff!important;font:inherit;min-width:240px}html body #iq:focus:not(#x){border-color:#1D4ED8!important;box-shadow:0 0 0 3px rgba(29,78,216,.15)!important;outline:0}

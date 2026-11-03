@@ -171,3 +171,15 @@ Run the new part of `supabase/update-4.sql` again (safe to repeat) and re-run `s
 **Case numbers.** Every case shows its number (the one the guest got, e.g. `C7PQK-0FFA8`) and the inbox has a search box. A guest can go to **scansay.se/svar**, type the case number and the same email/phone, and gets a fresh link to the conversation. Staff can mark a case solved without replying and open it again (*↺ Öppna igen*).
 
 **How long is it kept?** Guest messages: the period the company chose under GDPR (6, 12, 18 or 24 months, default 12), then deleted every night by `retention.sql`. Before deletion the numbers (count, ratings, solved) are kept in `stats_monthly` without text or contact details. Messages between you and the company: 24 months. Signed contracts (`signatures`): kept, since they are accounting and contract records.
+
+## 12. Guests can answer with Reply in their mail program (optional, recommended)
+Today every email to a guest has a **Svara** button (works without setup). To also let guests just press *Reply*:
+1. In your DNS add an MX record for a subdomain, e.g. **reply.scansay.se**, pointing to Brevo's inbound servers (Brevo → *Inbound parsing* shows the exact values).
+2. In Brevo → Inbound parsing → add a webhook for `reply.scansay.se` to `https://scansay.se/api/form?a=inbound&k=YOUR-SECRET`.
+3. In Vercel add `REPLY_DOMAIN` = `reply.scansay.se` and `INBOUND_SECRET` = the same secret (a long random string). Redeploy.
+Then the Reply-To of guest emails becomes a private address per case; the answer is added to the case (only if it comes from the guest's own address), the case opens again and the staff member who replied last gets an email.
+
+## 13. Closing a case
+- *Markera som löst* is always manual (also after an AI suggestion).
+- When a case is closed (with or without a written reply) the guest gets one message: "your case is solved / thank you", a **Svara** button and – if the company has added its Google/Tripadvisor link under Intyg – the review invitation. Every guest with a closed case gets the same, whatever the rating. Re-opening and closing again does not send it twice.
+- Inbox filter **Gästen svarade** shows cases where the guest's answer is the latest.

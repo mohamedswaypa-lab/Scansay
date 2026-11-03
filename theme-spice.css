@@ -76,3 +76,18 @@ html body .ctab.vbox .sv.ctav video:not(#x):not(#y){display:block!important;widt
 html body .ctab.vbox .sv.ctav:not(#x):not(#y)::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,15,28,.55) 0%,rgba(10,15,28,.15) 60%,rgba(10,15,28,0) 100%)!important}
 html body .ctab.vbox>*:not(.sv):not(#x){position:relative;z-index:1}
 @media (max-width:900px),(prefers-reduced-motion:reduce){html body section.hero.hsl .sv.hvbg:not(#x):not(#y){display:none!important}}
+
+/* registration: clearer questions */
+html body #cform .qbox:not(#x){background:linear-gradient(180deg,#F5F8FF,#FFFFFF);border:1px solid #DBEAFE;border-radius:16px;padding:16px 18px;margin:14px 0}
+html body #cform .qh:not(#x){font-size:15px;margin:12px 0 4px;color:#1D4ED8!important;-webkit-text-fill-color:#1D4ED8!important}
+html body #cform .qh:first-child{margin-top:0}
+html body #cform .qn:not(#x){font-size:13px;color:#4B5563!important;margin:0 0 6px}
+html body #cform .row3:not(#x){display:grid;grid-template-columns:repeat(3,1fr);gap:0 12px;align-items:end}html body #cform .row4:not(#x){display:grid;grid-template-columns:repeat(2,1fr);gap:0 12px;align-items:end}
+@media(max-width:700px){html body #cform .row3:not(#x),html body #cform .row4:not(#x){grid-template-columns:1fr 1fr}}
+html body #cform .qbox label:not(#x){font-size:13px}
+
+/* a few coloured words in the headings */
+html body .cw-b:not(#x):not(#y){color:#1D4ED8!important;-webkit-text-fill-color:#1D4ED8!important}
+html body .cw-g:not(#x):not(#y){color:#15803D!important;-webkit-text-fill-color:#15803D!important}
+html body .cw-l:not(#x):not(#y){color:inherit!important;background:linear-gradient(transparent 62%,#C8F542 62%,#C8F542 92%,transparent 92%)!important;padding:0 .08em}
+html body .cw-x:not(#x):not(#y){color:#C8F542!important;-webkit-text-fill-color:#C8F542!important}
