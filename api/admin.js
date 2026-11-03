@@ -16,7 +16,9 @@ module.exports = async (req, res) => {
     if (req.method === 'GET' && a === 'state') {
       const [st] = await L.sb('GET', 'admin_state?id=eq.1&select=doc');
       const apps = await L.sb('GET', 'applications?select=*&order=created_at.desc&limit=200');
-      const accs = await L.sb('GET', 'accounts?select=id,name,org,ind,city,email,phone,plan,seats,places,mods,locked,billing,created_at,kind,parent_id,max_children,roles&order=created_at.desc');
+      let accs;   // works also before update-4.sql has been run (then without parent/daughter and roles)
+      try { accs = await L.sb('GET', 'accounts?select=id,name,org,ind,city,email,phone,plan,seats,places,mods,locked,billing,created_at,kind,parent_id,max_children,roles&order=created_at.desc'); }
+      catch (e) { if (!/does not exist|42703/.test(e.message)) throw e; accs = await L.sb('GET', 'accounts?select=id,name,org,ind,city,email,phone,plan,seats,places,mods,locked,billing,created_at&order=created_at.desc'); }
       const mem = await L.sb('GET', 'members?select=account_id,user_id,role,name,email');
       const since = new Date(Date.now() - 30 * 864e5).toISOString();
       const fb = await L.sb('GET', 'feedback?created_at=gte.' + L.q(since) + '&select=account_id,type,status');
