@@ -48,7 +48,7 @@ module.exports = async (req, res) => {
       const mem = await L.sb('GET', 'members?account_id=eq.' + L.q(acc.id) + '&select=user_id,role,name,email,secs,created_at');
       let push = { key: null, mine: [] };
       try { push.key = require('./_push').publicKey(); push.mine = (await L.sb('GET', 'push_subs?user_id=eq.' + L.q(M.user.id) + '&account_id=eq.' + L.q(acc.id) + '&select=endpoint,level,secs,device,created_at')); } catch (e) { console.error('push state', e.message); }
-      const accInfo = { id: acc.id, name: acc.name, org: acc.org, ind: acc.ind, seats: acc.seats, plan: acc.plan, mods: acc.mods || {}, city: acc.city, kind: acc.kind || 'site', max_children: acc.max_children || 0, parent: null, roles: acc.roles || {} };
+      const accInfo = { id: acc.id, name: acc.name, org: acc.org, ind: acc.ind, seats: acc.seats, plan: acc.plan, mods: acc.mods || {}, city: acc.city, email: ADMIN_ROLES.includes(role) ? acc.email : null, phone: ADMIN_ROLES.includes(role) ? acc.phone : null, kind: acc.kind || 'site', max_children: acc.max_children || 0, parent: null, roles: acc.roles || {} };
       if (acc.parent_id) { const [pa] = await L.sb('GET', 'accounts?id=eq.' + L.q(acc.parent_id) + '&select=name'); accInfo.parent = pa ? pa.name : null; }
       const me = { id: M.user.id, email: M.user.email, role, name: M.member.name, secs: mySecs(M.member) };
       const base = { account: accInfo, me, members: ADMIN_ROLES.includes(role) ? mem : mem.map(x => ({ user_id: x.user_id, role: x.role, name: x.name })), push, accounts: M.all };
@@ -127,15 +127,28 @@ module.exports = async (req, res) => {
         if (!f.contact) return L.send(res, 400, { error: 'nocontact' });
         const inv = b.fix ? L.reviewInvite(acc, f) : null;   // same invitation for every closed case, never by rating
         const gl = L.guestLink(f);                              // the guest answers on a web page, so the answer lands in this case
-        if (f.via === 'sms') { await L.sendSms({ to: f.contact, text: acc.name + ': ' + text + (b.fix ? '' : '\nSvara: ' + gl) }); if (inv) await L.sendSms({ to: f.contact, text: acc.name + ': ' + inv.sms }); }
-        else await L.sendEmail({ to: f.contact, replyTo: M.user.email, subject: 'Svar från ' + acc.name + ' om ditt meddelande', text: text + '\n\n— ' + acc.name + '\n\nSvara här: ' + gl + '\n\nDitt meddelande: "' + (f.message || '') + '"' + (inv ? '\n\n' + inv.text : ''),
+        if (f.via === 'sms') { await L.sendSms({ to: f.contact, text: acc.name + ': ' + text + '\nSvara: ' + gl }); if (inv) await L.sendSms({ to: f.contact, text: acc.name + ': ' + inv.sms }); }
+        else await L.sendEmail({ to: f.contact, replyTo: L.replyTo(f, M.user.email), subject: 'Svar från ' + acc.name + ' om ditt meddelande', text: text + '\n\n— ' + acc.name + '\n\nSvara här: ' + gl + '\n\nDitt meddelande: "' + (f.message || '') + '"' + (inv ? '\n\n' + inv.text : ''),
           html: L.mailHtml('Svar från ' + L.escH(acc.name), `<p style="white-space:pre-wrap">${L.escH(text)}</p><p style="color:#6B7280;font-size:13px;margin-top:18px">Ditt meddelande om ${L.escH(f.sec_name ? f.sec_name + ' › ' : '')}${L.escH(f.place || '')}:</p><blockquote style="border-left:4px solid #E5E7EB;margin:0;padding:6px 12px;color:#4B5563">${L.escH(f.message || '')}</blockquote>` + (inv ? inv.html : ''), ['Svara ' + L.escH(acc.name), gl], { preheader: text.slice(0, 90) }) });
         if (inv) patch.review_invited_at = new Date().toISOString();
-        patch.replies = (f.replies || []).concat({ txt: text, ts: Date.now(), by: M.member.name || M.user.email, email: M.user.email });
+        patch.replies = (f.replies || []).concat(Object.assign({ txt: text, ts: Date.now(), by: M.member.name || M.user.email, email: M.user.email }, b.fix ? { closed: true } : {}));
         if (b.fix) { patch.status = 'fix'; patch.fixed_at = new Date().toISOString(); } else if (f.status === 'new') patch.status = 'prog';
       } else {
         if (!['new', 'prog', 'fix'].includes(b.status)) return L.send(res, 400, { error: 'status' });
         patch.status = b.status; patch.fixed_at = b.status === 'fix' ? new Date().toISOString() : null;
+        // closed without a written reply: the guest still hears that it is solved (once), with the answer link and,
+        // if the company uses it, the same review invitation that every closed case gets (never chosen by rating)
+        if (b.status === 'fix' && f.contact && !(f.replies || []).some(r => r.closed)) {
+          const inv = L.reviewInvite(acc, f), gl = L.guestLink(f), what = (f.sec_name ? f.sec_name + ' › ' : '') + (f.place || '');
+          const msg = f.type === 'p' ? 'Tack för ditt fina meddelande! Vi har delat det med teamet.' : f.type === 'i' ? 'Tack för din idé! Vi har tagit med den.' : 'Ditt ärende om ' + what + ' är nu åtgärdat. Tack för att du sa till!';
+          try {
+            if (f.via === 'sms') { await L.sendSms({ to: f.contact, text: acc.name + ': ' + msg + '\nSvara: ' + gl }); if (inv) await L.sendSms({ to: f.contact, text: acc.name + ': ' + inv.sms }); }
+            else await L.sendEmail({ to: f.contact, replyTo: L.replyTo(f, M.user.email), subject: (f.type === 'c' || f.type === 'q' ? 'Ditt ärende är löst · ' : 'Tack från ') + acc.name, text: msg + '\n\nSvara här: ' + gl + (inv ? '\n\n' + inv.text : ''),
+              html: L.mailHtml(L.escH(f.type === 'c' || f.type === 'q' ? 'Ditt ärende är löst' : 'Tack från ' + acc.name), `<p>${L.escH(msg)}</p><p style="color:#6B7280;font-size:13px;margin-top:14px">Ditt meddelande:</p><blockquote style="border-left:4px solid #E5E7EB;margin:0;padding:6px 12px;color:#4B5563">${L.escH(f.message || '')}</blockquote>` + (inv ? inv.html : ''), ['Svara ' + L.escH(acc.name), gl]) });
+            patch.replies = (f.replies || []).concat({ txt: 'Gästen fick besked om att ärendet är avslutat' + (inv ? ' och en inbjudan att recensera' : '') + '.', ts: Date.now(), by: M.member.name || M.user.email, internal: true, closed: true });
+            if (inv) patch.review_invited_at = new Date().toISOString();
+          } catch (e) { console.error('close notice', e.message); }
+        }
       }
       await L.sb('PATCH', 'feedback?id=eq.' + L.q(f.id), patch, 'return=minimal');
       return L.send(res, 200, { ok: true });
@@ -158,13 +171,29 @@ module.exports = async (req, res) => {
       const r = await invite(email, b.name, acc, rl, null, secs);
       return L.send(res, 200, r);
     }
-    if (a === 'member') {   // change a colleague's role or sections
+    if (a === 'account_update' || a === 'child_update') {   // company name and contact details (owner/manager), or a daughter's (parent)
       if (!ADMIN_ROLES.includes(role)) return L.send(res, 403, { error: 'role' });
-      if (b.user_id === M.user.id) return L.send(res, 400, { error: 'self' });
+      let target = acc;
+      if (a === 'child_update') { if ((acc.kind || 'site') !== 'group') return L.send(res, 403, { error: 'role' }); [target] = await L.sb('GET', 'accounts?id=eq.' + L.q(String(b.id || '')) + '&parent_id=eq.' + L.q(acc.id) + '&select=*'); if (!target) return L.send(res, 404, { error: 'notfound' }); }
+      const p = {};
+      if (b.name !== undefined) { const n = String(b.name).trim().slice(0, 120); if (n.length < 2) return L.send(res, 400, { error: 'name' }); p.name = n; }
+      if (b.city !== undefined) p.city = String(b.city).trim().slice(0, 60) || null;
+      if (b.org !== undefined) p.org = String(b.org).trim().slice(0, 20) || null;
+      if (b.phone !== undefined) p.phone = String(b.phone).trim().slice(0, 30) || null;
+      if (b.email !== undefined) { const e = String(b.email).trim().toLowerCase(); if (e && !/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(e)) return L.send(res, 400, { error: 'format' }); p.email = e || null; }
+      await L.sb('PATCH', 'accounts?id=eq.' + L.q(target.id), p, 'return=minimal');
+      if (p.name) await L.sb('PATCH', 'codes?account_id=eq.' + L.q(target.id), { company: p.name }, 'return=minimal').catch(() => {});   // the QR form shows the new name
+      return L.send(res, 200, { ok: true });
+    }
+    if (a === 'member') {   // change a colleague's role, sections or name
+      if (!ADMIN_ROLES.includes(role)) return L.send(res, 403, { error: 'role' });
+      const onlyName = b.role === undefined && b.secs === undefined;
+      if (b.user_id === M.user.id && !onlyName) return L.send(res, 400, { error: 'self' });
       const patch = {};
       if (b.role !== undefined) { if (!['Gruppadmin', 'Handläggare', 'Medarbetare', 'Läsare'].includes(b.role)) return L.send(res, 400, { error: 'role' }); if (!(await quotaOk(acc, b.role, String(b.user_id || '')))) return L.send(res, 402, { error: 'seats', role: b.role }); patch.role = b.role; }
       if (Array.isArray(b.secs)) patch.secs = b.secs.map(x => String(x).slice(0, 80)).slice(0, 40);
-      await L.sb('PATCH', 'members?account_id=eq.' + L.q(acc.id) + '&user_id=eq.' + L.q(String(b.user_id || '')) + '&role=neq.' + L.q('Ägare'), patch, 'return=minimal');
+      if (b.name !== undefined) patch.name = String(b.name).trim().slice(0, 80) || null;
+      await L.sb('PATCH', 'members?account_id=eq.' + L.q(acc.id) + '&user_id=eq.' + L.q(String(b.user_id || '')) + (onlyName ? '' : '&role=neq.' + L.q('Ägare')), patch, 'return=minimal');
       return L.send(res, 200, { ok: true });
     }
     if (a === 'push_sub') {

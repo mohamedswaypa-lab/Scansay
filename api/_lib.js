@@ -237,6 +237,17 @@ function reviewCfg(acc) {
 /* logins per role that ScanSay sells in the package (the owner is always one extra) */
 const ROLE_KEYS = ['Gruppadmin', 'Handläggare', 'Medarbetare', 'Läsare'];
 function cleanRoles(r) { const o = {}; ROLE_KEYS.forEach(k => { const n = parseInt((r || {})[k]); if (n >= 0) o[k] = Math.min(10000, n); }); return o; }
+/* Reply-To for emails to a guest. With REPLY_DOMAIN set (and Brevo inbound parsing pointing at /api/form?a=inbound),
+   the guest can simply press Reply in their mail program and the answer lands in the case. Otherwise the staff member's address. */
+function replyTo(f, fallback) {
+  const d = env('REPLY_DOMAIN'); if (!d || !f || !f.id) return fallback;
+  const id = String(f.id).replace(/-/g, ''); return 'svar+' + id + '.' + hmac('reply:' + id).slice(0, 10) + '@' + d;
+}
+function replyTarget(addr) {
+  const m = String(addr || '').toLowerCase().match(/svar\+([0-9a-f]{32})\.([0-9a-f]{10})@/); if (!m) return null;
+  if (hmac('reply:' + m[1]).slice(0, 10) !== m[2]) return null;
+  return m[1].replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, '$1-$2-$3-$4-$5');
+}
 /* link for the guest to answer a reply: the answer is added to the same case in the dashboard (valid 30 days) */
 function guestLink(f) { return site() + '/svar/?t=' + seal({ f: f.id, k: 'r', exp: Date.now() + 30 * 864e5 }); }
 function reviewInvite(acc, f) {
@@ -270,4 +281,4 @@ function fail(res, e, req) {
   send(res, st, { error: st === 401 ? 'auth' : st >= 500 && !admin ? 'server' : e.message });
 }
 
-module.exports = { brandMail, offerMail, welcomeMail, subTable, seller, secLog, recent, adminGate, env, send, body, isAdmin, seal, unseal, sendEmail, sendSms, escH, crypto, sb, sbOn, q, authApi, member, limited, ipOf, hmac, site, mailHtml, routeAlarm, pushAccount, reviewInvite, reviewCfg, guestLink, cleanRoles, ROLE_KEYS, fail };
+module.exports = { brandMail, offerMail, welcomeMail, subTable, seller, secLog, recent, adminGate, env, send, body, isAdmin, seal, unseal, sendEmail, sendSms, escH, crypto, sb, sbOn, q, authApi, member, limited, ipOf, hmac, site, mailHtml, routeAlarm, pushAccount, reviewInvite, reviewCfg, guestLink, cleanRoles, ROLE_KEYS, replyTo, replyTarget, fail };
