@@ -24,6 +24,23 @@
       ]
     },
     {
+      "source": "/svar/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        }
+      ]
+    },
+    {
       "source": "/api/(.*)",
       "headers": [
         {

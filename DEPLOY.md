@@ -117,3 +117,57 @@ The dashboard can be installed as an app on phones and computers, and every user
 - Logging out turns notifications off on that device. Removing a colleague under Användare removes their devices.
 - **Skicka testlarm** on the Larm page also sends a notification to every device of the company, and **Skicka testnotis** sends one only to your own devices.
 - The app opens without internet but needs internet for new data. A screen then says there is no connection.
+
+## 9. Review invitations (Google / Tripadvisor)
+- The hotel pastes its Google review link (Google Business Profile → *Ask for reviews*) and optionally Tripadvisor under **Intyg → Recensioner på Google och Tripadvisor**.
+- When staff reply and tick **Markera som löst**, the reply also carries one invitation to leave a public review. It goes to **every** guest whose case is closed — complaints and praise, any rating — once per guest. There is no rating filter on purpose: Google forbids asking only happy guests.
+- A new complaint has the box unticked by default (first reply = "we're on it"); the follow-up reply, when it is fixed, has it ticked.
+- Clicks go through `scansay.se/api/form?a=r…`, so the dashboard shows invitations sent and how many clicked through.
+- Needs the two `review_…` columns from `supabase/update-3.sql`.
+
+## 10. Parent and daughter companies, roles, guest replies
+Run `supabase/update-4.sql` once (after update-3).
+
+**Parent company (koncern)**
+- In admin → open the customer → **Koncern** → choose *Moderbolag* and set **Max antal dotterbolag**. Save.
+- The parent's users now get a *Koncernöversikt* instead of an inbox: numbers per daughter (messages, satisfied guests, resolved complaints, time to fix, urgent alarms, review invitations) and a comparison table. They never see the guests' messages or contact details.
+- Under **Dotterbolag** they create daughters themselves (name, city, manager's email) until the limit is reached. The manager gets the normal welcome email with *Välj lösenord*. Each daughter gets the same package, modules and number of logins as the parent.
+- You can also link an existing customer to a parent in admin: **Koncern → Tillhör moderbolag**.
+- Someone who is a user in several companies gets a company switcher at the top.
+
+**Roles inside each company** (set when inviting under *Användare*, and changeable later)
+| Role | Sees | Can |
+|---|---|---|
+| Ägare / Chef (Gruppadmin) | everything | settings, QR codes, alarms, users, replies |
+| Handläggare (agent) | Inkorg, Notiser | reply to guests, forward cases, mark solved |
+| Medarbetare (worker) | only cases from their own departments (urgent alarms always) | "Jag tar det", "Markera som åtgärdat", notifications – no replies to guests |
+| Läsare | Översikt (statistics, no message text) | – |
+All limits are checked on the server, not only hidden in the page.
+
+**Forward a case:** *Skicka vidare* in the inbox sends the case to a colleague by email and phone notification and logs it in the case.
+
+**Guest replies:** every reply to a guest now has a **Svara** button (and a link in SMS). The guest answers on scansay.se/svar, the answer appears in the same case, the case opens again, and the person who replied gets an email plus a phone notification. Links work for 30 days.
+
+**If emails don't arrive:**
+1. Brevo → *Transactional → Logs*: look up the address. "Delivered" means it reached the mailbox (check spam); "Blocked/Hard bounce" shows why.
+2. Brevo → *Senders, Domains & Dedicated IPs → Domains*: authenticate **scansay.se** (add the DKIM, SPF and DMARC records Brevo shows in your DNS). Without this Gmail and Outlook often put the mail in spam or reject it.
+3. `MAIL_FROM` must be an address on that authenticated domain, e.g. `ScanSay <hello@scansay.se>`.
+4. Make sure **hello@scansay.se** really receives mail (email forwarding at your domain provider to your Gmail, or Google Workspace). Otherwise replies to system emails disappear.
+
+## 11. Packages with roles, offer alternatives, messages, case numbers
+Run the new part of `supabase/update-4.sql` again (safe to repeat) and re-run `supabase/retention.sql`.
+
+**Offer → package with roles.** In admin → Ansökningar → open the company:
+- **5. Inloggningar per roll:** number of Chefer, Handläggare, Medarbetare and Läsare (the owner is always one extra).
+- **Koncern:** *Enskilt företag* or *Moderbolag med dotterbolag* + how many daughters are included. Each daughter gets the same roles.
+- **Paketalternativ:** set up a package and press *Lägg till paketet ovan som alternativ*; change it and add the next one. With alternatives in the list the customer chooses one on the signing page, and the signed choice is what *Godkänn och skapa konto* uses.
+- You can change the role numbers later under Kunder → the company → *Inloggningar per roll*.
+- The company cannot invite more people per role than the package allows (checked on the server). The parent company can give one person roles in several daughters (and in the parent); that person switches company at the top after login.
+
+**Messages from admin now reach the company.** Admin → Meddelanden (new message, reply or *Utskick till flera*) is saved for the company and emailed to its owner and managers. They read and answer under **Meddelanden** in their dashboard; you get the answer in admin and by email to NOTIFY_EMAIL.
+
+**Guest answers** email only the staff member who wrote the last reply (no push to everyone).
+
+**Case numbers.** Every case shows its number (the one the guest got, e.g. `C7PQK-0FFA8`) and the inbox has a search box. A guest can go to **scansay.se/svar**, type the case number and the same email/phone, and gets a fresh link to the conversation. Staff can mark a case solved without replying and open it again (*↺ Öppna igen*).
+
+**How long is it kept?** Guest messages: the period the company chose under GDPR (6, 12, 18 or 24 months, default 12), then deleted every night by `retention.sql`. Before deletion the numbers (count, ratings, solved) are kept in `stats_monthly` without text or contact details. Messages between you and the company: 24 months. Signed contracts (`signatures`): kept, since they are accounting and contract records.
