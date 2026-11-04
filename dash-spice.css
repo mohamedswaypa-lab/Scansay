@@ -46,3 +46,67 @@ html body .tm.s:not(#x):not(#y){background:#EFF6FF!important;border-color:#BFDBF
 html body #app .btn.pri:not(#x):not(#y){background:linear-gradient(135deg,#1D4ED8,#2563EB)!important;border-color:#1D4ED8!important}
 @media (prefers-reduced-motion:reduce){html body .card.kpi{transition:none}}
 html body #iq:not(#x):not(#y){padding:9px 12px!important;border:1px solid #D1D5DB!important;border-radius:11px!important;background:#fff!important;font:inherit;min-width:240px}html body #iq:focus:not(#x){border-color:#1D4ED8!important;box-shadow:0 0 0 3px rgba(29,78,216,.15)!important;outline:0}
+/* ---------- Teams-style chat (team, koncern and ScanSay messages) ---------- */
+html body #app .chat:not(#x):not(#y){display:grid;grid-template-columns:300px 1fr;gap:0;min-height:0;height:calc(100vh - 210px);min-height:520px;background:#fff;border:1px solid #E5E7EB;border-radius:18px;overflow:hidden;box-shadow:0 18px 40px -30px rgba(29,78,216,.45)}
+html body #app .cside:not(#x):not(#y){background:linear-gradient(180deg,#0A0F1C 0%,#13245C 100%);padding:14px 10px;overflow:auto;display:flex;flex-direction:column;gap:2px}
+html body #app .cside .csearch:not(#x):not(#y){width:100%;background:rgba(255,255,255,.1)!important;border:1px solid rgba(255,255,255,.18)!important;color:#fff!important;-webkit-text-fill-color:#fff!important;border-radius:12px!important;padding:10px 12px 10px 34px!important;font-size:14px;margin-bottom:8px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23C8F542' stroke-width='2.4'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M21 21l-4.3-4.3'/%3E%3C/svg%3E")!important;background-repeat:no-repeat!important;background-position:11px 50%!important}
+html body #app .cside .csearch::placeholder{color:#A5B4FC}
+html body #app .cgh:not(#x):not(#y){font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#C8F542!important;-webkit-text-fill-color:#C8F542!important;padding:12px 8px 6px}
+html body #app .cch:not(#x):not(#y){display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;padding:8px 10px;border-radius:12px;cursor:pointer;color:#E0E7FF!important;-webkit-text-fill-color:#E0E7FF!important}
+html body #app .cch:hover:not(#x):not(#y){background:rgba(255,255,255,.08)}
+html body #app .cch.on:not(#x):not(#y){background:rgba(200,245,66,.16);box-shadow:inset 3px 0 0 #C8F542}
+html body #app .cch .cnm:not(#x):not(#y){flex:1;min-width:0;display:flex;flex-direction:column}
+html body #app .cch .cnm b{font-size:14px;color:#fff!important;-webkit-text-fill-color:#fff!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html body #app .cch .cnm small{font-size:11.5px;color:#A5B4FC!important;-webkit-text-fill-color:#A5B4FC!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html body #app .cch .cnt:not(#x):not(#y){background:#C8F542;color:#0A0F1C!important;-webkit-text-fill-color:#0A0F1C!important;border-radius:999px;font-size:11px;font-weight:800;padding:1px 8px}
+html body #app .cav:not(#x):not(#y){width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff!important;-webkit-text-fill-color:#fff!important;font-weight:800;font-size:13px;flex:none}
+html body #app .cav.sm:not(#x):not(#y){width:30px;height:30px;font-size:12px}
+html body #app .cmain:not(#x):not(#y){display:flex;flex-direction:column;min-width:0;background:#F8FAFF}
+html body #app .chead:not(#x):not(#y){display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 18px;background:#fff;border-bottom:1px solid #E5E7EB}
+html body #app .chead b{font-size:16px}html body #app .chead small{display:block;color:#64748B;font-size:12.5px}
+html body #app .ctabs:not(#x):not(#y){display:flex;gap:4px;background:#EEF2FF;border-radius:10px;padding:3px}
+html body #app .ctabs button:not(#x):not(#y){border:0;background:none;padding:6px 12px;border-radius:8px;font-weight:700;font-size:13px;color:#3730A3!important;-webkit-text-fill-color:#3730A3!important;cursor:pointer}
+html body #app .ctabs button.on:not(#x):not(#y){background:#1D4ED8;color:#fff!important;-webkit-text-fill-color:#fff!important}
+html body #app .cmsgs:not(#x):not(#y),html body #app .csr:not(#x):not(#y){flex:1;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:10px;max-height:none;min-height:0}
+html body #app .cm:not(#x):not(#y){display:flex;gap:10px;align-items:flex-end;max-width:78%}
+html body #app .cm.me:not(#x):not(#y){align-self:flex-end;flex-direction:row-reverse}
+html body #app .cm .cb:not(#x):not(#y){background:#fff;border:1px solid #E5E7EB;border-radius:4px 16px 16px 16px;padding:8px 12px;box-shadow:0 2px 6px -4px rgba(15,23,42,.2)}
+html body #app .cm.me .cb:not(#x):not(#y){background:linear-gradient(135deg,#1D4ED8,#3B82F6);border:0;border-radius:16px 4px 16px 16px}
+html body #app .cm.me .cb *:not(a):not(#x){color:#fff!important;-webkit-text-fill-color:#fff!important}
+html body #app .cm.me .cb a{color:#C8F542!important;-webkit-text-fill-color:#C8F542!important}
+html body #app .cwho:not(#x):not(#y){font-size:12px;margin-bottom:2px}html body #app .cwho b{font-size:12.5px}html body #app .cwho span{color:#94A3B8;margin-left:4px}
+html body #app .ct:not(#x):not(#y){font-size:14.5px;line-height:1.45;white-space:pre-wrap;word-break:break-word;color:#0F172A}
+html body #app .ct a{color:#1D4ED8;text-decoration:underline}
+html body #app .cday:not(#x):not(#y){display:flex;align-items:center;gap:10px;color:#64748B;font-size:11.5px;font-weight:700;margin:6px 0}
+html body #app .cday::before,html body #app .cday::after{content:"";flex:1;height:1px;background:#E2E8F0}
+html body #app .cday span{background:#EEF2FF;color:#3730A3;padding:2px 10px;border-radius:999px}
+html body #app .chit:not(#x):not(#y),html body #app .clink:not(#x):not(#y){display:flex;flex-direction:column;gap:3px;text-align:left;background:#fff;border:1px solid #E5E7EB;border-left:4px solid #1D4ED8;border-radius:12px;padding:10px 12px;cursor:pointer;text-decoration:none;color:#0F172A}
+html body #app .clink:not(#x):not(#y){flex-direction:row;align-items:center;gap:10px;border-left-color:#65A30D}
+html body #app .clink small{display:block;color:#64748B;font-size:12px}
+html body #app .chit mark{background:#C8F542;color:#0A0F1C;border-radius:3px;padding:0 2px}
+html body #app .cempty:not(#x):not(#y){margin:auto;text-align:center;color:#64748B;padding:30px}
+html body #app .ccomp:not(#x):not(#y){display:flex;gap:8px;padding:12px;background:#fff;border-top:1px solid #E5E7EB;align-items:flex-end}
+html body #app .ccomp textarea:not(#x):not(#y){flex:1;resize:none;border-radius:14px!important;padding:10px 14px!important;border:1.5px solid #CBD5E1!important;font-size:14.5px;min-height:44px;max-height:140px}
+html body #app .ccomp textarea:focus{border-color:#1D4ED8!important;outline:0;box-shadow:0 0 0 3px rgba(29,78,216,.15)}
+@media(max-width:860px){html body #app .chat:not(#x):not(#y){grid-template-columns:1fr;height:auto}html body #app .cside:not(#x):not(#y){max-height:260px}html body #app .cmsgs:not(#x):not(#y){max-height:60vh;min-height:300px}}
+/* team stats card on the overview */
+html body #app .tcard:not(#x):not(#y){background:radial-gradient(380px 200px at 100% 0%,rgba(200,245,66,.28),transparent 70%),#fff!important}
+html body #app .tsub:not(#x):not(#y){font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#7C3AED;margin:12px 0 6px}
+/* quota pills */
+html body #app .qrow:not(#x):not(#y){display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+html body #app .qpill:not(#x):not(#y){background:#EFF6FF;border:1px solid #BFDBFE;color:#1E3A8A;border-radius:999px;padding:5px 12px;font-size:13px}
+html body #app .qpill.full:not(#x):not(#y){background:#FEF2F2;border-color:#FECACA;color:#991B1B}
+/* tasks and aspects in cases */
+html body #app .task:not(#x):not(#y){background:linear-gradient(135deg,#F0FDFA,#ECFCCB);border:1px solid #99F6E4;border-left:4px solid #0D9488;border-radius:12px;padding:9px 12px;margin:8px 0;font-size:13.5px}
+html body #app .asp:not(#x):not(#y){display:flex;flex-wrap:wrap;gap:6px 14px;margin:6px 0;font-size:13px}
+html body #app .asp b.s1{color:#DC2626}html body #app .asp b.s2{color:#EA580C}html body #app .asp b.s3{color:#CA8A04}html body #app .asp b.s4{color:#65A30D}html body #app .asp b.s5{color:#15803D}
+/* more colour: cards, tables, buttons, collapsible QR sections */
+html body #app .card:not(.kpi):not(#x):not(#y){border-top:3px solid transparent;background-image:linear-gradient(#fff,#fff),linear-gradient(90deg,#1D4ED8,#3B82F6 60%,#C8F542);background-origin:border-box;background-clip:padding-box,border-box}
+html body #app table thead th:not(#x):not(#y){background:#EEF2FF!important;color:#1E3A8A!important;-webkit-text-fill-color:#1E3A8A!important}
+html body #app table tbody tr:hover td:not(#x):not(#y){background:#F8FAFF}
+html body #app .btn.lime:not(#x):not(#y){background:#C8F542!important;color:#0A0F1C!important;-webkit-text-fill-color:#0A0F1C!important}
+html body #app .qtog:not(#x):not(#y){background:#EEF2FF!important;color:#1D4ED8!important;-webkit-text-fill-color:#1D4ED8!important;border:1px solid #C7D2FE!important;border-radius:999px!important;font-weight:700}
+html body #app .seg button.on:not(#x):not(#y){background:#1D4ED8!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
+html body #app .cside button.cch.on:not(#x):not(#y){background:rgba(200,245,66,.16)!important;box-shadow:inset 3px 0 0 #C8F542!important}
+html body #app .cside button.cch:not(.on):not(#x):not(#y){background:transparent!important}
+html body #app .ctabs button.on:not(#x):not(#y){background:#1D4ED8!important;color:#fff!important;-webkit-text-fill-color:#fff!important}

@@ -91,3 +91,14 @@ html body .cw-b:not(#x):not(#y){color:#1D4ED8!important;-webkit-text-fill-color:
 html body .cw-g:not(#x):not(#y){color:#15803D!important;-webkit-text-fill-color:#15803D!important}
 html body .cw-l:not(#x):not(#y){color:inherit!important;background:linear-gradient(transparent 62%,#C8F542 62%,#C8F542 92%,transparent 92%)!important;padding:0 .08em}
 html body .cw-x:not(#x):not(#y){color:#C8F542!important;-webkit-text-fill-color:#C8F542!important}
+/* v20 · more colour on the main page: tinted sections, coloured card accents, lime highlights */
+html body section.offbg:not(#x):not(#y){background:radial-gradient(700px 320px at 0% 0%,rgba(29,78,216,.10),transparent 70%),radial-gradient(600px 300px at 100% 100%,rgba(200,245,66,.28),transparent 70%),#F7F9FE!important}
+html body section.fsec:not(#x):not(#y),html body section.stickers:not(#x):not(#y){background:linear-gradient(180deg,#FFFFFF 0%,#F2F6FF 100%)!important}
+html body .bcard:not(#x):not(#y),html body .fcard:not(#x):not(#y),html body .dcard:not(#x):not(#y){border-top:4px solid var(--ac,#1D4ED8)!important;transition:transform .18s,box-shadow .18s}
+html body .bcard:hover:not(#x):not(#y),html body .fcard:hover:not(#x):not(#y),html body .dcard:hover:not(#x):not(#y){transform:translateY(-3px);box-shadow:0 22px 40px -28px var(--ac,#1D4ED8)!important}
+html body .bcards>.bcard:nth-child(4n+1),html body .fcards>.fcard:nth-child(4n+1),html body .dcard:nth-child(4n+1){--ac:#1D4ED8}
+html body .bcards>.bcard:nth-child(4n+2),html body .fcards>.fcard:nth-child(4n+2),html body .dcard:nth-child(4n+2){--ac:#65A30D}
+html body .bcards>.bcard:nth-child(4n+3),html body .fcards>.fcard:nth-child(4n+3),html body .dcard:nth-child(4n+3){--ac:#7C3AED}
+html body .bcards>.bcard:nth-child(4n+4),html body .fcards>.fcard:nth-child(4n+4),html body .dcard:nth-child(4n+4){--ac:#0D9488}
+html body section h2 em:not(#x):not(#y),html body section h2 i:not(#x):not(#y){font-style:normal;background:linear-gradient(transparent 62%,rgba(200,245,66,.85) 62%);padding:0 3px;color:inherit}
+html body .eyebrow:not(#x):not(#y),html body .kick:not(#x):not(#y){color:#1D4ED8!important;-webkit-text-fill-color:#1D4ED8!important;background:#EEF2FF;border-radius:999px;padding:3px 10px;display:inline-block}

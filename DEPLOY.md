@@ -183,3 +183,23 @@ Then the Reply-To of guest emails becomes a private address per case; the answer
 - *Markera som löst* is always manual (also after an AI suggestion).
 - When a case is closed (with or without a written reply) the guest gets one message: "your case is solved / thank you", a **Svara** button and – if the company has added its Google/Tripadvisor link under Intyg – the review invitation. Every guest with a closed case gets the same, whatever the rating. Re-opening and closing again does not send it twice.
 - Inbox filter **Gästen svarade** shows cases where the guest's answer is the latest.
+
+## 14. Update 5: roles, case flow, tasks, team chat (November 2026)
+**Run `supabase/update-5.sql` once** in Supabase → SQL Editor (safe to run again). Then run `supabase/retention.sql` again so old chat messages are deleted after 12 months.
+
+Who does what:
+- **Ägare of a koncern**: adds only hotels and their **Chef** (as many as the package allows: `max_children`). Sees statistics for every hotel, the **Intyg** for every hotel (print all, one per page), and chats with the managers in the **Koncernen** channel. No inbox.
+- **Chef (Ägare/Gruppadmin of a hotel)**: adds Handläggare, Medarbetare and Läsare within the package quota (`roles` on the account). Gets statistics and the team card (answers, solved cases, tasks, praise). As soon as the hotel has a Handläggare, the Chef no longer gets the inbox or the guests' contact details.
+- **Handläggare**: works the inbox, answers guests, sends tasks to Medarbetare ("📋 Skicka uppdrag") and closes cases. May add and remove Medarbetare only.
+- **Medarbetare** (cleaning, maintenance, parking, security): gets a push/email and sees only *Mina uppdrag*. Presses **Klart** when done; the Handläggare gets an email and sees "klart HH:MM" on the case.
+- **Läsare**: statistics only.
+Everyone can only add or remove people below their own role. When someone is removed, their open tasks go back to the inbox, their private chats are deleted and their name is removed from old chat messages (GDPR).
+
+Case flow:
+- Answering the guest (or sending a task) moves the case to **Pågående**. A case can never be solved in the same click as the answer.
+- **Markera som löst** is possible only from Pågående and at the earliest **30 minutes** later, so there is time to fix and double-check. The same 30 minutes apply to a Medarbetare's **Klart**. Change it with the env var `CASE_MIN_MINUTES` (e.g. `15`).
+- When solved, the guest gets the close notice with Svara and (if set up) the review invitation – the same for every guest.
+
+Guest form: the main question and four 1–5 ratings now depend on the industry (hotel: Renlighet, Bekvämlighet, Personal, Frukost; café: Mat och dryck, Service, Väntetid, Atmosfär; taxi: Föraren, Bilen, Punktlighet, Pris; gym: Utrustning, Renlighet, Personal, Trängsel …). The ratings show on the case in the inbox. The code page tells the guest to check the spam folder.
+
+**Codes landing in spam**: the notice helps, but the real fix is to authenticate your domain in Brevo: Brevo → Senders, Domains & Dedicated IPs → Domains → Add `scansay.se` → add the DKIM, SPF (TXT `v=spf1 include:spf.brevo.com ~all`) and DMARC (TXT on `_dmarc`: `v=DMARC1; p=none; rua=mailto:hello@scansay.se`) records at your DNS provider → Verify. Use `MAIL_FROM` with that same domain (e.g. `ScanSay <kod@scansay.se>`). It usually takes 1–2 days before Gmail/Outlook trust it.
