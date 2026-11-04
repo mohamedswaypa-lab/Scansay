@@ -146,7 +146,7 @@ module.exports = async (req, res) => {
       if (name && /[0-9@#$%^*_=+<>{}\[\]|\\\/]|https?:/i.test(name)) return L.send(res, 400, { error: 'name' });
       let img = typeof b.image === 'string' && b.image.length < 600000 && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/]+=*$/.test(b.image) ? b.image : null;   // only a real base64 picture, nothing else
       const row = { account_id: c.account_id, code: c.code, group_id: c.group_id, sec_key: c.sec_key, sec_name: c.sec_name, place: c.place,
-        type: ['c', 'p', 'i', 'q'].includes(b.type) ? b.type : 'c', topic: String(b.topic || '').slice(0, 80), rating: Math.min(5, Math.max(1, +b.rating || 1)), quick: ['yes', 'no'].includes(b.quick) ? b.quick : null,
+        type: ['c', 'p', 'i', 'q'].includes(b.type) ? b.type : 'c', aspects: (() => { const o = {}; if (b.aspects && typeof b.aspects === 'object') Object.keys(b.aspects).slice(0, 6).forEach(k => { const v = parseInt(b.aspects[k]); if (v >= 1 && v <= 5) o[String(k).slice(0, 40)] = v; }); return Object.keys(o).length ? o : null; })(), topic: String(b.topic || '').slice(0, 80), rating: Math.min(5, Math.max(1, +b.rating || 1)), quick: ['yes', 'no'].includes(b.quick) ? b.quick : null,
         urgent: !!b.urgent, message: msg, name, via: v.method, contact: v.contact, contact_key: v.contact_key, image: img };
       const [saved] = await L.sb('POST', 'feedback', row);
       const [acc] = await L.sb('GET', 'accounts?id=eq.' + L.q(c.account_id) + '&select=*');
@@ -163,11 +163,11 @@ module.exports = async (req, res) => {
 /* a guest's answer: added to the case, the case opens again, the staff member who answered last gets an email */
 async function guestReply(f, acc, text) {
   const replies = (f.replies || []).concat({ txt: text, ts: Date.now(), by: 'Gästen', guest: true });
-  await L.sb('PATCH', 'feedback?id=eq.' + L.q(f.id), { replies, status: 'new', fixed_at: null }, 'return=minimal');
+  await L.sb('PATCH', 'feedback?id=eq.' + L.q(f.id), f.status === 'fix' ? { replies, status: 'new', fixed_at: null, prog_at: null, fixed_by: null } : { replies }, 'return=minimal');
   // tell the staff: only the person who answered the guest last gets an email (or the company address)
   const last = (f.replies || []).filter(r => r.email).pop(), to = (last && last.email) || acc.email;
   const head = 'Gästen svarade: ' + (f.sec_name ? f.sec_name + ' › ' : '') + (f.place || '');
   if (to) await L.sendEmail({ to, subject: head + ' · ' + acc.name, text: 'Gästen svarade på ert meddelande:\n\n"' + text + '"\n\nÖppna: ' + L.site() + '/app/#inbox',
-    html: L.mailHtml(L.escH(head), `<p>Gästen svarade på ert meddelande:</p><blockquote style="border-left:4px solid #1D4ED8;margin:0;padding:8px 12px;background:#F5F7FB">${L.escH(text)}</blockquote><p style="color:#6B7280;font-size:13px;margin-top:14px">Ärendet är öppnat igen och ligger under Öppna i inkorgen.</p>`, ['Öppna ärendet', L.site() + '/app/#inbox']) }).catch(e => console.error('greply mail', e.message));
+    html: L.mailHtml(L.escH(head), `<p>Gästen svarade på ert meddelande:</p><blockquote style="border-left:4px solid #1D4ED8;margin:0;padding:8px 12px;background:#F5F7FB">${L.escH(text)}</blockquote><p style="color:#6B7280;font-size:13px;margin-top:14px">Ärendet ligger under Gästen svarade i inkorgen.</p>`, ['Öppna ärendet', L.site() + '/app/#inbox']) }).catch(e => console.error('greply mail', e.message));
   return replies;
 }

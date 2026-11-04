@@ -21,7 +21,7 @@
     if (!r.ok) { var e = new Error(ERR[j.error] || j.error || ('Fel ' + r.status)); e.data = j; e.status = r.status; throw e; }
     return j;
   }
-  var ERR = { role: 'Din roll får inte göra det. Be ägaren om hjälp.', seats: 'Alla inloggningar för den rollen används. Kontakta ScanSay för fler.', nocontact: 'Kunden lämnade ingen e-post eller telefon, så svaret kan inte skickas.', taken: 'En kod var upptagen. Försök igen.', locked: 'Kontot är pausat. Kontakta ScanSay.', size: 'För mycket data på en gång.', format: 'Skriv en giltig e-postadress.', children: 'Ni har skapat alla dotterbolag som ingår. Kontakta ScanSay för fler.', nouser: 'Kollegan finns inte längre.', name: 'Skriv företagets namn.', self: 'Du kan inte ändra dig själv.', notfound: 'Ärendet finns inte längre.' };
+  var ERR = { role: 'Din roll får inte göra det. Be ägaren om hjälp.', seats: 'Alla inloggningar för den rollen används. Kontakta ScanSay för fler.', nocontact: 'Kunden lämnade ingen e-post eller telefon, så svaret kan inte skickas.', taken: 'En kod var upptagen. Försök igen.', locked: 'Kontot är pausat. Kontakta ScanSay.', size: 'För mycket data på en gång.', format: 'Skriv en giltig e-postadress.', children: 'Ni har skapat alla dotterbolag som ingår. Kontakta ScanSay för fler.', nouser: 'Kollegan finns inte längre.', name: 'Skriv företagets namn.', self: 'Du kan inte ändra dig själv.', notfound: 'Ärendet finns inte längre.', wait: 'Vänta minst 30 minuter efter att ärendet blev pågående, så hinner ni åtgärda och dubbelkolla.', notprog: 'Flytta ärendet till Pågående först.', assignee: 'Bara den som fick uppdraget kan markera det klart.', target: 'Välj en kollega som kan ta uppdrag.' };
 
   /* invite or password-reset link: #access_token=…&type=invite|recovery */
   var hp = new URLSearchParams((location.hash || '').slice(1));
@@ -83,7 +83,7 @@
   SSLIVE.saveGroup = function () { SSLIVE.save(SSLIVE.getS()); };
   SSLIVE.invite = function (email, name, role, secs) { return call('POST', 'invite', { email: email, name: name, role: role, secs: secs || [] }); };
   SSLIVE.remove = function (uid) { return call('POST', 'remove', { user_id: uid }); };
-  SSLIVE.forward = function (F, uid, note) { return call('POST', 'forward', { id: F.id, user_id: uid, note: note }); };
+  SSLIVE.forward = function (F, uid, note) { return call('POST', 'assign', { id: F.id, user_id: uid, note: note }); };
   SSLIVE.setMember = function (uid, patch) { return call('POST', 'member', Object.assign({ user_id: uid }, patch)); };
   SSLIVE.call = call;
   SSLIVE.logout = async function () {
@@ -116,6 +116,7 @@
     if (h && !document.getElementById('lo')) h.insertAdjacentHTML('beforeend', '<div class="liveme">' + sw + '<span>' + esc(d.me.email) + ' · ' + esc(roleName(d.me.role)) + '</span><button id="lo" class="btn sm line" onclick="SSLIVE.logout()">Logga ut</button></div>');
     if (d.account.parent) document.querySelectorAll('header .logo div div, header .logo small').forEach(function (el) { if (/Företagsöversikt/.test(el.textContent)) el.textContent = 'Företagsöversikt · ' + d.account.name + ' · del av ' + d.account.parent; });
     document.body.insertAdjacentHTML('beforeend', '<div id="livebar" style="display:none;position:fixed;bottom:12px;left:50%;transform:translateX(-50%);background:#B91C1C;color:#fff;padding:10px 16px;border-radius:12px;z-index:200;font-weight:700"></div>');
+    setTimeout(chatLoad, 1200); setInterval(function () { if (document.visibilityState === 'visible' && TAB !== 'team') chatLoad(); }, 60000);
     if (SSLIVE.group) return;
     window.users = liveUsers;
     if (SSLIVE.dirty) SSLIVE.save(SSLIVE.getS());
@@ -211,17 +212,79 @@
   function threads() { var m = (SSLIVE.data && SSLIVE.data.messages) || [], t = {}; m.forEach(function (x) { (t[x.thread] = t[x.thread] || { id: x.thread, subject: x.subject, msgs: [], unread: 0 }).msgs.push(x); if (x.sender === 'admin' && !x.read_company) t[x.thread].unread++; });
     return Object.keys(t).map(function (k) { return t[k]; }).sort(function (a, b) { return Date.parse(b.msgs[b.msgs.length - 1].created_at) - Date.parse(a.msgs[a.msgs.length - 1].created_at); }); }
   SSLIVE.unread = function () { return threads().reduce(function (s, t) { return s + t.unread; }, 0); };
+  /* ---------- Teams-style chat frame (used for the team chat and for the conversation with ScanSay) ---------- */
+  var linkRe = /(https?:\/\/[^\s<]+[^\s<.,;:!?)\]'"])/g;
+  function linkify(t) { return esc(t).replace(/(https?:\/\/[^\s<]+[^\s<.,;:!?)\]'"&])/g, function (u) { return '<a href="' + u + '" target="_blank" rel="noopener noreferrer">' + u + '</a>'; }); }
+  function dayLabel(ts) { var d = new Date(ts), n = new Date(); var y = new Date(n); y.setDate(n.getDate() - 1); return d.toDateString() === n.toDateString() ? 'Idag' : d.toDateString() === y.toDateString() ? 'Igår' : d.toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' }); }
+  function hm(ts) { var d = new Date(ts); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  function initials(n) { return String(n || '?').split(/[\s@.]+/).filter(Boolean).slice(0, 2).map(function (x) { return x[0].toUpperCase(); }).join(''); }
+  var AVC = ['#1D4ED8', '#65A30D', '#7C3AED', '#0D9488', '#EA580C', '#DB2777', '#0EA5E9', '#B45309'];
+  function avc(n) { var h = 0; String(n || '').split('').forEach(function (c) { h = (h * 31 + c.charCodeAt(0)) % 997; }); return AVC[h % AVC.length]; }
+  function chatFrame(o) {
+    var items = o.items || [], q = (o.q || '').trim().toLowerCase(), tab = o.tab || 'msgs', body = '';
+    if (q) { var hits = (o.all || items).filter(function (m) { return String(m.body).toLowerCase().indexOf(q) >= 0 || String(m.by || '').toLowerCase().indexOf(q) >= 0; }).slice(-80).reverse();
+      body = '<div class="csr">' + (hits.map(function (m) { return '<button class="chit" onclick="' + o.openJs + '(\'' + m.ch + '\')"><div class="cwho"><b>' + esc(m.by || '') + '</b> <span>' + esc(m.chName || '') + ' · ' + dayLabel(m.ts) + ' ' + hm(m.ts) + '</span></div><div>' + esc(m.body).replace(new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig'), '<mark>$1</mark>') + '</div></button>'; }).join('') || '<div class="cempty">Inga meddelanden matchar sökningen.</div>') + '</div>'; }
+    else if (tab === 'links') { var L2 = []; items.forEach(function (m) { (String(m.body).match(linkRe) || []).forEach(function (u) { L2.push({ u: u, by: m.by, ts: m.ts }); }); });
+      body = '<div class="csr">' + (L2.reverse().map(function (l) { return '<a class="clink" href="' + esc(l.u) + '" target="_blank" rel="noopener noreferrer"><span>🔗</span><div><b>' + esc(l.u.replace(/^https?:\/\//, '').slice(0, 70)) + '</b><small>' + esc(l.by || '') + ' · ' + dayLabel(l.ts) + ' ' + hm(l.ts) + '</small></div></a>'; }).join('') || '<div class="cempty">Inga länkar har delats här ännu.</div>') + '</div>'; }
+    else { var last = ''; body = '<div class="cmsgs" id="cmsgs">' + (items.map(function (m) { var dl = dayLabel(m.ts), sep = dl !== last ? '<div class="cday"><span>' + dl + '</span></div>' : ''; last = dl;
+        return sep + '<div class="cm ' + (m.mine ? 'me' : '') + '">' + (m.mine ? '' : '<span class="cav" style="background:' + avc(m.by) + '">' + esc(initials(m.by)) + '</span>') + '<div class="cb"><div class="cwho"><b>' + esc(m.mine ? 'Du' : m.by || '') + '</b> <span>' + hm(m.ts) + '</span></div><div class="ct">' + linkify(m.body) + '</div></div></div>'; }).join('') || '<div class="cempty">' + (o.empty || 'Inga meddelanden ännu. Skriv det första!') + '</div>') + '</div>'; }
+    return '<div class="chat"><aside class="cside"><input class="csearch" type="search" placeholder="Sök i alla meddelanden…" value="' + esc(o.q || '') + '" oninput="' + o.searchJs + '(this.value)">' + o.side + '</aside>' +
+      '<section class="cmain"><div class="chead"><div><b>' + esc(o.title || '') + '</b>' + (o.sub ? '<small>' + esc(o.sub) + '</small>' : '') + '</div><div class="ctabs"><button class="' + (tab === 'msgs' && !q ? 'on' : '') + '" onclick="' + o.tabJs + '(\'msgs\')">Meddelanden</button><button class="' + (tab === 'links' && !q ? 'on' : '') + '" onclick="' + o.tabJs + '(\'links\')">Länkar</button></div></div>' + body +
+      (o.canSend === false || q || tab === 'links' ? '' : '<div class="ccomp"><textarea id="' + o.inputId + '" rows="2" placeholder="' + esc(o.ph || 'Skriv ett meddelande…') + '" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();' + o.sendJs + '}"></textarea><button class="btn pri" onclick="' + o.sendJs + '">Skicka</button></div>') + '</section></div>';
+  }
+  function scrollChat() { setTimeout(function () { var m = document.getElementById('cmsgs'); if (m) m.scrollTop = m.scrollHeight; }, 0); }
+
+  /* ---------- team chat: everyone in the company, direct messages, and the koncern chat for owners and managers ---------- */
+  var CH = { data: null, cur: 'own|team', q: '', tab: 'msgs', busy: false, t: null };
+  function seen(k, v) { try { var o = JSON.parse(localStorage.getItem('ss-chatseen') || '{}'); if (v) { o[k] = v; localStorage.setItem('ss-chatseen', JSON.stringify(o)); } return o[k] || 0; } catch (e) { return 0; } }
+  function chKey(m) { return m.scope + '|' + m.channel; }
+  function dmCh(scope, other) { var ids = [SSLIVE.data.me.id, other].sort(); return scope + '|' + (scope === 'k' ? 'kdm:' : 'dm:') + ids.join('|'); }
+  async function chatLoad() { if (CH.busy || !SSLIVE.data || !SSLIVE.data.me) return; CH.busy = true; try { CH.data = await call('GET', 'chat'); CH.at = Date.now(); } catch (e) { CH.err = e.message; } CH.busy = false; if (typeof TAB !== 'undefined' && TAB === 'team') { render(); scrollChat(); } else { try { render(); } catch (e) {} } }
+  SSLIVE.chatUnread = function () { if (!CH.data || !SSLIVE.data) return 0; var me = CH.data.me; return CH.data.msgs.filter(function (m) { return m.user_id !== me && Date.parse(m.created_at) > seen(chKey(m)); }).length; };
+  function chName(k) { var p = k.split('|'), sc = p[0], ch = p.slice(1).join('|'); if (ch === 'team') return '# Alla i ' + (SSLIVE.data.account.name || 'företaget'); if (ch === 'koncern') return '# Koncernen ' + (CH.data.koncern || '');
+    var ids = ch.replace(/^k?dm:/, '').split('|'), o = ids.find(function (x) { return x !== SSLIVE.data.me.id; }) || ids[0], pp = (CH.data.people || []).find(function (x) { return x.user_id === o && x.scope === sc; }); return pp ? pp.name + (sc === 'k' && pp.company ? ' · ' + pp.company : '') : 'Tidigare användare'; }
+  SSLIVE.teamV = function () {
+    if (!CH.data) { chatLoad(); return '<h1>Team</h1><div class="card sub">Laddar chatten…</div>'; }
+    var gap = Date.now() - (CH.vAt || 0); CH.vAt = Date.now();
+    if ((gap > 2000 || Date.now() - (CH.at || 0) > 8000) && !CH.busy) setTimeout(chatLoad, 0);
+    clearTimeout(CH.t); CH.t = setTimeout(function () { if (TAB === 'team' && !document.querySelector('#ctin:focus')) chatLoad(); }, 15000);
+    var me = CH.data.me, all = CH.data.msgs.map(function (m) { var k = chKey(m); return { ch: k, chName: '', by: m.by_name, body: m.body, ts: Date.parse(m.created_at), mine: m.user_id === me, uid: m.user_id }; });
+    all.forEach(function (m) { m.chName = chName(m.ch); });
+    var items = all.filter(function (m) { return m.ch === CH.cur; });
+    if (items.length) seen(CH.cur, items[items.length - 1].ts + 1);
+    var unread = function (k) { return all.filter(function (m) { return m.ch === k && !m.mine && m.ts > seen(k); }).length; };
+    var row = function (k, label, sub, col) { var u = unread(k); return '<button class="cch ' + (CH.cur === k ? 'on' : '') + '" onclick="SSLIVE.chOpen(\'' + k + '\')"><span class="cav sm" style="background:' + (col || avc(label)) + '">' + (label[0] === '#' ? '#' : esc(initials(label))) + '</span><span class="cnm"><b>' + esc(label.replace(/^# /, '')) + '</b>' + (sub ? '<small>' + esc(sub) + '</small>' : '') + '</span>' + (u ? '<span class="cnt">' + u + '</span>' : '') + '</button>'; };
+    var side = '<div class="cgh">Kanaler</div>' + row('own|team', '# Alla', SSLIVE.data.account.name, '#1D4ED8') + (CH.data.koncern ? row('k|koncern', '# Koncernen', CH.data.koncern, '#65A30D') : '') +
+      '<div class="cgh">Direktmeddelanden</div>' + (CH.data.people || []).filter(function (p) { return p.user_id !== me; }).map(function (p) { return row(dmCh(p.scope, p.user_id), p.name, (p.scope === 'k' ? p.company + ' · ' : '') + roleName(p.role)); }).join('');
+    var h = chatFrame({ side: side, title: chName(CH.cur), sub: /\|team$/.test(CH.cur) ? 'Alla i företaget ser kanalen' : /\|koncern$/.test(CH.cur) ? 'Ägaren och alla hotellchefer' : 'Bara ni två ser samtalet', items: items, all: all, q: CH.q, tab: CH.tab,
+      openJs: 'SSLIVE.chOpen', searchJs: 'SSLIVE.chSearch', tabJs: 'SSLIVE.chTab', inputId: 'ctin', sendJs: 'SSLIVE.chSend()', ph: 'Skriv till ' + chName(CH.cur) + '…  (Enter skickar, Shift+Enter ny rad)' });
+    scrollChat();
+    return '<div class="row between" style="margin-bottom:12px"><div><h1>Team</h1><div class="sub">Chatta med kollegorna. Meddelanden sparas i 12 månader och raderas när en person slutar.</div></div></div>' + h;
+  };
+  SSLIVE.chOpen = function (k) { CH.cur = k; CH.q = ''; CH.tab = 'msgs'; render(); scrollChat(); setTimeout(function () { var e = document.getElementById('ctin'); if (e) e.focus(); }, 30); };
+  SSLIVE.chSearch = function (v) { CH.q = v; clearTimeout(CH.st); CH.st = setTimeout(function () { render(); var e = document.querySelector('.csearch'); if (e) { e.focus(); e.setSelectionRange(e.value.length, e.value.length); } }, 250); };
+  SSLIVE.chTab = function (t) { CH.tab = t; CH.q = ''; render(); scrollChat(); };
+  SSLIVE.chSend = async function () { var el = document.getElementById('ctin'), t = el && el.value.trim(); if (!t) return; var p = CH.cur.split('|'); el.value = '';
+    try { await call('POST', 'chat_send', { scope: p[0], channel: p.slice(1).join('|'), text: t }); await chatLoad(); } catch (e) { el.value = t; toast('Kunde inte skicka: ' + e.message); } };
+  SSLIVE.chatLoad = chatLoad;
+
+  /* ---------- conversation with ScanSay, in the same chat style ---------- */
+  var MQ = '', MTAB = 'msgs';
   SSLIVE.msgsV = function () {
     var L = threads(); if (MT === null && L[0]) MT = L[0].id; var t = L.find(function (x) { return x.id === MT; });
     if (t && t.unread) { t.msgs.forEach(function (x) { x.read_company = true; }); call('POST', 'msg_read', { thread: t.id }).catch(function () {}); }
-    var dt = function (s) { var d = new Date(s); return d.toLocaleDateString('sv-SE') + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
-    return '<div class="row between" style="margin-bottom:12px"><div><h1>Meddelanden</h1><div class="sub">Er kontakt med ScanSay: frågor om avtal, faktura, fler QR-koder eller hjälp. Svar kommer hit och som e-post.</div></div><button class="btn pri" onclick="SSLIVE.msgNew()">Nytt meddelande</button></div>' +
-      '<div class="grid g32"><div class="card">' + (MT === 'new' ? '<h2>Nytt meddelande till ScanSay</h2><div class="grid" style="gap:8px"><input id="mn_s" type="text" placeholder="Ämne, t.ex. Fler QR-koder till nya flygeln"><textarea id="mn_t" rows="6" placeholder="Skriv ditt meddelande…"></textarea><div class="row"><button class="btn pri" onclick="SSLIVE.msgSend()">Skicka</button><button class="btn line" onclick="SSLIVE.msgOpen(null)">Avbryt</button></div></div>'
-        : t ? '<h2>' + esc(t.subject || 'Meddelande') + '</h2><div class="thr">' + t.msgs.map(function (x) { return '<div class="tm ' + (x.sender === 'admin' ? 'g' : 's') + '"><div class="tw">' + (x.sender === 'admin' ? 'ScanSay' : esc(x.by_name || 'Ni')) + ' · ' + dt(x.created_at) + '</div>' + esc(x.body) + '</div>'; }).join('') + '</div><div class="grid" style="gap:8px;margin-top:10px"><textarea id="mr_t" rows="3" placeholder="Skriv ett svar till ScanSay…"></textarea><div class="row"><button class="btn pri" onclick="SSLIVE.msgSend(\'' + t.id + '\')">Skicka svar</button></div></div>'
-        : '<div class="sub">Inga meddelanden ännu. Tryck på <b>Nytt meddelande</b> för att skriva till ScanSay.</div>') + '</div>' +
-      '<div class="card"><h2>Konversationer</h2>' + (L.map(function (x) { var last = x.msgs[x.msgs.length - 1]; return '<button class="btn line" style="display:block;width:100%;text-align:left;margin:0 0 8px;padding:10px 12px;' + (x.id === MT ? 'border-color:#1D4ED8;background:#EFF6FF' : '') + '" onclick="SSLIVE.msgOpen(\'' + x.id + '\')"><b>' + esc(x.subject || 'Meddelande') + '</b>' + (x.unread ? ' <span class="cnt">' + x.unread + '</span>' : '') + '<div class="sub" style="font-weight:500">' + esc(String(last.body).slice(0, 70)) + '</div></button>'; }).join('') || '<div class="sub">Inga konversationer.</div>') + '</div></div>';
+    var all = []; L.forEach(function (x) { x.msgs.forEach(function (m) { all.push({ ch: x.id, chName: x.subject || 'Meddelande', by: m.sender === 'admin' ? 'ScanSay' : m.by_name, body: m.body, ts: Date.parse(m.created_at), mine: m.sender !== 'admin' }); }); });
+    var side = '<button class="btn pri" style="width:100%;margin-bottom:10px" onclick="SSLIVE.msgNew()">+ Nytt meddelande</button><div class="cgh">Konversationer med ScanSay</div>' + (L.map(function (x) { var last = x.msgs[x.msgs.length - 1]; return '<button class="cch ' + (x.id === MT ? 'on' : '') + '" onclick="SSLIVE.msgOpen(\'' + x.id + '\')"><span class="cav sm" style="background:#1D4ED8">S</span><span class="cnm"><b>' + esc(x.subject || 'Meddelande') + '</b><small>' + esc(String(last.body).slice(0, 40)) + '</small></span>' + (x.unread ? '<span class="cnt">' + x.unread + '</span>' : '') + '</button>'; }).join('') || '<div class="sub" style="padding:8px">Inga konversationer ännu.</div>');
+    var head = '<div class="row between" style="margin-bottom:12px"><div><h1>Meddelanden</h1><div class="sub">Er kontakt med ScanSay: avtal, faktura, fler QR-koder eller hjälp. Svar kommer hit och som e-post.</div></div></div>';
+    if (MT === 'new') return head + '<div class="chat"><aside class="cside">' + side + '</aside><section class="cmain"><div class="chead"><div><b>Nytt meddelande till ScanSay</b><small>Vi svarar oftast inom en arbetsdag</small></div></div><div style="padding:16px;display:grid;gap:10px"><input id="mn_s" type="text" placeholder="Ämne, t.ex. Fler QR-koder till nya flygeln"><textarea id="mn_t" rows="7" placeholder="Skriv ditt meddelande…"></textarea><div class="row"><button class="btn pri" onclick="SSLIVE.msgSend()">Skicka</button><button class="btn line" onclick="SSLIVE.msgOpen(null)">Avbryt</button></div></div></section></div>';
+    if (!t) return head + '<div class="card"><div class="sub">Inga meddelanden ännu.</div><button class="btn pri" style="margin-top:10px" onclick="SSLIVE.msgNew()">Skriv till ScanSay</button></div>';
+    var items = all.filter(function (m) { return m.ch === t.id; });
+    scrollChat();
+    return head + chatFrame({ side: side, title: t.subject || 'Meddelande', sub: 'Konversation med ScanSay', items: items, all: all, q: MQ, tab: MTAB, openJs: 'SSLIVE.msgOpen', searchJs: 'SSLIVE.msgSearch', tabJs: 'SSLIVE.msgTab', inputId: 'mr_t', sendJs: "SSLIVE.msgSend('" + t.id + "')", ph: 'Skriv ett svar till ScanSay…' });
   };
-  SSLIVE.msgOpen = function (id) { MT = id; render(); };
+  SSLIVE.msgSearch = function (v) { MQ = v; clearTimeout(SSLIVE._mq); SSLIVE._mq = setTimeout(function () { render(); var e = document.querySelector('.csearch'); if (e) { e.focus(); e.setSelectionRange(e.value.length, e.value.length); } }, 250); };
+  SSLIVE.msgTab = function (t) { MTAB = t; MQ = ''; render(); };
+  SSLIVE.msgOpen = function (id) { MT = id; MQ = ''; MTAB = 'msgs'; render(); scrollChat(); };
   /* company details the owner/manager can change */
   SSLIVE.settingsV = function () {
     var A = SSLIVE.data.account, f = function (id, l, v, t, ph) { return '<label style="display:grid;gap:5px;font-weight:600">' + l + '<input id="' + id + '" type="' + (t || 'text') + '" value="' + esc(v || '') + '" placeholder="' + (ph || '') + '"></label>'; };
@@ -244,24 +307,51 @@
     try { var r = await call('POST', thread ? 'msg_reply' : 'msg_new', { thread: thread, subject: thread ? undefined : document.getElementById('mn_s').value.trim(), text: tx }); var d = await call('GET', 'state'); SSLIVE.data.messages = d.messages; MT = r.thread; render(); toast('Skickat till ScanSay'); }
     catch (e) { toast('Kunde inte skicka: ' + e.message); }
   };
+  /* ---------- the manager's view of the team: who answered, solved and finished tasks ---------- */
+  window.teamCard = function () {
+    var S = SSLIVE.getS(), d = SSLIVE.data, L = S.fb.filter(function (f) { return inScope(f) && per(f); });
+    var med = function (a) { if (!a.length) return null; a = a.slice().sort(function (x, y) { return x - y; }); var m = a.length >> 1; return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2; };
+    var dur = function (ms) { if (ms == null) return '–'; var h = ms / 36e5; return h < 1 ? Math.max(1, Math.round(ms / 6e4)) + ' min' : h < 48 ? (Math.round(h * 10) / 10).toString().replace('.', ',') + ' tim' : Math.round(h / 24) + ' d'; };
+    var nm = function (m) { return m.name || m.email; };
+    var agents = (d.members || []).filter(function (m) { return m.role === 'Handläggare' || m.role === 'Ägare' || m.role === 'Gruppadmin'; }).map(function (m) { var n = nm(m);
+      var rep = L.filter(function (f) { return (f.replies || []).some(function (r) { return !r.internal && !r.guest && (r.by === n || r.email === m.email); }); });
+      var sol = L.filter(function (f) { return f.fixedBy === n || f.fixedBy === m.email; });
+      return { n: n, role: m.role, rep: rep.length, sol: sol.length, t: med(sol.map(function (f) { return (f.fixTs || f.ts) - f.ts; })), task: L.filter(function (f) { return (f.replies || []).some(function (r) { return r.assign && (r.by === n || r.email === m.email); }); }).length }; }).filter(function (x) { return x.role === 'Handläggare' || x.rep || x.sol; });
+    var staff = (d.members || []).filter(function (m) { return m.role === 'Medarbetare'; }).map(function (m) { var n = nm(m), t = L.filter(function (f) { return f.assignedName === n || f.assignedTo === m.user_id; }), dn = t.filter(function (f) { return f.taskDoneTs; });
+      return { n: n, t: t.length, dn: dn.length, open: t.length - dn.length, tm: med(dn.map(function (f) { return f.taskDoneTs - f.assignedTs; })) }; });
+    var praise = {}; L.filter(function (f) { return f.type === 'p'; }).forEach(function (f) { var k = f.secName || 'Övrigt'; praise[k] = (praise[k] || 0) + 1; });
+    var pk = Object.keys(praise).sort(function (a, b) { return praise[b] - praise[a]; });
+    var open = L.filter(function (f) { return f.status === 'new' && f.type !== 'p'; }).length, prog = L.filter(function (f) { return f.status === 'prog'; }).length, tasks = L.filter(function (f) { return f.assignedName && !f.taskDoneTs && f.status !== 'fix'; }).length;
+    return '<div class="card tcard" style="margin-top:14px"><div class="row between"><h2 style="margin:0">Teamet</h2><div class="row" style="gap:8px"><span class="tag t-new">' + open + ' nya</span><span class="tag t-prog">' + prog + ' pågående</span><span class="tag" style="background:#FEF3C7!important;color:#78350F!important">' + tasks + ' uppdrag väntar</span></div></div>' +
+      '<div class="grid g2" style="gap:14px;margin-top:12px"><div style="overflow-x:auto"><b class="tsub">Handläggare</b><table><thead><tr><th>Namn</th><th>Besvarade</th><th>Lösta</th><th>Uppdrag skickade</th><th>Tid till löst</th></tr></thead><tbody>' +
+      (agents.map(function (x) { return '<tr><td><b>' + esc(x.n) + '</b><div class="sub">' + esc(roleName(x.role)) + '</div></td><td>' + x.rep + '</td><td><b style="color:#15803D">' + x.sol + '</b></td><td>' + x.task + '</td><td>' + dur(x.t) + '</td></tr>'; }).join('') || '<tr><td colspan="5" class="sub">Inga handläggare ännu. Bjud in under Användare.</td></tr>') + '</tbody></table></div>' +
+      '<div style="overflow-x:auto"><b class="tsub">Medarbetare</b><table><thead><tr><th>Namn</th><th>Uppdrag</th><th>Klara</th><th>Väntar</th><th>Tid till klart</th></tr></thead><tbody>' +
+      (staff.map(function (x) { return '<tr><td><b>' + esc(x.n) + '</b></td><td>' + x.t + '</td><td><b style="color:#15803D">' + x.dn + '</b></td><td>' + (x.open ? '<b style="color:#B45309">' + x.open + '</b>' : '0') + '</td><td>' + dur(x.tm) + '</td></tr>'; }).join('') || '<tr><td colspan="5" class="sub">Inga medarbetare ännu.</td></tr>') + '</tbody></table></div></div>' +
+      '<div style="margin-top:12px"><b class="tsub">Beröm per avdelning</b><div class="row" style="gap:8px;margin-top:6px;flex-wrap:wrap">' + (pk.map(function (k) { return '<span class="tag t-p">👏 ' + esc(k) + ' · ' + praise[k] + '</span>'; }).join('') || '<span class="sub">Inget beröm i perioden ännu.</span>') + '</div></div></div>';
+  };
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function liveUsers() {
-    var d = SSLIVE.data, m = d.members || [], admin = SSLIVE.full, secs = secNames();
-    var RD = { 'Gruppadmin': 'Chef: allt utom att ta bort ägaren – statistik, inkorg, platser, QR-koder, larm och användare.', 'Handläggare': 'Handläggare: inkorgen. Svarar gäster, skickar vidare ärenden och får notiser.', 'Medarbetare': 'Medarbetare: bara ärenden från sina avdelningar. Markerar som åtgärdat, svarar inte gäster.', 'Läsare': 'Läsare: bara statistik, inga meddelanden.' };
-    var roleSel = function (id, cur, dis) { return '<select id="' + id + '"' + (dis ? ' disabled' : '') + ' onchange="liveRole(this)">' + ['Gruppadmin', 'Handläggare', 'Medarbetare', 'Läsare'].map(function (r) { return '<option value="' + r + '"' + (r === cur ? ' selected' : '') + '>' + roleName(r) + '</option>'; }).join('') + '</select>'; };
-    var secBox = function (pre, cur) { return secs.length ? '<div class="psecs" style="margin-top:6px">' + secs.map(function (n) { return '<label><input type="checkbox" class="' + pre + '" value="' + esc(n) + '"' + (cur.indexOf(n) >= 0 ? ' checked' : '') + '> ' + esc(n) + '</label>'; }).join('') + '</div>' : '<div class="sub">Lägg till avdelningar under Platser först.</div>'; };
-    return '<h1>Användare</h1><div class="sub" style="margin-bottom:12px">' + m.length + ' av ' + d.account.seats + ' inloggningar används. Varje person får en egen inloggning via e-post och ser bara det hens roll tillåter.</div><div class="grid g32">' +
-      '<div class="card" style="overflow-x:auto"><table><thead><tr><th>Namn</th><th>E-post</th><th>Roll</th><th>Avdelningar</th><th></th></tr></thead><tbody>' +
-      m.map(function (x) { var own = x.role === 'Ägare' || x.user_id === d.me.id;
-        return '<tr data-u="' + x.user_id + '"><td><b>' + esc(x.name || '–') + '</b>' + (admin ? ' <button class="btn sm line" style="padding:2px 8px" onclick="liveRename(\'' + x.user_id + '\',' + esc(JSON.stringify(x.name || '')).replace(/'/g, '&#39;') + ')">✎</button>' : '') + '</td><td>' + esc(x.email || '') + '</td><td>' + (admin && !own ? roleSel('r_' + x.user_id, x.role) : '<span class="tag t-p">' + esc(roleName(x.role)) + '</span>') + '</td><td>' +
-          (x.role === 'Medarbetare' ? (admin ? secBox('ms_' + x.user_id, x.secs || []) + '<button class="btn sm line" style="margin-top:6px" onclick="liveSecs(\'' + x.user_id + '\')">Spara avdelningar</button>' : esc((x.secs || []).join(', ') || 'Alla')) : '<span class="sub">Alla</span>') + '</td><td>' + (admin && !own ? '<button class="btn sm red" onclick="liveRemove(\'' + x.user_id + '\')">Ta bort</button>' : '') + '</td></tr>'; }).join('') + '</tbody></table></div>' +
-      (admin ? '<div class="card"><h2>Bjud in en kollega</h2><div class="grid" style="gap:8px"><input id="ln" type="text" placeholder="Namn"><input type="email" id="le" placeholder="namn@foretag.se"><select id="lr" onchange="document.getElementById(\'lsecs\').style.display=this.value===\'Medarbetare\'?\'block\':\'none\';document.getElementById(\'lrd\').textContent=(' + JSON.stringify(RD).replace(/"/g, '&quot;') + ')[this.value]">' + ['Handläggare', 'Medarbetare', 'Gruppadmin', 'Läsare'].map(function (r) { return '<option value="' + r + '">' + roleName(r) + '</option>'; }).join('') + '</select>' +
-        '<div class="sub" id="lrd">' + RD['Handläggare'] + '</div><div id="lsecs" style="display:none"><b style="font-size:13px">Vilka avdelningar?</b>' + secBox('ls', []) + '</div><button class="btn pri" onclick="liveInvite()">Skicka inbjudan</button></div><div class="sub" style="margin-top:10px">Länken i mejlet gäller i 24 timmar. Personen väljer själv sitt lösenord.</div></div>' : '<div class="card sub">Bara ägare och chefer kan bjuda in.</div>') + '</div>';
+    var d = SSLIVE.data, me = d.me.role, all = d.members || [], secs = secNames();
+    var RK = { 'Ägare': 5, 'Gruppadmin': 4, 'Handläggare': 3, 'Medarbetare': 1, 'Läsare': 1 };
+    var can = function (t) { return (/Ägare|Gruppadmin/.test(me) && RK[t] < RK[me]) || (me === 'Handläggare' && t === 'Medarbetare'); };
+    var roles = ['Handläggare', 'Medarbetare', 'Läsare', 'Gruppadmin'].filter(can), m = me === 'Handläggare' ? all.filter(function (x) { return x.role === 'Medarbetare' || x.user_id === d.me.id; }) : all;
+    var Q = d.account.roles || {}, used = function (r) { return all.filter(function (x) { return x.role === r; }).length; };
+    var RD = { 'Gruppadmin': 'Biträdande chef: samma som chefen, utom att ta bort chefen.', 'Handläggare': 'Handläggare: inkorgen. Svarar gästerna, skickar uppdrag till medarbetarna och avslutar ärendena.', 'Medarbetare': 'Medarbetare (t.ex. städ, teknik, parkering, säkerhet): får uppdrag i mobilen och trycker Klart när det är gjort.', 'Läsare': 'Läsare: bara statistik, inga meddelanden.' };
+    var roleSel = function (id, cur) { return '<select id="' + id + '" onchange="liveRole(this)">' + roles.concat(roles.indexOf(cur) < 0 ? [cur] : []).map(function (r) { return '<option value="' + r + '"' + (r === cur ? ' selected' : '') + '>' + roleName(r) + '</option>'; }).join('') + '</select>'; };
+    var secBox = function (pre, cur) { return secs.length ? '<div class="psecs" style="margin-top:6px">' + secs.map(function (n) { return '<label><input type="checkbox" class="' + pre + '" value="' + esc(n) + '"' + (cur.indexOf(n) >= 0 ? ' checked' : '') + '> ' + esc(n) + '</label>'; }).join('') + '</div>' : ''; };
+    var quota = Object.keys(Q).length ? '<div class="qrow">' + ['Gruppadmin', 'Handläggare', 'Medarbetare', 'Läsare'].filter(function (r) { return Q[r] > 0 || used(r); }).map(function (r) { var u = used(r), q = Q[r] || 0; return '<span class="qpill' + (u >= q ? ' full' : '') + '"><b>' + u + '/' + q + '</b> ' + roleName(r).toLowerCase() + '</span>'; }).join('') + '</div>' : '';
+    var tagc = { 'Ägare': '#1D4ED8', 'Gruppadmin': '#1D4ED8', 'Handläggare': '#7C3AED', 'Medarbetare': '#0D9488', 'Läsare': '#6B7280' };
+    return '<h1>' + (me === 'Handläggare' ? 'Medarbetare' : 'Användare') + '</h1><div class="sub" style="margin-bottom:10px">' + (me === 'Handläggare' ? 'Lägg till och ta bort medarbetare som får uppdrag från dig.' : 'Varje person får en egen inloggning och ser bara det rollen tillåter. Du kan lägga till och ta bort roller under din egen.') + '</div>' + quota + '<div class="grid g32">' +
+      '<div class="card" style="overflow-x:auto"><table><thead><tr><th>Namn</th><th>E-post</th><th>Roll</th><th></th></tr></thead><tbody>' +
+      m.map(function (x) { var ok = can(x.role) && x.user_id !== d.me.id;
+        return '<tr><td><span class="cav sm" style="background:' + (tagc[x.role] || '#6B7280') + ';margin-right:8px">' + esc(initials(x.name || x.email)) + '</span><b>' + esc(x.name || '–') + '</b>' + (ok || x.user_id === d.me.id ? ' <button class="btn sm line" style="padding:2px 8px" onclick="liveRename(\'' + x.user_id + '\',' + esc(JSON.stringify(x.name || '')).replace(/'/g, '&#39;') + ')">✎</button>' : '') + '</td><td>' + esc(x.email || '') + '</td><td>' + (ok && /Ägare|Gruppadmin/.test(me) ? roleSel('r_' + x.user_id, x.role) : '<span class="tag" style="background:' + tagc[x.role] + '1A!important;color:' + tagc[x.role] + '!important;-webkit-text-fill-color:' + tagc[x.role] + '!important">' + esc(roleName(x.role)) + '</span>') + '</td><td>' + (ok ? '<button class="btn sm red" onclick="liveRemove(\'' + x.user_id + '\')">Ta bort</button>' : '') + '</td></tr>'; }).join('') + '</tbody></table>' +
+      '<div class="sub" style="margin-top:10px">När någon tas bort raderas inloggningen och personens privata chattar. Pågående uppdrag går tillbaka till inkorgen.</div></div>' +
+      (roles.length ? '<div class="card"><h2>Lägg till en person</h2><div class="grid" style="gap:8px"><input id="ln" type="text" placeholder="Namn"><input type="email" id="le" placeholder="namn@foretag.se"><select id="lr" onchange="document.getElementById(\'lsecs\').style.display=this.value===\'Medarbetare\'?\'block\':\'none\';document.getElementById(\'lrd\').textContent=(' + JSON.stringify(RD).replace(/"/g, '&quot;') + ')[this.value]">' + roles.map(function (r) { return '<option value="' + r + '">' + roleName(r) + '</option>'; }).join('') + '</select>' +
+        '<div class="sub" id="lrd">' + RD[roles[0]] + '</div><div id="lsecs" style="display:' + (roles[0] === 'Medarbetare' ? 'block' : 'none') + '">' + (secs.length ? '<b style="font-size:13px">Avdelningar (för akuta larm)</b>' : '') + secBox('ls', []) + '</div><button class="btn pri" onclick="liveInvite()">Skicka inbjudan</button></div><div class="sub" style="margin-top:10px">Länken i mejlet gäller i 24 timmar. Personen väljer själv sitt lösenord.</div></div>' : '') + '</div>';
   }
   window.liveInvite = async function () {
     var e = document.getElementById('le').value.trim(), n = document.getElementById('ln').value.trim(), r = document.getElementById('lr').value;
     var secs = [].slice.call(document.querySelectorAll('.ls:checked')).map(function (x) { return x.value; });
-    if (r === 'Medarbetare' && !secs.length) { toast('Välj minst en avdelning för medarbetaren.'); return; }
     try { await SSLIVE.invite(e, n, r, secs); toast('Inbjudan skickad till ' + e); await SSLIVE.reload(); } catch (x) { toast(x.message); }
   };
   window.liveRole = async function (el) { var uid = el.id.slice(2); try { await SSLIVE.setMember(uid, { role: el.value }); toast('Rollen är ändrad'); await SSLIVE.reload(); } catch (x) { toast(x.message); } };
