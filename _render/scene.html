@@ -1,0 +1,125 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../fonts.css">
+<style>
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#0A0F1C;font-family:Inter,system-ui,sans-serif}
+.bg{position:absolute;inset:-40px;background-size:cover;background-position:center;filter:blur(6px) brightness(.72) saturate(1.1);animation:bgz 6s linear forwards}
+@keyframes bgz{from{transform:scale(1.06)}to{transform:scale(1.16) translateX(-20px)}}
+.vig{position:absolute;inset:0;background:radial-gradient(ellipse at 68% 50%,rgba(10,15,28,0) 0%,rgba(10,15,28,.35) 55%,rgba(10,15,28,.8) 100%),linear-gradient(90deg,rgba(10,15,28,.75) 0%,rgba(10,15,28,.2) 45%,rgba(10,15,28,0) 70%)}
+.glow{position:absolute;left:1180px;top:560px;width:900px;height:900px;margin:-450px 0 0 -450px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.38),rgba(59,130,246,0) 62%);animation:gl 6s ease-in-out forwards}
+@keyframes gl{0%{opacity:.4}50%{opacity:1}100%{opacity:.7}}
+.stage{position:absolute;left:1000px;top:150px;width:780px;height:800px;perspective:1600px}
+.stk{position:absolute;left:30px;top:40px;width:470px;height:672px;transform-style:preserve-3d;animation:stk 6s cubic-bezier(.3,.1,.2,1) forwards;filter:drop-shadow(0 50px 60px rgba(0,0,0,.55))}
+.stk svg{width:100%;height:100%;display:block}
+@keyframes stk{0%{transform:translateY(60px) rotateY(-28deg) rotateX(8deg) scale(.92);opacity:0}12%{opacity:1}40%{transform:translateY(0) rotateY(-14deg) rotateX(4deg) scale(1)}100%{transform:translateY(-10px) rotateY(-8deg) rotateX(2deg) scale(1.02)}}
+.phone{position:absolute;left:540px;top:150px;width:310px;height:640px;border-radius:52px;background:#0B0D12;box-shadow:0 0 0 2px #2A2F3A inset,0 60px 90px rgba(0,0,0,.6);animation:ph 6s cubic-bezier(.2,.8,.2,1) forwards;transform-origin:50% 100%}
+@keyframes ph{0%,14%{transform:translate(220px,520px) rotate(10deg);opacity:0}30%{transform:translate(0,0) rotate(-4deg);opacity:1}100%{transform:translate(-6px,-8px) rotate(-3deg);opacity:1}}
+.scr{position:absolute;inset:12px;border-radius:42px;overflow:hidden;background:#000}
+.notch{position:absolute;left:50%;top:10px;width:96px;height:26px;margin-left:-48px;border-radius:14px;background:#000;z-index:5}
+.cam{position:absolute;inset:0;background:#1a1d24}
+.cam .mini{position:absolute;left:50%;top:48%;width:200px;height:286px;margin:-143px 0 0 -100px;transform:rotate(3deg) scale(1.08);filter:blur(.3px)}
+.cam .mini svg{width:100%;height:100%}
+.cam:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 48%,rgba(0,0,0,0) 40%,rgba(0,0,0,.55))}
+.frame{position:absolute;left:50%;top:44%;width:176px;height:176px;margin:-88px 0 0 -88px;z-index:2;animation:fr 6s linear forwards}
+.frame i{position:absolute;width:34px;height:34px;border:4px solid #fff;border-radius:6px}
+.frame i:nth-child(1){left:0;top:0;border-right:0;border-bottom:0}.frame i:nth-child(2){right:0;top:0;border-left:0;border-bottom:0}
+.frame i:nth-child(3){left:0;bottom:0;border-right:0;border-top:0}.frame i:nth-child(4){right:0;bottom:0;border-left:0;border-top:0}
+@keyframes fr{0%,40%{transform:scale(1.15);opacity:.8}50%{transform:scale(1);opacity:1}62%{transform:scale(1);opacity:1}66%{opacity:0}100%{opacity:0}}
+.line{position:absolute;left:8%;right:8%;height:3px;border-radius:3px;background:#60A5FA;box-shadow:0 0 18px 4px rgba(96,165,250,.85);animation:ln 6s linear forwards;top:10%}
+@keyframes ln{0%,32%{top:8%;opacity:0}34%{opacity:1}44%{top:88%}52%{top:12%}60%{top:80%;opacity:1}63%,100%{opacity:0}}
+.toast{position:absolute;left:16px;right:16px;top:52px;z-index:3;background:rgba(255,255,255,.96);border-radius:16px;padding:10px 12px;display:flex;gap:10px;align-items:center;font-size:13px;color:#0A0F1C;box-shadow:0 10px 30px rgba(0,0,0,.35);animation:to 6s ease forwards}
+.toast b{display:block;font-size:14px}.toast span{color:#5B6476}
+.toast .ic{width:34px;height:34px;flex:none}
+@keyframes to{0%,54%{transform:translateY(-90px);opacity:0}58%{transform:translateY(0);opacity:1}66%{opacity:1}70%,100%{transform:translateY(-90px);opacity:0}}
+.form{position:absolute;inset:0;background:#F5F7FB;z-index:4;animation:fm 6s ease forwards;padding:52px 18px 0}
+@keyframes fm{0%,64%{transform:translateY(100%)}72%,100%{transform:translateY(0)}}
+.fh{display:flex;align-items:center;justify-content:space-between;padding:6px 2px 12px;border-bottom:1px solid #E6EAF2}
+.fh img{height:20px}
+.card{background:#fff;border-radius:16px;padding:14px;margin-top:12px;box-shadow:0 2px 0 #E6EAF2}
+.card small{color:#1D4ED8;font-weight:700;font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.card h3{margin:4px 0 2px;font:400 19px "Libre Baskerville",Georgia,serif;color:#0A0F1C}
+.card p{margin:0;color:#5B6476;font-size:11.5px}
+.faces{display:flex;gap:6px;margin-top:12px}
+.faces div{flex:1;height:44px;border-radius:12px;border:1.5px solid #E1E6F0;display:grid;place-items:center;font-size:20px;background:#fff}
+.faces div.on{border-color:#1D4ED8;background:#EFF6FF;box-shadow:0 0 0 3px rgba(29,78,216,.15);animation:on 6s forwards}
+@keyframes on{0%,78%{border-color:#E1E6F0;background:#fff;box-shadow:none}82%,100%{border-color:#1D4ED8;background:#EFF6FF;box-shadow:0 0 0 3px rgba(29,78,216,.15)}}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.chips span{font-size:11px;padding:5px 9px;border-radius:999px;background:#fff;border:1px solid #E1E6F0;color:#3A4356}
+.btn{margin-top:14px;height:42px;border-radius:12px;background:#1D4ED8;color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px;animation:bt 6s forwards}
+@keyframes bt{0%,86%{transform:scale(1)}88%{transform:scale(.96)}90%,100%{transform:scale(1)}}
+.done{position:absolute;inset:0;z-index:6;background:#1D4ED8;color:#fff;display:grid;place-items:center;text-align:center;animation:dn 6s forwards}
+.done div{font:400 22px "Libre Baskerville",Georgia,serif}.done span{display:block;font:500 12px Inter;opacity:.85;margin-top:6px}
+.done svg{width:64px;height:64px;margin:0 auto 12px;display:block}
+@keyframes dn{0%,90%{opacity:0;transform:scale(1.04)}94%,100%{opacity:1;transform:scale(1)}}
+.mark{position:absolute;right:70px;bottom:56px;height:46px;opacity:.95}
+
+
+/* ===== realistic holders ===== */
+.hold{position:absolute;inset:0;pointer-events:none}
+.stk svg{position:relative;z-index:2;border-radius:10px}
+/* 1 acrylic table stand (restaurant) */
+.h-stand .stk{filter:none}
+.h-stand .acr{position:absolute;left:-16px;top:-16px;right:-16px;bottom:-16px;border-radius:12px;z-index:3;
+ background:linear-gradient(118deg,rgba(255,255,255,.34) 0%,rgba(255,255,255,.07) 22%,rgba(255,255,255,0) 46%,rgba(255,255,255,.05) 70%,rgba(255,255,255,.24) 100%);
+ box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.7),inset 2px 2px 0 3px rgba(255,255,255,.12),inset -3px -3px 0 2px rgba(150,170,190,.18)}
+.h-stand .edge{position:absolute;top:-10px;right:-27px;bottom:-14px;width:11px;border-radius:0 8px 8px 0;background:linear-gradient(90deg,rgba(200,225,240,.55),rgba(255,255,255,.15) 50%,rgba(160,190,210,.45));z-index:1;transform:skewY(-6deg);transform-origin:left}
+.h-stand .back{position:absolute;left:-16px;top:-16px;right:-16px;bottom:-16px;border-radius:12px;background:rgba(220,235,245,.10);backdrop-filter:blur(2px);z-index:1;box-shadow:0 60px 70px -20px rgba(0,0,0,.55)}
+.h-stand .btop{position:absolute;left:-70px;right:-70px;bottom:-46px;height:44px;z-index:4;background:linear-gradient(180deg,#D9AE77,#C0905A);clip-path:polygon(4% 0,96% 0,100% 100%,0 100%);box-shadow:inset 0 2px 0 rgba(255,255,255,.4)}
+.h-stand .btop::before{content:"";position:absolute;left:12%;right:12%;top:9px;height:9px;border-radius:5px;background:rgba(40,25,10,.55)}
+.h-stand .bfront{position:absolute;left:-70px;right:-70px;bottom:-110px;height:64px;z-index:4;border-radius:0 0 8px 8px;background:linear-gradient(180deg,#A8743C 0%,#8E5F2D 60%,#704A22 100%);box-shadow:0 34px 40px rgba(0,0,0,.55),inset 0 -6px 10px rgba(0,0,0,.25)}
+.h-stand .bfront::after,.h-stand .btop::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(92deg,rgba(60,35,10,.10) 0 2px,rgba(255,230,190,.05) 2px 7px,rgba(60,35,10,.06) 7px 9px);border-radius:inherit}
+.h-stand .shadow{position:absolute;left:-90px;right:-90px;bottom:-118px;height:40px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.55),rgba(0,0,0,0) 70%);z-index:0}
+/* 2 brushed aluminium plate with screws (gym) */
+.h-plate .stk{filter:none}
+.h-plate .plate{position:absolute;left:-30px;top:-30px;right:-30px;bottom:-30px;border-radius:14px;z-index:1;
+ background:linear-gradient(135deg,rgba(255,255,255,.35),rgba(255,255,255,0) 40%,rgba(0,0,0,.12)),repeating-linear-gradient(90deg,#B9BEC6 0 1px,#AEB4BC 1px 2px,#C4C9D0 2px 4px),#B8BDC5;
+ box-shadow:inset 0 2px 0 rgba(255,255,255,.7),inset 0 -3px 0 rgba(0,0,0,.25),0 0 0 1px #7C838D,0 50px 70px rgba(0,0,0,.6)}
+.h-plate .sc{position:absolute;width:16px;height:16px;border-radius:50%;z-index:3;background:radial-gradient(circle at 35% 30%,#FFFFFF,#C9CED6 35%,#6F7680 80%);box-shadow:0 1px 2px rgba(0,0,0,.6)}
+.h-plate .sc::after{content:"";position:absolute;left:3px;right:3px;top:7px;height:2px;background:#555C66;transform:rotate(35deg)}
+/* 3 glossy black headrest holder (taxi) */
+.h-clip .stk{filter:none}
+.h-clip .tframe{position:absolute;left:-24px;top:-24px;right:-24px;bottom:-24px;border-radius:22px;z-index:1;background:linear-gradient(160deg,#5A616C,#30353D 45%,#454B55);box-shadow:inset 0 2px 0 rgba(255,255,255,.35),inset 0 -2px 0 rgba(0,0,0,.4),inset 0 0 0 1px rgba(255,255,255,.06),0 50px 70px rgba(0,0,0,.65)}
+.h-clip .glass{position:absolute;left:-2px;top:-2px;right:-2px;bottom:-2px;border-radius:12px;z-index:3;background:linear-gradient(125deg,rgba(255,255,255,.22),rgba(255,255,255,0) 35%,rgba(255,255,255,0) 70%,rgba(255,255,255,.1));box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+.h-clip .hook{position:absolute;left:50%;top:-74px;width:150px;height:56px;margin-left:-75px;z-index:0;border-radius:18px 18px 6px 6px;background:linear-gradient(180deg,#24282E,#0E1013);box-shadow:inset 0 2px 0 rgba(255,255,255,.15)}
+.h-clip .hook::before,.h-clip .hook::after{content:"";position:absolute;top:-46px;width:12px;height:60px;border-radius:6px;background:linear-gradient(90deg,#9AA1AB,#E6E9EE 45%,#7B828C)}
+.h-clip .hook::before{left:28px}.h-clip .hook::after{right:28px}
+.h-clip .tabs i{position:absolute;top:-58px;width:14px;height:52px;border-radius:7px;z-index:0;background:linear-gradient(90deg,#8E959F,#E8EBEF 45%,#6F7680)}.h-clip .tabs i:first-child{left:34%}.h-clip .tabs i:last-child{right:34%}
+/* 4 acrylic panel on chrome standoffs (bus) */
+.h-standoff .stk{filter:none}
+.h-standoff .acr{position:absolute;left:-36px;top:-36px;right:-36px;bottom:-36px;border-radius:10px;z-index:3;background:linear-gradient(120deg,rgba(255,255,255,.30) 0%,rgba(255,255,255,.05) 25%,rgba(255,255,255,0) 55%,rgba(255,255,255,.18) 100%);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.65),0 46px 60px rgba(0,0,0,.55)}
+.h-standoff .so{position:absolute;width:26px;height:26px;border-radius:50%;z-index:4;background:radial-gradient(circle at 35% 30%,#FFFFFF,#D7DCE3 30%,#8A919B 70%,#555C66);box-shadow:0 3px 6px rgba(0,0,0,.5),inset 0 -2px 3px rgba(0,0,0,.3)}
+html:has(body.product),body.product{background:transparent!important}body.product .bg,body.product .vig,body.product .glow,body.product .phone{display:none}body.product .stk{animation:none;transform:rotateY(-12deg) rotateX(3deg)}
+</style></head><body>
+<div class="bg" id="bg"></div><div class="vig"></div><div class="glow"></div>
+<div class="stage"><div class="stk" id="stk"></div>
+<div class="phone"><div class="scr"><div class="notch"></div>
+ <div class="cam"><div class="mini" id="mini"></div></div>
+ <div class="frame"><i></i><i></i><i></i><i></i></div><div class="line"></div>
+ <div class="toast"><img class="ic" src="../brand/scansay-icon.svg"><div><b id="tt"></b><span id="ts"></span></div></div>
+ <div class="form"><div class="fh"><img src="../brand/scansay-logo.svg"><span style="font-size:11px;color:#5B6476" id="fl"></span></div>
+  <div class="card"><small id="fp"></small><h3 id="fq"></h3><p id="fs"></p>
+   <div class="faces"><div>😞</div><div>😕</div><div>😐</div><div class="on">🙂</div><div>😄</div></div>
+   <div class="chips" id="fc"></div><div class="btn" id="fb"></div></div></div>
+ <div class="done"><div><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="none" stroke="#fff" stroke-width="3"/><path d="M19 33l9 9 17-19" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><div id="dt"></div><span id="ds"></span></div></div>
+</div></div></div>
+<script src="../qrcode.min.js"></script><script src="../sticker.js"></script>
+<script>
+const P=new URLSearchParams(location.search),k=P.get('k'),lang=P.get('lang')||'sv',en=lang==='en';
+const D={restaurant:{th:'white',st:'elegant',co:['Café Linnea','Café Linnea'],pl:['Bord 4','Table 4'],code:'CB4TK',chips:[['Maten','Service','Väntetid'],['Food','Service','Waiting']]},
+gym:{th:'noir',st:'bold',co:['Atlas Gym','Atlas Gym'],pl:['Maskin 7','Machine 7'],code:'GY7CD',chips:[['Maskinen','Renlighet','Personal'],['Machine','Cleanliness','Staff']]},
+taxi:{th:'black',st:'modern',co:['Taxi Nova','Taxi Nova'],pl:['Bil 112','Car 112'],code:'T112Q',chips:[['Föraren','Bilen','Rutten'],['Driver','The car','Route']]},
+bus:{th:'blue',st:'modern',co:['Linje 4','Line 4'],pl:['Buss 4503','Bus 4503'],code:'B4503',chips:[['Föraren','Renlighet','Punktlighet'],['Driver','Cleanliness','On time']]}}[k];
+const L=en?1:0,z=SSB.SIZES.find(s=>s.id==='7x10');
+const st=SSB.sticker({code:D.code,title:D.co[L],place:D.pl[L],showPlace:true,lang,theme:D.th,style:D.st,qr:'rounded',qrColor:D.th==='blue'?'#0B1F4D':'#0F1013',w:z.w,h:z.h});
+const ST=document.getElementById('stk');const HT={restaurant:'stand',gym:'plate',taxi:'clip',bus:'standoff'}[k];
+const H={stand:'<div class="shadow"></div><div class="back"></div><div class="edge"></div><div class="acr"></div><div class="btop"></div><div class="bfront"></div>',
+plate:'<div class="plate"></div>'+[[-18,-18],[null,-18],[-18,null],[null,null]].map(([l,t])=>`<i class="sc" style="${l===null?'right:-18px':'left:-18px'};${t===null?'bottom:-18px':'top:-18px'}"></i>`).join(''),
+clip:'<div class="tabs"><i></i><i></i></div><div class="tframe"></div><div class="glass"></div>',
+standoff:'<div class="acr"></div>'+[[0,0],[1,0],[0,1],[1,1]].map(([r,b])=>`<i class="so" style="${r?'right':'left'}:-26px;${b?'bottom':'top'}:-26px"></i>`).join('')}[HT];
+ST.innerHTML=st+H;document.querySelector('.stage').classList.add('h-'+HT);if(HT==='stand')ST.style.top='0px';if(HT==='clip')ST.style.top='70px';
+if(P.get('product')){document.body.classList.add('product')}
+document.getElementById('mini').innerHTML=st;
+document.getElementById('bg').style.backgroundImage=`url(bg/bg-${k}.jpg)`;
+const T=en?{tt:'ScanSay code found',ts:D.co[1]+' · '+D.pl[1],fl:'Scan it. Say it.',fp:D.co[1]+' · '+D.pl[1],fq:'How was it?',fs:'Takes 30 seconds.',fb:'Send',dt:'Thank you!',ds:'The team has your message.'}
+:{tt:'ScanSay-kod hittad',ts:D.co[0]+' · '+D.pl[0],fl:'Skanna. Säg det.',fp:D.co[0]+' · '+D.pl[0],fq:'Hur var det?',fs:'Tar 30 sekunder.',fb:'Skicka',dt:'Tack!',ds:'Teamet har fått ditt meddelande.'};
+for(const id in T)document.getElementById(id).textContent=T[id];
+document.getElementById('fc').innerHTML=D.chips[L].map(c=>'<span>'+c+'</span>').join('');
+window.seek=t=>{document.getAnimations().forEach(a=>{a.pause();a.currentTime=t*1000})};
+</script></body></html>
