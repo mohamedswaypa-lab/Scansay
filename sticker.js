@@ -11,12 +11,25 @@ function mark(x,y,s,o){o=o||{};const k=s/128,id=uid('qm');
   return `<g transform="translate(${x} ${y}) scale(${k})"><defs><linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1D4ED8"/><stop offset="1" stop-color="#0B1F4D"/></linearGradient></defs><rect x="0" y="0" width="128" height="128" rx="26" fill="#fff"/><rect x="5" y="5" width="118" height="118" rx="22" fill="url(#${id}g)"/><g transform="translate(22.5 11) scale(.69)"><path d="M60.00 4.00 C66.00 24.00 86.00 30.00 101.00 42.00 C117.00 56.00 116.00 86.00 98.00 101.00 C86.00 112.00 70.00 116.00 60.00 134.00 C50.00 116.00 34.00 112.00 22.00 101.00 C4.00 86.00 3.00 56.00 19.00 42.00 C34.00 30.00 54.00 24.00 60.00 4.00 Z" fill="none" stroke="#FFFFFF" stroke-width="5.5"/><path d="M60 22 C63 28 63 33 60 37 C57 33 57 28 60 22 Z" fill="#FFFFFF"/><path d="M60 102 C56 108 56 113 60 118 C64 113 64 108 60 102 Z" fill="#FFFFFF"/><rect x="40" y="46" width="17" height="17" rx="2.6" fill="none" stroke="#FFFFFF" stroke-width="3.4"/><rect x="45.1" y="51.1" width="6.800000000000001" height="6.800000000000001" rx="1" fill="#FFFFFF"/><rect x="63" y="46" width="17" height="17" rx="2.6" fill="none" stroke="#FFFFFF" stroke-width="3.4"/><rect x="68.1" y="51.1" width="6.800000000000001" height="6.800000000000001" rx="1" fill="#FFFFFF"/><rect x="40" y="69" width="17" height="17" rx="2.6" fill="none" stroke="#FFFFFF" stroke-width="3.4"/><rect x="45.1" y="74.1" width="6.800000000000001" height="6.800000000000001" rx="1" fill="#FFFFFF"/><rect x="63" y="74" width="5" height="5" rx="1" fill="#FFFFFF"/><rect x="70" y="74" width="5" height="5" rx="1" fill="#FFFFFF"/><rect x="63" y="81" width="5" height="5" rx="1" fill="#FFFFFF"/><rect x="70" y="86" width="5" height="5" rx="1" fill="#FFFFFF"/></g></g>`}
 function markSVG(size,o){return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 64 64" aria-hidden="true">${mark(0,0,64,o)}</svg>`}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
-/* QR path; hole:[fraction] leaves a clear square in the middle for the logo */
-function qrPath(text,x,y,size,hole){const q=qrcode(0,hole?'H':'M');q.addData(text);q.make();const n=q.getModuleCount(),m=size/n;let d='';
+/* QR in three styles: square | rounded | dots. hole:[fraction] leaves a clear square in the middle for the logo */
+const QRSTYLES={square:{sv:'Fyrkant',en:'Square'},rounded:{sv:'Rundad',en:'Rounded'},dots:{sv:'Prickar',en:'Dots'}};
+const QRCOLORS={'#0F1013':{sv:'Svart',en:'Black'},'#0B1F4D':{sv:'Marinblå',en:'Navy'},'#1D4ED8':{sv:'Blå',en:'Blue'}};
+function rr(x,y,w,h,r){r=Math.min(r,w/2,h/2);return `M${(x+r).toFixed(3)} ${y.toFixed(3)}h${(w-2*r).toFixed(3)}a${r.toFixed(3)} ${r.toFixed(3)} 0 0 1 ${r.toFixed(3)} ${r.toFixed(3)}v${(h-2*r).toFixed(3)}a${r.toFixed(3)} ${r.toFixed(3)} 0 0 1 -${r.toFixed(3)} ${r.toFixed(3)}h-${(w-2*r).toFixed(3)}a${r.toFixed(3)} ${r.toFixed(3)} 0 0 1 -${r.toFixed(3)} -${r.toFixed(3)}v-${(h-2*r).toFixed(3)}a${r.toFixed(3)} ${r.toFixed(3)} 0 0 1 ${r.toFixed(3)} -${r.toFixed(3)}z`}
+function qrPath(text,x,y,size,hole,style){style=style||'rounded';const q=qrcode(0,hole?'H':'M');q.addData(text);q.make();const n=q.getModuleCount(),m=size/n;let d='';
   const h0=hole?Math.floor(n*(1-hole)/2):-1,h1=hole?n-1-h0:-1;
-  for(let r=0;r<n;r++)for(let c=0;c<n;c++){if(hole&&r>=h0&&r<=h1&&c>=h0&&c<=h1)continue;if(q.isDark(r,c))d+=`M${(x+c*m).toFixed(3)} ${(y+r*m).toFixed(3)}h${m.toFixed(3)}v${m.toFixed(3)}h-${m.toFixed(3)}z`}return d}
-function qrWithLogo(text,x,y,size,color){const hole=.24,cx=x+size/2,cy=y+size/2,s=size*hole*.86;
-  return `<path d="${qrPath(text,x,y,size,hole)}" fill="${color||'#0F1013'}"/>${mark(cx-s/2,cy-s/2,s,{})}`}
+  const inF=(r,c)=>(r<7&&c<7)||(r<7&&c>=n-7)||(r>=n-7&&c<7);
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++){if(hole&&r>=h0&&r<=h1&&c>=h0&&c<=h1)continue;if(style!=='square'&&inF(r,c))continue;if(!q.isDark(r,c))continue;
+    const X=x+c*m,Y=y+r*m;
+    if(style==='square')d+=`M${X.toFixed(3)} ${Y.toFixed(3)}h${m.toFixed(3)}v${m.toFixed(3)}h-${m.toFixed(3)}z`;
+    else if(style==='dots'){const k=m*.42,cx=X+m/2,cy=Y+m/2;d+=`M${(cx-k).toFixed(3)} ${cy.toFixed(3)}a${k.toFixed(3)} ${k.toFixed(3)} 0 1 0 ${(2*k).toFixed(3)} 0a${k.toFixed(3)} ${k.toFixed(3)} 0 1 0 -${(2*k).toFixed(3)} 0z`}
+    else d+=rr(X+m*.06,Y+m*.06,m*.88,m*.88,m*.32)}
+  if(style!=='square'){const R=style==='dots'?.5:.3;[[0,0],[0,n-7],[n-7,0]].forEach(([r,c])=>{const X=x+c*m,Y=y+r*m;
+    d+=rr(X,Y,7*m,7*m,7*m*R*.62)+rr(X+m,Y+m,5*m,5*m,5*m*R*.5);
+    d+=rr(X+2*m,Y+2*m,3*m,3*m,3*m*R*.55)})}
+  return d}
+function qrSVG(text,x,y,size,hole,style,color){return `<path d="${qrPath(text,x,y,size,hole,style)}" fill="${color||'#0F1013'}" fill-rule="evenodd"/>`}
+function qrWithLogo(text,x,y,size,color,style){const hole=.24,cx=x+size/2,cy=y+size/2,s=size*hole*.86;
+  return qrSVG(text,x,y,size,hole,style,color)+mark(cx-s/2,cy-s/2,s,{})}
 const CW=.58;
 function fit(text,maxW,maxH,maxFs,maxLines){text=String(text||'').trim().replace(/\s+/g,' ');if(!text)return{lines:[],fs:0};
   const words=text.split(' ');let best={lines:[text],fs:0};
@@ -66,7 +79,7 @@ function sticker(o){
     return `<text x="${x}" y="${y}" font-size="${ffs}" font-weight="700" fill="${(T.pw==='#0F1013'||T.pw==='#0A0F1C')?T.sub:pwCol}">${L.by}</text>${mark(x+byW+ffs*.6,y-mk*.78,mk,{})}<text x="${x+byW+ffs*.6+mk+ffs*.5}" y="${y}" font-size="${ffs*1.08}" font-weight="800" fill="${pwCol}">ScanSay</text>`}
   function qrBlock(x,y,s){const fr=s*.055,br=s*.16,sw=Math.max(s*.022,.5),q=s-fr*2;
     const c=(d)=>`<path d="${d}" fill="none" stroke="${frameCol}" stroke-width="${sw}" stroke-linecap="round"/>`;const o2=-sw*1.6,X=x+o2,Y=y+o2,S=s-o2*2;
-    return `<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="${s*.07}" fill="#fff"/>`+(useLogo?qrWithLogo(url,x+fr,y+fr,q):`<path d="${qrPath(url,x+fr,y+fr,q)}" fill="#0F1013"/>`)+
+    return `<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="${s*.07}" fill="#fff"/>`+(useLogo?qrWithLogo(url,x+fr,y+fr,q,o.qrColor,o.qr):qrSVG(url,x+fr,y+fr,q,0,o.qr,o.qrColor))+
       c(`M${X} ${Y+br}V${Y+sw*2}q0-${sw*2} ${sw*2}-${sw*2}H${X+br}`)+c(`M${X+S-br} ${Y}H${X+S-sw*2}q${sw*2} 0 ${sw*2} ${sw*2}V${Y+br}`)+
       c(`M${X+S} ${Y+S-br}V${Y+S-sw*2}q0 ${sw*2}-${sw*2} ${sw*2}H${X+S-br}`)+c(`M${X+br} ${Y+S}H${X+sw*2}q-${sw*2} 0-${sw*2}-${sw*2}V${Y+S-br}`)}
   const txt=(lines,cx,y,fs,col,wt,anchor)=>lines.map((l,i)=>`<text x="${cx}" y="${y+fs*.86+i*fs*1.18}" text-anchor="${anchor||'middle'}" font-size="${fs.toFixed(2)}" font-weight="${wt}" fill="${col}">${esc(l)}</text>`).join('');
@@ -103,5 +116,5 @@ const SIZES=[
 ];
 const THEME_NAMES={white:{sv:'Vit',en:'White'},black:{sv:'Svart',en:'Black'},orange:{sv:'Orange',en:'Orange'},gold:{sv:'Guld',en:'Gold'},green:{sv:'Grön',en:'Green'},blue:{sv:'Blå',en:'Blue'},lime:{sv:'Röd',en:'Red'},cream:{sv:'Krämvit',en:'Cream'},ivory:{sv:'Elfenben',en:'Ivory'},noir:{sv:'Noir',en:'Noir'},forest:{sv:'Skogsgrön',en:'Forest'},pink:{sv:'Rosa',en:'Pink'},sun:{sv:'Solgul',en:'Sun yellow'},sky:{sv:'Himmelsblå',en:'Sky blue'},purple:{sv:'Lila',en:'Purple'},navy:{sv:'Marinblå',en:'Navy'},custom:{sv:'Egen färg',en:'Custom colour'}};
 const SWATCH={white:'#FFFFFF',black:'#0F1013',orange:'#F97316',gold:'linear-gradient(135deg,#FFF3C4,#F4D06F 35%,#D9A93B 65%,#A97A12)',green:'#15803D',blue:'#1D4ED8',lime:'#E4002B',cream:'#F6F6F8',ivory:'#F5EFE4',noir:'#141414',forest:'#1F3A33',pink:'#EC4899',sun:'#FDE047',sky:'#38BDF8',purple:'#7C3AED',navy:'#0A1F44'};
-window.SSB={STYLES,PAL,GOLD,goldDefs,mark,markSVG,sticker,SIZES,THEMES,THEME_NAMES,SWATCH,TXT,qrPath,qrWithLogo,esc,themeFor};
+window.SSB={QRSTYLES,QRCOLORS,qrSVG,STYLES,PAL,GOLD,goldDefs,mark,markSVG,sticker,SIZES,THEMES,THEME_NAMES,SWATCH,TXT,qrPath,qrWithLogo,esc,themeFor};
 })();

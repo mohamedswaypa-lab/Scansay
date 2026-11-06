@@ -292,3 +292,14 @@ html[lang] body nav.mob a:not(#q1):not(#q2):not(#q3){font-family:"Libre Baskervi
 html[lang] body .lxsl figcaption b:not(#q1):not(#q2):not(#q3),html[lang] body .lxnum:not(#q1):not(#q2):not(#q3),html[lang] body .lxcnt:not(#q1):not(#q2):not(#q3){font-family:"Libre Baskerville",Georgia,serif!important;font-weight:400!important}
 html[lang] body .sslogo:not(#q1):not(#q2):not(#q3){height:42px!important}
 @media(max-width:700px){html[lang] body .sslogo:not(#q1):not(#q2):not(#q3){height:30px!important}}
+html[lang] body .ctab:not(#q1):not(#q2):not(#q3){position:relative!important;overflow:hidden!important;background:#0B1F4D!important;background-image:radial-gradient(circle at 85% 30%,rgba(59,130,246,.45),rgba(59,130,246,0) 55%),radial-gradient(circle at 10% 120%,rgba(29,78,216,.5),rgba(29,78,216,0) 50%)!important;color:#FFFFFF!important;border:0!important;border-radius:4px!important;box-shadow:0 40px 80px -40px rgba(11,31,77,.6)!important}
+html[lang] body .ctab:not(#q1):not(#q2):not(#q3)::after{content:""!important;position:absolute!important;right:-30px!important;top:50%!important;width:300px!important;height:345px!important;transform:translateY(-50%)!important;background:url(brand/scansay-icon-dark.svg) center/contain no-repeat!important;opacity:.09!important;pointer-events:none!important}
+html[lang] body .ctab>*:not(#q1):not(#q2):not(#q3){position:relative!important;z-index:1!important}
+html[lang] body .ctab h2:not(#q1):not(#q2):not(#q3){color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important}
+html[lang] body .ctab .cw-x:not(#q1):not(#q2):not(#q3){color:#93C5FD!important;-webkit-text-fill-color:#93C5FD!important;text-decoration:none!important}
+html[lang] body .ctab p:not(#q1):not(#q2):not(#q3){color:rgba(255,255,255,.82)!important;-webkit-text-fill-color:rgba(255,255,255,.82)!important}
+html[lang] body .ctab p a:not([class]):not(#q1):not(#q2):not(#q3),html[lang] body .ctab p a:not(#q1):not(#q2):not(#q3){color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important;text-decoration:underline!important;text-underline-offset:4px!important}
+html[lang] body .ctab .btn-a:not(#q1):not(#q2):not(#q3){background:#FFFFFF!important;border-color:#FFFFFF!important;color:#0B1F4D!important;-webkit-text-fill-color:#0B1F4D!important}
+html[lang] body .ctab .btn-a:hover:not(#q1):not(#q2):not(#q3){background:#DBEAFE!important;border-color:#DBEAFE!important}
+html[lang] body .ctab .btn-w:not(#q1):not(#q2):not(#q3){text-transform:uppercase!important;letter-spacing:.16em!important;font-size:12px!important;font-weight:500!important;background:transparent!important;border:1px solid rgba(255,255,255,.7)!important;color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important;border-radius:0!important}
+html[lang] body .ctab .btn-w:hover:not(#q1):not(#q2):not(#q3){background:#FFFFFF!important;color:#0B1F4D!important;-webkit-text-fill-color:#0B1F4D!important}
