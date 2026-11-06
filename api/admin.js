@@ -23,8 +23,9 @@ module.exports = async (req, res) => {
       const since = new Date(Date.now() - 30 * 864e5).toISOString();
       const fb = await L.sb('GET', 'feedback?created_at=gte.' + L.q(since) + '&select=account_id,type,status');
       let offers = []; try { offers = await L.sb('GET', 'offers?select=id,app_id,version,status,note,reply,replied_at,created_at,data&order=created_at.desc&limit=1000'); } catch (e) { offers = null; }
+      let sigs = []; try { sigs = await L.sb('GET', 'signatures?select=ref,company,name,title,email,created_at&order=created_at.desc&limit=2000'); } catch (e) { sigs = []; }
       let messages = []; try { messages = await L.sb('GET', 'messages?select=*&order=created_at.asc&limit=3000'); } catch (e) { messages = null; }
-      return L.send(res, 200, { doc: st ? st.doc : null, apps, accounts: accs, members: mem, fb30: fb, offers, messages });
+      return L.send(res, 200, { doc: st ? st.doc : null, apps, accounts: accs, members: mem, fb30: fb, offers, messages, sigs });
     }
     if (req.method !== 'POST') return L.send(res, 405, { error: 'method' });
     const b = await L.body(req);
@@ -94,6 +95,35 @@ module.exports = async (req, res) => {
       await L.sendEmail({ to: o.customer.email, replyTo: L.env('NOTIFY_EMAIL') || undefined, subject: (version > 1 ? 'Uppdaterad offert' : 'Offert') + ' från ScanSay · ' + o.customer.name, text: 'Hej! Här är ' + (version > 1 ? 'den uppdaterade ' : '') + 'offerten för ' + o.customer.name + ': ' + url + '\nNi kan signera direkt eller be om ändringar via länken. Länken gäller i 30 dagar.',
         html: await L.offerMail(o, url, b.note, version) });
       return L.send(res, 200, { ok: true, url, offer_id: row.id, version, app_id: appId });
+    }
+    if (a === 'offer_remind') {   // remind the customer to sign the latest open offer (same offer, new 30-day link)
+      const appId = String(b.app_id || '');
+      const [o] = await L.sb('GET', 'offers?app_id=eq.' + L.q(appId) + '&status=in.(sent,changes)&select=*&order=version.desc&limit=1');
+      if (!o) return L.send(res, 404, { error: 'Det finns ingen öppen offert att påminna om' });
+      const d = o.data || {}, c = d.customer || {}; if (!c.email) return L.send(res, 400, { error: 'Kundens e-post saknas' });
+      const url = L.site() + '/sign/?t=' + encodeURIComponent(L.seal({ oid: o.id, exp: Date.now() + 30 * 864e5 }));
+      const first = String(c.contact || '').split(' ')[0] || '', msg = String(b.message || '').trim().slice(0, 1500);
+      await L.sendEmail({ to: c.email, replyTo: L.env('NOTIFY_EMAIL') || undefined, subject: 'Påminnelse: offert och avtal att signera · ' + (c.name || 'ScanSay'),
+        text: 'Hej ' + first + '!\n\n' + (msg || 'Vi vill påminna om offerten och avtalet från ScanSay. Ni kan signera direkt eller be om ändringar via länken. Det tar ungefär två minuter.') + '\n\n' + url + '\n\nLänken gäller i 30 dagar.',
+        html: L.mailHtml('Påminnelse: ert avtal väntar', `<p>Hej ${L.escH(first)}!</p><p style="white-space:pre-wrap">${L.escH(msg || 'Vi vill påminna om offerten och avtalet från ScanSay för ' + (c.name || 'er') + '. Ni kan signera direkt eller be om ändringar via länken. Det tar ungefär två minuter.')}</p><p style="font-size:14px;color:#4B5563">Offert ${L.escH(d.no || '')} · ${L.escH(String(d.price || ''))} kr/${d.interval === 'year' ? 'år' : 'mån'} exkl. moms.</p>`,
+          [['Öppna och signera', url]], { preheader: 'Offerten från ScanSay väntar på er signatur', reason: 'Du får det här mejlet eftersom ScanSay har skickat en offert till ' + L.escH(c.name || 'ert företag') + '.' }) });
+      if (b.sms && c.phone) { try { await L.sendSms({ to: c.phone, text: 'Hej ' + first + '! Påminnelse från ScanSay: offerten och avtalet väntar på er signatur: ' + url }); } catch (e) {} }
+      d.reminders = (d.reminders || []).concat(Date.now()).slice(-20);
+      await L.sb('PATCH', 'offers?id=eq.' + L.q(o.id), { data: d }, 'return=minimal');
+      return L.send(res, 200, { ok: true, url, reminders: d.reminders });
+    }
+    if (a === 'contract_send') {   // contract for an existing customer (e.g. created without signature, or an add-on): sealed link + mail
+      const o = b.offer || {}, c = o.customer || {};
+      if (!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(c.email || '')) return L.send(res, 400, { error: 'Kundens e-post saknas' });
+      if (!L.env('SIGN_SECRET')) return L.send(res, 500, { error: 'SIGN_SECRET saknas' });
+      const url = L.site() + '/sign/?t=' + encodeURIComponent(L.seal({ o, exp: Date.now() + 30 * 864e5 }));
+      const first = String(c.contact || '').split(' ')[0] || '', msg = String(b.message || '').trim().slice(0, 1500), rem = !!b.reminder;
+      await L.sendEmail({ to: c.email, replyTo: L.env('NOTIFY_EMAIL') || undefined, subject: (rem ? 'Påminnelse: avtal att signera' : 'Avtal att signera') + ' · ScanSay',
+        text: 'Hej ' + first + '!\n\n' + (msg || (rem ? 'En påminnelse om avtalet från ScanSay.' : 'Här är avtalet från ScanSay.') + ' Läs igenom och signera elektroniskt via länken. Det tar ungefär två minuter.') + '\n\n' + url + '\n\nLänken gäller i 30 dagar.',
+        html: L.mailHtml(rem ? 'Påminnelse: ert avtal väntar' : 'Ert avtal att signera', `<p>Hej ${L.escH(first)}!</p><p style="white-space:pre-wrap">${L.escH(msg || (rem ? 'En påminnelse om avtalet från ScanSay för ' : 'Här är avtalet från ScanSay för ') + (c.name || 'er') + '. Läs igenom och signera elektroniskt. Det tar ungefär två minuter.')}</p>`,
+          [['Läs och signera avtalet', url]], { preheader: 'Avtalet från ScanSay väntar på er signatur', reason: 'Du får det här mejlet eftersom ' + L.escH(c.name || 'ert företag') + ' är kund hos ScanSay.' }) });
+      if (b.sms && c.phone) { try { await L.sendSms({ to: c.phone, text: 'Hej ' + first + '! ' + (rem ? 'Påminnelse: a' : 'A') + 'vtalet från ScanSay väntar på er signatur: ' + url }); } catch (e) {} }
+      return L.send(res, 200, { ok: true, url });
     }
     if (a === 'info_request') {
       const [ap] = await L.sb('GET', 'applications?id=eq.' + L.q(String(b.app_id || '')) + '&select=*'); if (!ap) return L.send(res, 404, { error: 'notfound' });

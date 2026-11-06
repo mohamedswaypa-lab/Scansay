@@ -124,9 +124,9 @@ function mailHtml(title, bodyHtml, btn, opts) {
 <body style="margin:0;padding:0;background:#F3F5F9">${opts.preheader ? `<div style="display:none;max-height:0;overflow:hidden">${escH(opts.preheader)}</div>` : ''}
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3F5F9"><tr><td align="center" style="padding:28px 12px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;font-family:Inter,'Segoe UI',Arial,sans-serif;color:#0A0F1C">
-<tr><td style="padding:0 6px 18px"><a href="${site()}"><img src="${site()}/brand/email-logo.png" width="152" height="40" alt="ScanSay" style="display:block;border:0"></a></td></tr>
+<tr><td style="padding:0 6px 18px"><a href="${site()}"><img src="${site()}/brand/email-logo.png" width="187" height="40" alt="ScanSay" style="display:block;border:0"></a></td></tr>
 <tr><td style="background:#FFFFFF;border:1px solid #E5E7EB;border-radius:18px;padding:34px 34px 30px">
-<div style="height:4px;width:44px;background:#C8F542;border-radius:4px;margin-bottom:18px"></div>
+<div style="height:4px;width:44px;background:#E4002B;border-radius:4px;margin-bottom:18px"></div>
 <h1 style="margin:0 0 14px;font-size:24px;line-height:1.25;letter-spacing:-.02em;color:#0A0F1C">${title}</h1>
 <div style="font-size:15.5px;line-height:1.65;color:#1F2937">${bodyHtml}</div>
 ${btns.length ? `<div style="margin-top:22px">${btns.map((x, i) => BTN(x[0], x[1], i > 0)).join('')}</div>` : ''}
@@ -157,7 +157,7 @@ function subTable(o) {
 }
 async function offerMail(o, url, note, version) {
   const c = o.customer || {};
-  return mailHtml((version > 1 ? 'Uppdaterad offert' : 'Er offert') + ' från ScanSay', `<p>Hej ${escH(String(c.contact || '').split(' ')[0] || '')}!</p><p>${version > 1 ? 'Här är den uppdaterade offerten' : 'Tack för er registrering. Här är offerten'} för <b>${escH(c.name || '')}</b>.</p>${note ? `<blockquote style="border-left:4px solid #C8F542;margin:12px 0;padding:8px 14px;background:#F7FEE7;white-space:pre-wrap">${escH(note)}</blockquote>` : ''}${subTable(o)}
+  return mailHtml((version > 1 ? 'Uppdaterad offert' : 'Er offert') + ' från ScanSay', `<p>Hej ${escH(String(c.contact || '').split(' ')[0] || '')}!</p><p>${version > 1 ? 'Här är den uppdaterade offerten' : 'Tack för er registrering. Här är offerten'} för <b>${escH(c.name || '')}</b>.</p>${note ? `<blockquote style="border-left:4px solid #E4002B;margin:12px 0;padding:8px 14px;background:#F7FEE7;white-space:pre-wrap">${escH(note)}</blockquote>` : ''}${subTable(o)}
 <p><b>Så går det till:</b></p><ol style="padding-left:20px;margin:6px 0"><li>Öppna offerten och läs avtal och villkor.</li><li>Signera direkt, eller tryck på <b>Jag vill ändra något</b> om ni vill justera pris eller innehåll.</li><li>När ni har signerat aktiverar vi kontot och skickar inloggningen.</li></ol><p style="font-size:13.5px;color:#4B5563">Offertnummer ${escH(o.no || '')}. Länken gäller i 30 dagar.</p>`,
     [['Öppna och signera offerten', url]], { preheader: 'Offert för ' + (c.name || '') + ' – signera eller be om ändringar', reason: 'Du får det här mejlet eftersom ' + escH(c.name || 'ert företag') + ' har registrerat sig hos ScanSay och vill ha en offert.' });
 }
