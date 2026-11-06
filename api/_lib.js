@@ -124,7 +124,7 @@ function mailHtml(title, bodyHtml, btn, opts) {
 <body style="margin:0;padding:0;background:#F3F5F9">${opts.preheader ? `<div style="display:none;max-height:0;overflow:hidden">${escH(opts.preheader)}</div>` : ''}
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3F5F9"><tr><td align="center" style="padding:28px 12px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;font-family:Inter,'Segoe UI',Arial,sans-serif;color:#0A0F1C">
-<tr><td style="padding:0 6px 18px"><a href="${site()}"><img src="${site()}/brand/email-logo.png" width="187" height="40" alt="ScanSay" style="display:block;border:0"></a></td></tr>
+<tr><td style="padding:0 6px 18px"><a href="${site()}"><img src="${site()}/brand/email-logo.png" width="186" height="40" alt="ScanSay" style="display:block;border:0"></a></td></tr>
 <tr><td style="background:#FFFFFF;border:1px solid #E5E7EB;border-radius:18px;padding:34px 34px 30px">
 <div style="height:4px;width:44px;background:#E4002B;border-radius:4px;margin-bottom:18px"></div>
 <h1 style="margin:0 0 14px;font-size:24px;line-height:1.25;letter-spacing:-.02em;color:#0A0F1C">${title}</h1>
