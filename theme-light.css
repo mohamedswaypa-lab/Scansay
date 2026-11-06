@@ -1,6 +1,6 @@
 /* ScanSay · light theme. White backgrounds, strong black text, blue actions, lime highlight on a few words. Loaded last. */
 :root{--bg:#FFFFFF;--bg2:#F5F7FB;--card:#FFFFFF;--line:#E5E7EB;--line2:#D1D5DB;--t1:#0A0F1C;--t2:#374151;--t3:#6B7280;
- --acc:#1D4ED8;--acc2:#1E40AF;--blue:#1D4ED8;--blue-l:#EFF6FF;--lime:#C8F542;--sun:#1D4ED8;color-scheme:light}
+ --acc:#1D4ED8;--acc2:#1E40AF;--blue:#1D4ED8;--blue-l:#EFF6FF;--lime:#E4002B;--sun:#1D4ED8;color-scheme:light}
 html,html body{background:#FFFFFF!important;color:var(--t1)!important}
 
 /* every section light; alternate white / soft grey */
@@ -19,7 +19,7 @@ html body .page>section:nth-of-type(n) :is(h1,h2,h3,h4,b,strong,li b){color:#0A0
 html body a{color:#1D4ED8}
 html body .crumb a{color:#1D4ED8!important}
 /* headings: lime highlight on the accent words */
-html body :is(h1,h2) em,html body .hsl-h em{font-style:normal!important;color:#0A0F1C!important;-webkit-text-fill-color:#0A0F1C!important;background:linear-gradient(transparent 58%,#C8F542 58%,#C8F542 92%,transparent 92%)!important;padding:0 .06em}
+html body :is(h1,h2) em,html body .hsl-h em{font-style:normal!important;color:#0A0F1C!important;-webkit-text-fill-color:#0A0F1C!important;background:linear-gradient(transparent 58%,#E4002B 58%,#E4002B 92%,transparent 92%)!important;padding:0 .06em}
 html body .eyebrow{color:#1D4ED8!important;background:none!important;padding:0!important}
 html body .page>section:nth-of-type(n) .eyebrow{color:#1D4ED8!important;background:none!important;padding:0!important}
 
@@ -49,10 +49,10 @@ html body :is(.fcard,.bcard,.wh,.sfeat,.num,.step3,.vcard,.pkg,.faq details,.car
 html body .page>section:nth-of-type(odd) :is(.fcard,.wh,.sfeat,.num,.step3,.vcard,.galc,.bento,.bcard){background:#F9FAFB!important}
 html body :is(.nic,.wic,.s3i,.phic,.th.dk,.ki):not(#x),html body .page>section:nth-of-type(n) :is(.nic,.wic,.s3i):not(#x){background:#EFF6FF!important;color:#1D4ED8!important;background-image:none!important}
 html body .page>section:nth-of-type(n) :is(.nic,.wic,.s3i):not(#x) svg{color:#1D4ED8!important;stroke:#1D4ED8!important}
-html body .page>section:nth-of-type(n) .whn,html body .whn,html body .flow time,html body .page>section:nth-of-type(n) .flow time{background:#C8F542!important;border-color:#C8F542!important;color:#0A0F1C!important}
+html body .page>section:nth-of-type(n) .whn,html body .whn,html body .flow time,html body .page>section:nth-of-type(n) .flow time{background:#E4002B!important;border-color:#E4002B!important;color:#FFFFFF!important}
 html body .chip,html body .page>section:nth-of-type(n) .chip{background:#FFFFFF!important;border:1px solid #D1D5DB!important;color:#0A0F1C!important}
 html body .more,html body .page>section:nth-of-type(n) .more{color:#1D4ED8!important}
-html body .vlist li svg,html body .page>section:nth-of-type(n) .vlist li svg,html body .vlist.dk li svg{color:#0A0F1C!important;stroke:#0A0F1C!important;background:#C8F542!important;border-radius:50%;padding:2px}
+html body .vlist li svg,html body .page>section:nth-of-type(n) .vlist li svg,html body .vlist.dk li svg{color:#FFFFFF!important;stroke:#0A0F1C!important;background:#E4002B!important;border-radius:50%;padding:2px}
 html body .vlist li,html body .vlist.dk li{color:#0A0F1C!important}
 html body .step3 .s3n{color:rgba(10,15,28,.06)!important}
 
@@ -82,14 +82,14 @@ html body .ttab span{color:#9CA3AF!important}html body .ttab.on span{color:#1D4E
 html body .ttab:after,html body .tdot.on i{background:#1D4ED8!important}
 html body .tdot i{background:#D1D5DB!important}
 html body .ttext h3,html body .ttext li{color:#0A0F1C!important}
-html body .ttext li:before{background:#C8F542!important;color:#0A0F1C!important}
+html body .ttext li:before{background:#E4002B!important;color:#FFFFFF!important}
 html body .tnum{color:#1D4ED8!important}
 html body .tarr{background:#fff!important;border-color:#D1D5DB!important;color:#0A0F1C!important}
 html body .qtile b,html body .alc b,html body .otpc b,html body .mk b{color:#0A0F1C!important}
 html body .qtile .tqq,html body .tscan{background:#0A0F1C!important}
 html body .qtile .tqq svg,html body .tscan .tqq svg{fill:#FFFFFF!important}
 html body .otpd span{background:#F5F7FB!important;color:#0A0F1C!important;border-color:#D1D5DB!important}
-html body .otpok,html body .msolved{background:#C8F542!important;color:#0A0F1C!important}
+html body .otpok,html body .msolved{background:#E4002B!important;color:#FFFFFF!important}
 html body .mk{background:#F5F7FB!important}html body .mk em{color:#15803D!important}
 html body .mai{background:#F5F7FB!important;border-color:#E5E7EB!important;color:#374151!important}
 html body .mai span{background:#0A0F1C!important;color:#fff!important}
@@ -106,14 +106,14 @@ html body .stk img{filter:drop-shadow(0 16px 22px rgba(10,15,28,.18))!important}
 html body .stk figcaption b{color:#0A0F1C!important}
 html body .bcard .bimg{background:#EFF6FF!important;border-bottom:1px solid #E5E7EB}
 html body .bcard .bimg span{background:#FFFFFF!important;color:#1D4ED8!important}
-html body .bcat{background:#C8F542!important;color:#0A0F1C!important}
+html body .bcat{background:#E4002B!important;color:#FFFFFF!important}
 html body .finder .fsearch{background:#FFFFFF!important;border-color:#D1D5DB!important}
 html body .finder .fpop button,html body .vfilters button,html body .vchips button{background:#fff!important;border:1px solid #D1D5DB!important;color:#0A0F1C!important}
 
 /* CTA band: blue box with white text */
 html body .page>section:last-of-type .ctab,html body .ctab{background:#0A0F1C!important;border-color:#0A0F1C!important}
 html body .ctab :is(h2,h3,p,b,a:not(.btn)){color:#FFFFFF!important}
-html body .ctab .btn-a{background:#C8F542!important;border-color:#C8F542!important;color:#0A0F1C!important;-webkit-text-fill-color:#0A0F1C!important}
+html body .ctab .btn-a{background:#E4002B!important;border-color:#E4002B!important;color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important}
 html body .ctab :is(.btn-w,.btn-o){background:transparent!important;border-color:rgba(255,255,255,.5)!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
 
 /* footer: light */
@@ -140,7 +140,7 @@ html body .vcard{color:#0A0F1C!important}
 html body :is(h1,h2,h3,h4,.st):not(#x):not(#y){color:#0A0F1C!important;-webkit-text-fill-color:#0A0F1C!important;background-clip:border-box!important;-webkit-background-clip:border-box!important}
 html body :is(h1,h2,h3,h4):not(#x):not(#y):not(:has(em)){background:none!important}
 html body .ctab:not(#x) :is(h2,h3,p,b,a:not(.btn)):not(#x):not(#y){color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important}
-html body .ctab:not(#x) .btn-a:not(#x){background:#C8F542!important;border-color:#C8F542!important;color:#0A0F1C!important;-webkit-text-fill-color:#0A0F1C!important}
+html body .ctab:not(#x) .btn-a:not(#x){background:#E4002B!important;border-color:#E4002B!important;color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important}
 html body .ctab:not(#x) :is(.btn-w,.btn-o):not(#x){background:transparent!important;border-color:rgba(255,255,255,.55)!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
 html body footer:not(#x),html body footer.fvid:not(#x){background:#F5F7FB!important}
 html body footer:not(#x) :is(a,span,p,small,li):not(#x){color:#374151!important;-webkit-text-fill-color:#374151!important}
@@ -212,7 +212,7 @@ html body .whn,html body .flow time{background:#D9F99D!important;border-color:#D
 html body .bcat{background:#D9F99D!important;color:#14532D!important}
 html body .otpok,html body .msolved{background:#DCFCE7!important;color:#15803D!important}
 html body .mk em{color:#15803D!important}
-html body .ctab .btn-a{background:#C8F542!important;color:#0A0F1C!important}
+html body .ctab .btn-a{background:#E4002B!important;color:#FFFFFF!important}
 html body .num b,html body .num .n{color:#0A0F1C!important}
 html body .num{border-top:4px solid #84CC16!important}
 /* header dropdowns: always readable */
@@ -297,7 +297,7 @@ html body .hzones .hz small:not(#x):not(#y){color:#374151!important;-webkit-text
 html body :is(.hpanel,.dcardx,.dtop,.acb,.acf,.pbar,.ach):not(#x):not(#y) :is(h3,h4,h5,b,strong,.eyebrow,span){color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important}
 html body :is(.hpanel,.dcardx,.dtop,.acb,.acf,.pbar):not(#x):not(#y) :is(p,small,.note,.mut){color:#D1D5DB!important;-webkit-text-fill-color:#D1D5DB!important}
 html body .dtop .tabs span:not(.on):not(#x):not(#y){color:#9CA3AF!important;-webkit-text-fill-color:#9CA3AF!important}
-html body .hpanel .eyebrow:not(#x):not(#y){color:#C8F542!important;-webkit-text-fill-color:#C8F542!important}
+html body .hpanel .eyebrow:not(#x):not(#y){color:#93C5FD!important;-webkit-text-fill-color:#93C5FD!important}
 html body :is(.hpanel .chips .chip,.hpanel .chip,.msg .tag,.dcardx .tag):not(#x):not(#y){background:#FFFFFF!important;color:#0A0F1C!important;-webkit-text-fill-color:#0A0F1C!important;border:1px solid #E5E7EB!important}
 html body .msg .tag.g:not(#x):not(#y){background:#DCFCE7!important;color:#166534!important;-webkit-text-fill-color:#166534!important}
 html body .msg .tag.r:not(#x):not(#y){background:#FEE2E2!important;color:#991B1B!important;-webkit-text-fill-color:#991B1B!important}
@@ -308,7 +308,7 @@ html body .pbody:not(#x):not(#y) :is(.mut,.ppow){color:#4B5563!important;-webkit
 html body .pbody .pchips span:not(.on):not(#x):not(#y){background:#FFFFFF!important;border:1px solid #D1D5DB!important}
 html body .pbody .rate span:not(.on):not(#x):not(#y){background:#F3F4F6!important}
 html body .pbody:not(#x):not(#y) :is(.pchips span.on,.rate span.on,.psend){color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important}
-html body .dcardx .ai:not(#x):not(#y) b{color:#C8F542!important;-webkit-text-fill-color:#C8F542!important}
+html body .dcardx .ai:not(#x):not(#y) b{color:#93C5FD!important;-webkit-text-fill-color:#93C5FD!important}
 html body .seg button.sw:not(#x):not(#y){width:34px;height:34px;padding:0!important;border:2px solid #D1D5DB!important;border-radius:10px!important;box-shadow:none!important}
 html body .seg button.sw.on:not(#x):not(#y){outline:3px solid #1D4ED8!important;outline-offset:2px;border-color:#FFFFFF!important}
 html body .vdet:not(#x):not(#y){background:#FFFFFF!important;border:1px solid #E5E7EB!important;box-shadow:0 10px 30px -18px rgba(10,15,28,.25)!important;color:#0A0F1C!important}

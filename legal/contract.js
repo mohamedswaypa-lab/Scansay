@@ -1,7 +1,7 @@
 /* ScanSay · offert och avtal (svensk rätt, B2B). Delas av admin, signeringssidan och servern.
    MALL: låt en svensk jurist granska texterna innan skarp användning. */
 (function (root) {
-  const VERSION = '2026-11-01';
+  const VERSION = '2026-11-05';
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const kr = n => Math.round(+n || 0).toLocaleString('sv-SE') + ' kr';
   const date = t => { const d = t ? new Date(t) : new Date(); return isNaN(d) ? String(t) : d.toLocaleDateString('sv-SE', { year: 'numeric', month: 'long', day: 'numeric' }); };
@@ -61,7 +61,7 @@ ${TERMS(d)}
 
 <h3 class="ctr-s">Bilaga 1. Personuppgiftsbiträdesavtal (sammanfattning)</h3>
 ${PUB(d)}
-${d.staff ? STAFF(d) : ''}
+${d.staff ? STAFF(d) : ''}${TEAM(d)}
 
 <div class="ctr-sign" id="ctr-sign"><div><small>För ${esc(s.name)}</small><span class="ctr-sigl">${SIG}</span><span>Behörig firmatecknare · ${date(d.date)}</span></div>
 <div><small>För ${esc(c.name)}</small><span class="ctr-sigl ctr-empty" data-sign-slot>Signeras elektroniskt</span><span data-sign-meta>Namn, titel och datum fylls i vid signering</span></div></div>
@@ -69,7 +69,16 @@ ${d.staff ? STAFF(d) : ''}
   }
 
 
-  function STAFF(d) {
+  function TEAM(d) {
+  const L = [
+    ['Roller', 'Kunden ger varje användare en roll: Ägare, Chef, Handläggare, Medarbetare eller Läsare. En användare kan bara lägga till eller ta bort användare med lägre roll. Antalet användare per roll följer paketet i offerten.'],
+    ['Ärenden och uppdrag', 'Handläggare kan skicka ett ärende som uppdrag till en medarbetare. Namn och tidpunkter för uppdraget sparas i ärendet så att uppföljningen blir rätt. Ett ärende kan markeras som löst tidigast 30 minuter efter att det flyttats till Pågående.'],
+    ['Teamchatt', 'Användarna kan skriva till varandra i Kundens chatt. Kunden ansvarar för att chatten inte används för känsliga personuppgifter om gäster. Chattmeddelanden raderas automatiskt efter 12 månader, och privata meddelanden med en användare raderas när användaren tas bort.'],
+    ['Begränsningar', 'Uppgifter om enskilda medarbetares uppdrag får inte vara enda underlag för beslut om anställning, lön eller disciplinära åtgärder.']
+  ];
+  return '<h3 class="ctr-s">Bilaga 3. Användare, roller, uppdrag och teamchatt</h3><ol class="ctr-ol">' + L.map(([h, t]) => '<li><b>' + h + '.</b> ' + t + '</li>').join('') + '</ol>';
+}
+function STAFF(d) {
     const L = [
       ['Syfte', 'Personalmodulen gör det möjligt för medarbetare att logga in, checka in på sitt pass och se feedback som rör deras arbetsplats. Syftet är att förbättra service och arbetsmiljö, inte att kontrollera enskilda medarbetare.'],
       ['Kundens ansvar före start', 'Innan modulen används ska Kunden (a) göra en konsekvensbedömning (DPIA) enligt artikel 35 i dataskyddsförordningen, (b) informera berörda medarbetare skriftligt enligt artikel 13, och (c) fullgöra sin informations- och förhandlingsskyldighet enligt lagen (1976:580) om medbestämmande i arbetslivet (MBL) om arbetsplatsen har kollektivavtal. ScanSay tillhandahåller mallar men ansvarar inte för att Kunden fullgör dessa skyldigheter.'],

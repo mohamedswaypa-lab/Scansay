@@ -203,3 +203,28 @@ Case flow:
 Guest form: the main question and four 1–5 ratings now depend on the industry (hotel: Renlighet, Bekvämlighet, Personal, Frukost; café: Mat och dryck, Service, Väntetid, Atmosfär; taxi: Föraren, Bilen, Punktlighet, Pris; gym: Utrustning, Renlighet, Personal, Trängsel …). The ratings show on the case in the inbox. The code page tells the guest to check the spam folder.
 
 **Codes landing in spam**: the notice helps, but the real fix is to authenticate your domain in Brevo: Brevo → Senders, Domains & Dedicated IPs → Domains → Add `scansay.se` → add the DKIM, SPF (TXT `v=spf1 include:spf.brevo.com ~all`) and DMARC (TXT on `_dmarc`: `v=DMARC1; p=none; rua=mailto:hello@scansay.se`) records at your DNS provider → Verify. Use `MAIL_FROM` with that same domain (e.g. `ScanSay <kod@scansay.se>`). It usually takes 1–2 days before Gmail/Outlook trust it.
+
+## 15. New look, logo, video, stickers, contract reminders (5 November 2026)
+No database changes this time. Just upload the files.
+
+- **Logo:** QR code inside a round "globe" with a blue, red and white swoosh, plus scan corners. Files in `brand/` (logo, white logo for dark backgrounds, icon, app icons, email logo).
+- **Colours:** electric blue `#1D4ED8`, navy `#0A1F44`, white and red `#E4002B` (replaces lime) on the website, dashboards, admin, guest form and emails. Site styles: `theme-pepsi.css` (loaded last).
+- **Video:** `video/story.mp4` (Swedish) and `video/story-en.mp4` (English), 16 seconds in 1080p: scan → message → task to staff → happy guest. The `-720` files are used on phones. The old background videos are no longer used. **Delete these old files from GitHub:** `video/bg*, city*, code*, cta-flow*, flow*, hero-map*, mesh*, net*, qr.*, qrwave*, shapes*`.
+- **Home page:** a hero slider with 4 slides (video, dashboard, stickers, team), "Systemet steg för steg", "QR-koden i verkligheten" (hotel, taxi, café, gym) and a dashboard section with tabs. The Guide page also has the video and the steps.
+- **Stickers:** 14 colours plus your own colour (new: pink, sun yellow, sky blue, purple, navy; lime is now red) and 5 writing styles (Modern, Kraftig, Vänlig, Elegant, Versaler). These are chosen under QR-koder → step 3.
+- **FAQ:** new category "Team, roller och dekaler".
+- **Contract:** version 2026-11-05 with Bilaga 3 (roles, tasks, team chat). The DPA and privacy policy now cover tasks and chat.
+- **Admin:**
+  - An application with an open offer has the button **🔔 Påminn om signering**. It sends the same offer again by email and SMS, with a new 30-day link, and logs the reminder.
+  - A customer without a signature has **✍ Skicka avtal att signera** and then **🔔 Påminn om avtalet**.
+  - When the customer signs, the customer card shows "signerat" automatically.
+
+## 16. New logo, look and video (6 November 2026)
+No database changes. Upload the files.
+
+- **Logo:** an elegant line version of the ScanSay mark – an arch-shaped speech bubble with three QR corner squares and a small spark, in blue – with "SCAN" in black and "SAY" in blue, thin spaced capitals. Files in `brand/` (same file names as before, so every page picks them up): `scansay-logo.svg` (for white backgrounds), `scansay-logo-white.svg` (for dark/photo backgrounds), `scansay-logo-light/dark(-en).svg` (with the tagline), `scansay-logo-stacked-*.svg`, `scansay-icon.svg`, `email-logo.png`, and app icons in `app/icons/`. Inside the QR codes on the stickers the mark sits on a blue rounded square.
+- **Colours:** white, blue `#1D4ED8` and black text `#0A0F1C`. Headings use the thin display font Italiana, matching the logo (self-hosted in `fonts/italiana.woff`, OFL licence – no Google Fonts).
+- **Website:** `theme-luxe.css` (loaded after `theme-pepsi.css`). Logo in the middle of the header, Meny on the left, full-screen menu. The header is see-through over the video and white when you scroll.
+- **Home page video:** four 8-second slides – café/restaurant table, gym machine, taxi headrest and bus pole – each with a real ScanSay sticker (your QR code with the logo in the middle and the name) at true size. Files: `video/scene-*.mp4` and `video/scene-*_en.mp4`; photos in `img/scenes/`.
+- **Dashboards:** `dash-navy.css` – white header and side menu, blue active item, blue "Översikt" card – in `app/index.html` (managers), `admin/index.html`, `admin/advanced.html`. The staff app (`staff/`) and the guest form (`form/`) have a white top bar with the new logo.
+- Background photos made with Artlist (folder "ScanSay website"); the stickers are added by us, so the QR codes are real.

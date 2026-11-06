@@ -267,8 +267,10 @@ vids.forEach(v=>io.observe(v))})();
  function loadV(v){if(!v.src&&v.dataset.src&&!reduce){v.src=v.dataset.src;v.load()}var p=v.play&&v.play();if(p&&p.catch)p.catch(function(){})}
  function show(n){i=(n+S.length)%S.length;S.forEach(function(e,k){e.classList.toggle('on',k===i)});
   B.forEach(function(e,k){e.classList.toggle('on',k===i);var bar=e.querySelector('i');if(k===i&&bar){bar.style.animation='none';void bar.offsetWidth;bar.style.animation=''}});
-  var bg=S[i].dataset.bg;V.forEach(function(v){var on=v.getAttribute('data-src').indexOf(bg)>=0;v.classList.toggle('on',on);if(on)loadV(v)});
-  clearTimeout(t);t=setTimeout(function(){show(i+1)},D)}
+  var bg=S[i].dataset.bg||'';V.forEach(function(v){var on=v.getAttribute('data-src').indexOf(bg)>=0;v.classList.toggle('on',on);if(on)loadV(v)});
+  var d=+S[i].getAttribute('data-d')||D;B.forEach(function(e,k){var bar=e.querySelector('i');if(bar)bar.style.animationDuration=d+'ms'});
+  S.forEach(function(e,k){var v=e.querySelector('video');if(!v)return;if(k===i&&!reduce){try{v.currentTime=0}catch(x){}var p=v.play();if(p&&p.catch)p.catch(function(){})}else v.pause()});
+  clearTimeout(t);t=setTimeout(function(){show(i+1)},d)}
  B.forEach(function(b){b.addEventListener('click',function(){show(+b.dataset.i)})});
  document.addEventListener('visibilitychange',function(){if(document.hidden)clearTimeout(t);else show(i)});
  var x0=null;w.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});
