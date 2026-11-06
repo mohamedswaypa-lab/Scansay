@@ -207,7 +207,7 @@ Guest form: the main question and four 1–5 ratings now depend on the industry 
 ## 15. New look, logo, video, stickers, contract reminders (5 November 2026)
 No database changes this time. Just upload the files.
 
-- **Logo:** QR code inside a round "globe" with a blue, red and white swoosh, plus scan corners. Files in `brand/` (logo, white logo for dark backgrounds, icon, app icons, email logo).
+- **Logo (inspired by Asia Gardens):** an ornate emblem – a lotus-shaped frame with fine borders, small petals and your QR corner squares inside – above or beside **SCANSAY** in a classic serif (Libre Baskerville), with a thin line and "SKANNA & SÄG DET" / "SCAN & SAY IT" in the stacked version. Files in `brand/` keep their old names, so every page, the emails and the app icons pick it up. In the middle of every sticker QR code the emblem sits on a blue square; stickers end with "Drivs av / Powered by ScanSay". Headings use the same serif (self-hosted `fonts/baskerville.woff`, OFL).
 - **Colours:** electric blue `#1D4ED8`, navy `#0A1F44`, white and red `#E4002B` (replaces lime) on the website, dashboards, admin, guest form and emails. Site styles: `theme-pepsi.css` (loaded last).
 - **Video:** `video/story.mp4` (Swedish) and `video/story-en.mp4` (English), 16 seconds in 1080p: scan → message → task to staff → happy guest. The `-720` files are used on phones. The old background videos are no longer used. **Delete these old files from GitHub:** `video/bg*, city*, code*, cta-flow*, flow*, hero-map*, mesh*, net*, qr.*, qrwave*, shapes*`.
 - **Home page:** a hero slider with 4 slides (video, dashboard, stickers, team), "Systemet steg för steg", "QR-koden i verkligheten" (hotel, taxi, café, gym) and a dashboard section with tabs. The Guide page also has the video and the steps.
@@ -219,12 +219,9 @@ No database changes this time. Just upload the files.
   - A customer without a signature has **✍ Skicka avtal att signera** and then **🔔 Påminn om avtalet**.
   - When the customer signs, the customer card shows "signerat" automatically.
 
-## 16. New logo, look and video (6 November 2026)
+## 16. Logo, look and video (6 November 2026)
 No database changes. Upload the files.
 
-- **Logo:** an elegant line version of the ScanSay mark – an arch-shaped speech bubble with three QR corner squares and a small spark, in blue – with "SCAN" in black and "SAY" in blue, thin spaced capitals. Files in `brand/` (same file names as before, so every page picks them up): `scansay-logo.svg` (for white backgrounds), `scansay-logo-white.svg` (for dark/photo backgrounds), `scansay-logo-light/dark(-en).svg` (with the tagline), `scansay-logo-stacked-*.svg`, `scansay-icon.svg`, `email-logo.png`, and app icons in `app/icons/`. Inside the QR codes on the stickers the mark sits on a blue rounded square.
-- **Colours:** white, blue `#1D4ED8` and black text `#0A0F1C`. Headings use the thin display font Italiana, matching the logo (self-hosted in `fonts/italiana.woff`, OFL licence – no Google Fonts).
-- **Website:** `theme-luxe.css` (loaded after `theme-pepsi.css`). Logo in the middle of the header, Meny on the left, full-screen menu. The header is see-through over the video and white when you scroll.
-- **Home page video:** four 8-second slides – café/restaurant table, gym machine, taxi headrest and bus pole – each with a real ScanSay sticker (your QR code with the logo in the middle and the name) at true size. Files: `video/scene-*.mp4` and `video/scene-*_en.mp4`; photos in `img/scenes/`.
-- **Dashboards:** `dash-navy.css` – white header and side menu, blue active item, blue "Översikt" card – in `app/index.html` (managers), `admin/index.html`, `admin/advanced.html`. The staff app (`staff/`) and the guest form (`form/`) have a white top bar with the new logo.
-- Background photos made with Artlist (folder "ScanSay website"); the stickers are added by us, so the QR codes are real.
+- **Logo:** your blue QR speech-bubble icon sitting above the "n" and "S" of **ScanSay** ("Scan" black, "Say" blue). Files in `brand/` keep their old names, so every page, the emails and the app icons pick it up: `scansay-logo.svg` (white backgrounds), `scansay-logo-white.svg` (dark/photo backgrounds), `scansay-logo-light/dark(-en).svg` (with "Skanna · Säg det"), `scansay-icon.svg`, `email-logo.png`, `app/icons/*`. The same icon sits in the middle of every sticker QR code.
+- **Colours and type:** white, blue `#1D4ED8`, black text `#0A0F1C`; bold Plus Jakarta Sans headings. Website styles `theme-luxe.css`; dashboard styles `dash-navy.css` (manager dashboard, admin, admin tools). Staff app and guest form have a white top bar with the logo.
+- **Home page video:** four 6-second 1080p AI clips made with Artlist (restaurant/café, gym, taxi, bus). The page plays `video/ai-restaurant.mp4`, `ai-gym.mp4`, `ai-taxi.mp4`, `ai-bus.mp4` if you add them (download them from the Artlist folder "ScanSay website"); otherwise it streams them from Artlist; if that fails it plays our own clips `video/scene-*.mp4`. A real ScanSay sticker (your QR code and logo) floats over each clip with a scan line.

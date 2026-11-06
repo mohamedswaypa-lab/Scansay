@@ -1,9 +1,9 @@
 /* ScanSay dashboards · white, blue and black. Loaded last. */
-@font-face{font-family:"Italiana";src:url(../fonts/italiana.woff) format("woff");font-display:swap}
+@font-face{font-family:"Libre Baskerville";src:url(../fonts/baskerville.woff) format("woff");font-display:swap}
 html body header:not(#q1):not(#q2):not(#q3),html body header.top:not(#q1):not(#q2):not(#q3){background:#FFFFFF!important;color:#0A0F1C!important;border-bottom:1px solid #E6EAF2!important;box-shadow:none!important;backdrop-filter:none!important}
 html body header:not(#q1):not(#q2):not(#q3)::after{background:linear-gradient(90deg,#1D4ED8,#3B82F6)!important;height:2px!important}
 html body header .slg:not(#q1):not(#q2):not(#q3),html body header small:not(#q1):not(#q2):not(#q3),html body header label:not(#q1):not(#q2):not(#q3){color:#5B6476!important;-webkit-text-fill-color:#5B6476!important}
-html body header .slg:not(#q1):not(#q2):not(#q3){font-family:"Italiana",Georgia,serif!important;font-style:normal!important;letter-spacing:.12em!important}
+html body header .slg:not(#q1):not(#q2):not(#q3){font-style:normal!important}
 html body header a:not(#q1):not(#q2):not(#q3){color:#1D4ED8!important}
 html body header .brand small:not(#q1):not(#q2):not(#q3){color:#1D4ED8!important;-webkit-text-fill-color:#1D4ED8!important;letter-spacing:.18em!important}
 html body header select:not(#q1):not(#q2):not(#q3),html body header input:not(#q1):not(#q2):not(#q3){background:#F5F7FB!important;color:#0A0F1C!important;border:1px solid #E1E6F0!important;-webkit-text-fill-color:#0A0F1C!important}
@@ -20,7 +20,7 @@ html[lang] body:not(#q1):not(#q2):not(#q3){background:#F5F7FB!important}
 html body .card.kpi:not(#q1):not(#q2):not(#q3){border-top-color:#1D4ED8!important}
 html body .hello:not(#q1):not(#q2):not(#q3){background:linear-gradient(135deg,#1D4ED8 0%,#2563EB 55%,#3B82F6 100%)!important;color:#FFFFFF!important;border:0!important}
 html body .hello:not(#q1):not(#q2):not(#q3)::before,html body .hello:not(#q1):not(#q2):not(#q3)::after{display:none!important}
-html body .hello h1:not(#q1):not(#q2):not(#q3){color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important;font-family:"Italiana",Georgia,serif!important;font-weight:400!important;letter-spacing:.02em!important}
+html body .hello h1:not(#q1):not(#q2):not(#q3){color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important}
 html body .hello .sub:not(#q1):not(#q2):not(#q3){color:#DBEAFE!important;-webkit-text-fill-color:#DBEAFE!important}
 html body .hello .hg:not(#q1):not(#q2):not(#q3){color:#BFDBFE!important;-webkit-text-fill-color:#BFDBFE!important}
 html body .hello .hc:not(#q1):not(#q2):not(#q3){background:rgba(255,255,255,.14)!important;color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important;border-color:rgba(255,255,255,.22)!important}
@@ -29,3 +29,4 @@ html body .hello .seg:not(#q1):not(#q2):not(#q3){background:rgba(255,255,255,.14
 html body .hello .seg button:not(#q1):not(#q2):not(#q3){background:transparent!important;color:#DBEAFE!important;-webkit-text-fill-color:#DBEAFE!important}
 html body .hello .seg button.on:not(#q1):not(#q2):not(#q3){background:#FFFFFF!important;color:#1D4ED8!important;-webkit-text-fill-color:#1D4ED8!important}
 html body nav.side button span:not(.ni):not(#q1):not(#q2):not(#q3),html body nav#nav button span:not(.ni):not(#q1):not(#q2):not(#q3){color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important}
+html body .hello h1:not(#q1):not(#q2):not(#q3){font-family:"Libre Baskerville",Georgia,serif!important;font-weight:400!important}

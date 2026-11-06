@@ -193,10 +193,10 @@ ${miss.length?miss.map(f=>`<div class="fb ${f.type}"><div class="h"><span class=
 <div class="row"><button class="btn o" type="button" onclick="reset()">Återställ demon</button></div>`}
 
 function render(){
-  if(!S.user){$('root').innerHTML=`<div class="top"><span class="nm lrow"><img class="sslogo" src="../brand/scansay-logo.svg" alt="ScanSay" width="131" height="28" style="height:28px;width:auto;display:block"><em> · Personal</em></span></div><main>${viewLogin()}<p class="foot">Demo med exempeldata. Kundcenter med fyra kassor.</p></main>`;return}
+  if(!S.user){$('root').innerHTML=`<div class="top"><span class="nm lrow"><img class="sslogo" src="../brand/scansay-logo.svg" alt="ScanSay" width="140" height="30" style="height:30px;width:auto;display:block"><em> · Personal</em></span></div><main>${viewLogin()}<p class="foot">Demo med exempeldata. Kundcenter med fyra kassor.</p></main>`;return}
   const u=me();const T=[['today','Idag'],['fb','Min feedback'],['stats','Min statistik'],['mgr','Chefsvy (demo)']];
   const body=TAB==='today'?viewToday():TAB==='fb'?viewFeedback():TAB==='stats'?viewStats():viewManager();
-  $('root').innerHTML=`<div class="top"><span class="nm lrow"><img class="sslogo" src="../brand/scansay-logo.svg" alt="ScanSay" width="131" height="28" style="height:28px;width:auto;display:block"><em> · Personal</em></span><div class="who"><span class="hide-s">${u.name}</span><span class="av">${u.ini}</span><button type="button" onclick="logout()">Logga ut</button></div></div>
+  $('root').innerHTML=`<div class="top"><span class="nm lrow"><img class="sslogo" src="../brand/scansay-logo.svg" alt="ScanSay" width="140" height="30" style="height:30px;width:auto;display:block"><em> · Personal</em></span><div class="who"><span class="hide-s">${u.name}</span><span class="av">${u.ini}</span><button type="button" onclick="logout()">Logga ut</button></div></div>
 <nav class="tabs">${T.map(([k,v])=>`<button type="button" class="${TAB===k?'on':''} ${k==='mgr'?'mgr':''}" onclick="TAB='${k}';render()">${v}</button>`).join('')}</nav><main>${body}<p class="foot">Demo med exempeldata. Drivs av ScanSay · Skanna. Säg det.</p></main>`}
 render();setInterval(()=>{if(S.user&&(TAB==='today'||TAB==='mgr'))render()},60000);
 </script>
